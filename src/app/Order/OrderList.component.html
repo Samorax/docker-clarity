@@ -1,0 +1,98 @@
+<head>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<clr-datagrid [(clrDgSelected)]="selected">
+    <clr-dg-action-bar>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+            <cds-icon shape="plus"></cds-icon>
+            Add 
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+            <cds-icon shape="pencil"></cds-icon>
+            Edit
+          </button>
+        </div>
+    </clr-dg-action-bar>
+    
+    <clr-dg-column [style.width.px]="250">Order No.</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Total Amount</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Status
+        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+    </clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Payment</clr-dg-column>
+
+    <clr-dg-placeholder>We couldn't find any orders</clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let element of orders" [clrDgItem]="element">
+      <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
+      <clr-dg-cell>{{element.totalAmount}}</clr-dg-cell>
+      <clr-dg-cell>{{element.orderStatus}}</clr-dg-cell>
+      <clr-dg-cell> {{element.payment}}</clr-dg-cell>
+    </clr-dg-row>
+  
+   <clr-dg-detail *clrIfDetail="let element">
+      <clr-dg-detail-header>Order No:{{element.orderID}}</clr-dg-detail-header>
+      <clr-dg-detail-body>
+        <table>
+          <th>
+            <tr>
+              <td>Products</td>
+              <td>Prices</td>
+            </tr>
+          </th>
+         <tbody>
+          <tr *ngFor="let product of element.products">
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+          </tr>
+         </tbody>
+         <tfoot>
+          <tr>
+            <td>Total</td>
+            <td>{{element.totalAmount}}</td>
+          </tr>
+        </tfoot>
+        </table>
+        <div >
+          <clr-select-container *ngIf="element.status == 'Approved'">
+            <label>Select Status</label>
+            <select  clrSelect name="status" #status (change)="element.status = status.value">
+              <option value="Unapproved">Unapprove</option>
+              <option value="Approved">Approve</option>
+            </select>
+          </clr-select-container>
+        </div>
+       
+        <button *ngIf="element.payment != 'succeeded' && element.status == 'Approved'"  class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
+        
+        
+        <div *ngIf="paymentFeedback == 'succeeded'">
+          <clr-alert  [clrAlertType]="'success'" [clrAlertAppLevel]="true">
+            <clr-alert-item>
+              <span class="alert-text">Payment Succeeded!!!</span>
+            </clr-alert-item>
+          </clr-alert>
+          </div>
+          <div *ngIf="paymentFeedback && paymentFeedback != 'succeeded'">
+            <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
+              <clr-alert-item>
+                <span class="alert-text">{{paymentFeedback}}</span>
+              </clr-alert-item>
+            </clr-alert>
+            </div>
+    </clr-dg-detail-body>
+    </clr-dg-detail> 
+  
+    <clr-dg-footer>
+      <clr-dg-pagination #pagination>
+        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+          Elements per page
+        </clr-dg-page-size>
+        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+        {{pagination.totalItems}} elements
+      </clr-dg-pagination>
+    </clr-dg-footer>
+  </clr-datagrid>
+
+  <edit-order></edit-order>
+  <add-order></add-order>

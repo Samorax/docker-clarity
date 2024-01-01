@@ -1,0 +1,111 @@
+<div class="centralise">
+
+<form clrStepper #contactForm="ngForm" (ngSubmit)="signUp(contactForm)" >
+  <section class="title">
+    <!-- These could be heading elements. -->
+    <div style="font-size: 40px; margin:0px 0px 8px;">Foodloyale</div>
+    <div style="font-size: 20px;margin: 8px 0px 0px;">Invent Loyal Customers</div>
+  </section>
+  <clr-stepper-panel ngModelGroup="businessInformation">
+    <clr-step-title>Business Information</clr-step-title>
+    <clr-step-description>Tell us about your business</clr-step-description>
+    <clr-step-content>
+      <clr-input-container>
+        <label>Business Name</label>
+        <input clrInput [ngModel]="credentials.businessName" name="businessName" required />
+      </clr-input-container>
+      <div class="clr-row">
+        <clr-input-container class="clr-col-6">
+          <label>Business Address Line 1</label>
+          <input clrInput [ngModel]="credentials.businessAddressLine1" name="businessAddressLine1" required />
+        </clr-input-container>
+        <clr-input-container class="clr-col-6">
+          <label>Business Address Line 2</label>
+          <input clrInput [ngModel]="credentials.businessAddressLine2" name="businessAddressLine2" required />
+        </clr-input-container>
+      </div>
+      <div class="clr-row">
+        <clr-input-container class="clr-col-6">
+          <label>City</label>
+          <input clrInput [ngModel]="credentials.businessAddressCity" name="businessAddressCity" required />
+        </clr-input-container>
+        <clr-input-container class="clr-col-6">
+          <label>Country</label>
+          <input clrInput [ngModel]="credentials.businessAddressCountry" name="businessAddressCountry" required />
+        </clr-input-container>
+      </div>
+      <button clrStepButton="next">next</button>
+    </clr-step-content>
+  </clr-stepper-panel>
+
+  <clr-stepper-panel ngModelGroup="contact">
+    <clr-step-title>Contact Information</clr-step-title>
+    <clr-step-description>How should we contact you</clr-step-description>
+    <clr-step-content>
+      <div class="clr-row">
+        <clr-input-container class="clr-col-6">
+          <label>First Name</label>
+          <input clrInput [ngModel]="credentials.firstName" name="firstName" required />
+        </clr-input-container>
+        <clr-input-container>
+          <label>Last Name</label>
+          <input clrInput [ngModel]="credentials.lastName" name="lastName" required />
+        </clr-input-container>
+      </div>
+      <div class="clr-row">
+        <clr-input-container class="clr-col-6">
+          <label>Email</label>
+          <input clrInput [ngModel]="credentials.email" name="email" required />
+        </clr-input-container>
+        <clr-input-container>
+          <label>Phone Number</label>
+          <input clrInput [ngModel]="credentials.phoneNumber" name="phoneNumber" required />
+        </clr-input-container>
+      </div>
+      
+      <button clrStepButton="next">next</button>
+    </clr-step-content>
+  </clr-stepper-panel>
+
+  <clr-stepper-panel ngModelGroup="loginDetails">
+    <clr-step-title>Password</clr-step-title>
+    <clr-step-description>This is what you use to login. Your Email is the Username</clr-step-description>
+    <clr-step-content>
+      <clr-select-container>
+        <label>Account Type</label>
+        <select clrSelect name="accountType" [ngModel]="credentials.accountType">
+          <option value="business owner">Business Owner</option>
+          <option value="developer">Developer</option>
+        </select>
+      </clr-select-container>
+      <clr-password-container>
+        <label>Password</label>
+        <input type="password"
+               autocomplete="current-password"
+               name="password"
+               clrPassword
+               placeholder="Enter password" [ngModel]="credentials.password" required />
+      </clr-password-container>
+      <clr-password-container>
+        <label>Verify Password</label>
+        <input type="password"
+               autocomplete="current-password"
+               name="verifyPassword"
+               clrPassword
+               placeholder="Enter password" [ngModel]="credentials.verifyPassword"  required />
+      </clr-password-container>
+      <button clrStepButton="submit" type="submit">submit</button>
+    </clr-step-content>
+  </clr-stepper-panel>
+  
+  
+  
+</form>
+<span *ngIf="processing" class="spinner spinner-inline">processing ...</span>
+  <div *ngIf="show">
+    <div *ngIf="feedbacks">
+      {{feedbacks}}
+    </div>
+    <div *ngIf="feedbacks.succeeded">Registration Successful!<br> Check your emai for further instructions.</div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div>
+    <clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+        <h3 class="modal-title" clrModalTitle>CheckOut</h3>
+        <div class="modal-body" clrModalContent>
+            <div class="clr-row">
+                <div class="clr-col-8">
+                    <h3>Select Product(s)</h3>
+                    <ul style="list-style-type:none;">
+                      <li *ngFor='let product of products'>
+                        <div class="card clickable"  (click)="onSelect(product)" class="clr-col-lg-2"> 
+                          <div class="card-img">
+                            <img [src]="product.photosUrl" alt="..."/>
+                          </div>
+                          <div class="card-block">
+                            <p class="card-text">
+                              {{product.name}}
+                            </p>
+                            <p>{{product.price}}</p>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                    
+                    
+                  <!--   <li *ngFor='let product of products' (click)="onSelect(product)">
+                        {{product.name}}
+                      </li> -->
+                </div>
+              <div class="clr-col-4">
+                <order-cart [Products]="selected" [TotalAmount]="totalAmount"></order-cart>
+            </div>
+            </div>
+           
+        </div>
+        <div class="modal-footer" clrModalActions>
+          <button class="btn btn-outline" (click)="show=false">Close</button>
+        </div>
+      </clr-modal>
+</div>
+
+
+  

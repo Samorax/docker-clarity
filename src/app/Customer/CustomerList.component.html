@@ -1,0 +1,103 @@
+<clr-datagrid [(clrDgSelected)]="selected">
+    <clr-dg-action-bar>
+        <div class="btn-group">
+         
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+            <cds-icon shape="close"></cds-icon>
+            Delete
+          </button>
+          
+        </div>
+    </clr-dg-action-bar>
+    
+    <clr-dg-column [style.width.px]="250">CustomerNo.</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Birthday</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Email 
+        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+    </clr-dg-column>
+
+    <clr-dg-placeholder>We couldn't find any loyal customers!</clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
+      <clr-dg-cell>{{element.customerID}}</clr-dg-cell>
+      <clr-dg-cell>{{element.birthday}}</clr-dg-cell>
+      <clr-dg-cell>{{element.email}}</clr-dg-cell>
+    </clr-dg-row>
+  
+   <clr-dg-detail *clrIfDetail="let element">
+      <clr-dg-detail-header>{{element.firstName + ' '+ ' '+element.lastName}}</clr-dg-detail-header>
+      <clr-dg-detail-body>
+        <div class="clr-row">
+          <div class="clr-col-6">
+            <table>
+              <tr>
+                <td>CustomerNo: </td>
+                <td>{{element.customerID}}</td>
+              </tr>
+
+                <tr>
+                  <td>Birthday: </td>
+                  <td>{{element.birthday}}</td>
+                </tr>
+                <tr>
+                  <td>Last Order Date: </td>
+                  <td>{{element.lastOrderDate}}</td>
+                </tr>
+                <tr>
+                  <td>Total Amount Spent: </td>
+                  <td>{{element.totalAmountSpent}}</td>
+                </tr>
+                <tr>
+                  <td>High Spender: </td>
+                  <td>{{element.highSpender}}</td>
+                </tr>
+                <tr>
+                  <td>Favourite: </td>
+                  <td>{{element.favourite}}</td>
+                </tr>
+                <tr>
+                  <td>Loyalty Points: </td>
+                  <td>{{element.loyaltyPoints}}</td>
+                </tr>
+                <tr>
+                  <td>Membership: </td>
+                  <td>{{element.membership}}</td>
+                </tr>
+            </table>
+            
+          </div>
+          <div class="clr-col-6">
+            <table>
+            <tr>
+              <td>House Address:</td>
+              <td>{{element.houseAddress}}</td>
+            </tr>
+            <tr>
+              <td>Email: </td>
+              <td>{{element.email}}</td>
+            </tr>
+            <tr>
+              <td>Mobile Number: </td>
+              <td>{{element.mobileNumber}}</td>
+            </tr>
+          </table>
+          </div>
+        </div>
+       
+          
+        <br />
+         <clr-signpost>
+          <clr-signpost-content>This is a signpost.</clr-signpost-content>
+        </clr-signpost>
+    </clr-dg-detail-body>
+    </clr-dg-detail> 
+  
+    <clr-dg-footer>
+      <clr-dg-pagination #pagination>
+        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+          Elements per page
+        </clr-dg-page-size>
+        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+        {{pagination.totalItems}} elements
+      </clr-dg-pagination>
+    </clr-dg-footer>
+  </clr-datagrid>

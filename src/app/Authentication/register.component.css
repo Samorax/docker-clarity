@@ -1,0 +1,17 @@
+.centralise{
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    top: 20%;
+    bottom: 20%;
+}
+
+.registerHeader{
+    line-height: 1.8rem;
+    letter-spacing: normal;
+    width: 100%;
+    font-size: 1.6rem;
+    font-family: "Clarity City", "Avenir Next", "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-weight: 200;
+
+}

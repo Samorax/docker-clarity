@@ -1,0 +1,48 @@
+<div class="login-wrapper">
+  <form class="login" #loginForm ="ngForm" (ngSubmit)="onSubmit(loginForm.value)">
+    <section class="title">
+      <!-- These could be heading elements. -->
+      <div class="welcome">Foodloyale</div>
+      <div class="hint">Invent Loyal Customers</div>
+    </section>
+    <div class="login-group">
+      <clr-select-container>
+        <label>Account Type</label>
+        <select clrSelect name="type">
+          <option value="business owner">Business Owner</option>
+          <option value="developer">Developer</option>
+        </select>
+      </clr-select-container>
+      <clr-input-container>
+        <label class="clr-sr-only">E-mail</label>
+        <input type="text"
+               autocomplete="email"
+               name="email"
+               clrInput
+               placeholder="Enter e-mail"
+               [(ngModel)]="credentials.email" />
+      </clr-input-container>
+      <clr-password-container>
+        <label class="clr-sr-only">Password</label>
+        <input type="password"
+               autocomplete="current-password"
+               name="password"
+               clrPassword
+               placeholder="Enter password"
+               [(ngModel)]="credentials.password" />
+      </clr-password-container>
+      <!--<clr-checkbox-wrapper>
+        <label>Remember me</label>
+        <input type="checkbox" name="rememberMe" clrCheckbox [(ngModel)]="form.rememberMe" />
+      </clr-checkbox-wrapper>-->
+    
+      <button type="submit" class="btn btn-primary">Log in</button>
+      <a class="signup" [routerLink]='["/register"]' >Sign up for an account</a>
+    </div>
+    <div *ngIf="sendingForm">
+      <clr-spinner clrInline>Processing</clr-spinner>
+      <span>Processing</span>
+    </div>
+  </form>
+  
+</div>

@@ -1,0 +1,21 @@
+<h3> Cart</h3>
+<div *ngIf="Products">
+    <table class="table">
+        <tbody>
+            <tr *ngFor="let product of Products">
+                <td>
+                    <cds-icon shape="close" (click)="onCancel(product)"></cds-icon>
+                </td>
+                <td>{{product.name}}</td>
+                <td>{{product.price}}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Total:</td>
+                <td>{{TotalAmount}}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <button class="btn btn-primary" (click)="onCharge()">Charge</button>
+</div>
