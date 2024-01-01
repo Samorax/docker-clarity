@@ -9,7 +9,7 @@ import { Order } from "../Models/Order.model";
 export class OrderService {
   ordersCache: Order[] = [];
   constructor(private _httpClient: HttpClient) { }
-  baseUrl: string = "http://localhost:5241/api/orders/"
+  baseUrl: string = "https://foodloyaleopenapi.azurewebsites.net/api/orders/"
 
   httpOptions = {
     headers: new HttpHeaders({

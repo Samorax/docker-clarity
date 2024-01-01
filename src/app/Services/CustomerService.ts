@@ -10,7 +10,7 @@ import { Customer } from "../Models/Customer";
 export class CustomerService{
     customersCache: Customer[] = [];
     constructor(private _httpClient: HttpClient) { }
-    baseUrl: string = "http://localhost:5241/api/customers/"
+    baseUrl: string = "https://foodloyaleopenapi.azurewebsites.net/api/customers/"
   
     httpOptions = {
       headers: new HttpHeaders({

@@ -14,7 +14,7 @@ import { PaymentIntentResult, loadStripe } from "@stripe/stripe-js";
 export class paymentService{
   apiKey:string = "pk_test_51ODaLPF8K9SuxQBZrG92Ky72BznTAU0muIj0ZjaUXYrKBwMa9ZutGVVChc0UJX9MjfLLtU9oCN71iqf9NsRiFuOh002xGDndvw";
     terminal!: Terminal;
-    baseUrl = "http://localhost:5241/api/payment";
+    baseUrl = "https://foodloyaleopenapi.azurewebsites.net/api/payment";
 
     httpOptions = {
       headers: new HttpHeaders({

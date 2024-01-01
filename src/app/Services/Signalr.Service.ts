@@ -28,7 +28,7 @@ export class SignalrService {
   //private hubConnection: any;
   //receiveorders20231123194629.azurewebsites.net
   private getConnectionInfo(): Observable<any> {
-    let requestUrl = `http://localhost:7137/api/negotiate`;
+    let requestUrl = `https://receiveorders20231123194629.azurewebsites.net/api/negotiate`;
     let x = this._http.post(requestUrl,{});
     return x;
   }
