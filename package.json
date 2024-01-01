@@ -18,7 +18,20 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
+    "@angular/ssr": "^17.0.8",
+    "@cds/core": "^6.9.0",
+    "@clr/angular": "^16.1.0",
+    "@clr/ui": "^16.1.0",
+    "@microsoft/signalr": "^8.0.0",
+    "@stripe/stripe-js": "^2.2.1",
+    "@stripe/terminal-js": "^0.12.0",
+    "echarts": "^5.4.3",
+    "jest-editor-support": "*",
+    "moments": "^0.0.2",
+    "ngx-echarts": "^17.1.0",
+    "run-script-os": "*",
     "rxjs": "~7.8.0",
+    "stripe.js": "^0.0.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },
@@ -27,6 +40,7 @@
     "@angular/cli": "^17.0.8",
     "@angular/compiler-cli": "^17.0.0",
     "@types/jasmine": "~5.1.0",
+    "@types/node": "^18.18.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -34,5 +48,11 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.2.2"
+  },
+  "browser": {
+    "http": false,
+    "https": false,
+    "url": false,
+    "util": false
   }
 }
