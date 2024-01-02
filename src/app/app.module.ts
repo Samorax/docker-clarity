@@ -40,6 +40,7 @@ import { authGuard } from './Authentication/auth.guard';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
+import { indexComponent } from './Index/indexComponent';
 
 
 @NgModule({
@@ -76,6 +77,7 @@ import { AppRoutingModule } from './app-routing.module';
     ClarityModule,
     NgxEchartsModule.forRoot({echarts: ()=>import('echarts')}),
     RouterModule.forRoot([
+      {path:'', component: indexComponent},
       { path: 'login', component: loginComponent },
       { path: 'register', component: registerComponent },
       { path: 'logout', component: logOutComponent },

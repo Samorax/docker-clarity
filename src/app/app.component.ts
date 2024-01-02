@@ -4,13 +4,13 @@ import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon } from '
 import { SignalrService } from './Services/Signalr.Service';
 import { Observable, Subscription, fromEvent, map, merge, of } from 'rxjs';
 import { paymentService } from './Services/PaymentService';
-import { AppModule } from './app.module';
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon);
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrl:'./app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
   networkStatus: boolean = false;
