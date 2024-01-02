@@ -1,0 +1,13 @@
+.card-lists{
+    height: 100%;
+    margin-top: 80px;
+}
+
+.card-lists ul{
+    list-style-type: none;
+    padding: 5px;
+}
+
+.card-lists ul>li{
+    margin: 5px;
+}
