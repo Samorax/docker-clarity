@@ -5,6 +5,8 @@ import { paymentService } from "../Services/PaymentService";
 import { terminalIcon } from "@cds/core/icon";
 import { terminalPaymentObject } from "../Models/TerminalPaymentObject";
 import { CartOrder } from "../Models/CartOder";
+import { PaymentIntentRequest } from "../Models/PaymentIntentRequest";
+import { Reader } from "@stripe/terminal-js";
 
 @Component({
     selector:'order-cart',
@@ -18,6 +20,8 @@ export class OrderCartComponent {
     newOder!:Order;
     @Input()Products!: Product[];
     @Input()TotalAmount: number = 0;
+    feedBack!:string;
+    spinnerStatus:boolean = false;
 
     
     
@@ -27,15 +31,30 @@ export class OrderCartComponent {
     }
 
     onCharge(){
-        let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:'gbp' }
-        this.PaymentSvr.connect2Reader(ob);
-        this.createCartProducts(this.Products).then(p=>{
-            this.newOder = {products : p,totalAmount:this.TotalAmount, orderStatus:"Approved", orderDate:Date.now(), orderID:0,customerID:0,payment:"succeeded", applicationUserID: this.appId }
-            this.cart.emit(this.newOder);
-        });
-       
-        
-    }
+        let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:this.PaymentSvr.currencySymbol}
+        this.PaymentSvr.discoverReader().then((result:Reader)=>{
+            this.spinnerStatus = true;
+            this.feedBack = "Reader discovered: "+result.label;
+            this.PaymentSvr.connectReader(result).then((status:string)=>{
+                this.feedBack = status;
+                this.PaymentSvr.processPayment(ob).then(g=>{
+                    let p: PaymentIntentRequest = {PaymentIntentId : g};
+                    this.PaymentSvr.capturePayment(p).subscribe((r:any)=> {
+                      this.feedBack = r.status;
+                      this.spinnerStatus = false;
+                      if(this.feedBack === 'succeeded'){
+                        this.createCartProducts(this.Products).then(p=>{
+                            this.newOder = {products : p,totalAmount:this.TotalAmount, orderStatus:"Approved", channel:'in-person', orderDate:Date.now(), orderID:0,customerID:0,payment:"succeeded", applicationUserID: this.appId }
+                            this.cart.emit(this.newOder);
+                        });
+                      }
+                    });
+                  },(err:any)=> {this.feedBack = err;  }); //if payment could not be processed.
+            })
+        },(er:any)=> {this.feedBack = er;}); //if reader is not discovered.
+            
+        } 
+    
 
     getSum(p: Product[]):number{
         let sum = 0;

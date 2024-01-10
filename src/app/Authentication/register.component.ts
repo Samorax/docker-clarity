@@ -24,10 +24,11 @@ export class registerComponent {
     let credentials: RegisterCredentials =
     {
       businessName: v.businessInformation.businessName,
-      businessAddress: v.businessInformation.businessAddressLine1 + " " +
-        v.businessInformation.businessAddressLine2 + " " +
-        v.businessInformation.businessAddressCity + " " +
-        v.businessInformation.businessAddressCountry,
+      businessAddress1: v.businessInformation.businessAddressLine1,
+      businessAddress2: v.businessInformation.businessAddressLine2,
+      state: v.businessInformation.businessAddressCity,
+      postalCode: v.businessInformation.businessAddressPostalCode,
+      country: v.businessInformation.businessAddressCountry,
       email: v.contact.email, firstName: v.contact.firstName, lastName: v.contact.lastName, password: v.loginDetails.password, accountType : v.loginDetails.accountType
 
     };

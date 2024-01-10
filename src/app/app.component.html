@@ -6,7 +6,14 @@
       </clr-alert-item>
     </clr-alert>
   </div>
+  <div *ngIf="loginStatus">
+    <clr-alert  [clrAlertType]="'success'" [clrAlertAppLevel]="true">
+      <clr-alert-item>
+        <span class="alert-text">{{loginStatus}}</span>
+      </clr-alert-item>
+    </clr-alert>
+  </div>
   
-<app-nav-menu ></app-nav-menu>
+<app-nav-menu [status]="Orderstatus" (loginStatus) = "loginStatus"></app-nav-menu>
   <router-outlet></router-outlet>
 </div>

@@ -9,7 +9,7 @@ import { NgForm } from "@angular/forms";
 })
 
 export class AddProductDialog{
-  
+  currencySymbol:any = localStorage.getItem("currency_iso_code");
   user:any = localStorage.getItem("user_id");
   show: boolean = false;
   categories: Array<string> = [];
@@ -93,7 +93,6 @@ handleFiles(files: FileList) {
 
   onSubmit(f:NgForm) {
     let prod = f.value;
-    console.log(prod);
     prod.applicationUserID = this.user;
 
     let data = new FormData();

@@ -8,13 +8,14 @@ import { Router } from "@angular/router";
 })
 export class logOutComponent implements OnInit{
  
+  @Output()isLoggedOut: EventEmitter<string> = new EventEmitter<string>();
   constructor(private _authService: AuthenticationService, private _router: Router) { }
 
     ngOnInit(): void {
-      this._authService.logOut();
-    
-  
+      this._authService.logOut().then(()=> this.isLoggedOut.emit("You have been logged out."));
     }
+
+    
 
 
 }

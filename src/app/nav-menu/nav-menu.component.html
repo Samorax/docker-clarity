@@ -1,10 +1,18 @@
 <header class="header header-6">
-  <div class="header-nav">
-    <a class="branding nav-text nav-link" [routerLink]="['/']">Foodloyale</a>
-    
-    
+  <div class="branding">
+    <a  [routerLink]="['/']" class="nav-link">
+      <img src="../../assets/foodloyale_logo.png" style="height: inherit;width: inherit;"/>
+      <span class="title">Foodloyale</span>
+    </a>
   </div>
-      <app-loginmenu [isAuthenticated]="isAuthenticated"></app-loginmenu>
+
+  <div *ngIf='_authService.isAuthenticated()' class="header-nav">
+    <a routerLink="./home/orders/list" class="nav-link nav-icon">
+      <cds-icon shape="bell" badge='status'></cds-icon>
+    </a>
+  </div>
+  <div class="header-actions">
+    <app-loginmenu [isAuthenticated]="isAuthenticated"></app-loginmenu>
+  </div>
       
-    
 </header>

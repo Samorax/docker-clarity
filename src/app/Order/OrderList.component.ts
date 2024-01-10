@@ -18,6 +18,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 export class OrderListComponent implements OnInit, AfterViewInit{
   paymentFeedback:any
+  currencySymbol: string = this.paymentService.currencySymbol;
 
   @ViewChild(OrderEditComponent) OrderEditModal!: OrderEditComponent;
   @ViewChild(OrderAddComponent) OrderAddModal!: OrderAddComponent;
@@ -41,27 +42,26 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         this.orderService.addOrder(o).subscribe(x=>this.orders.push(x));
       });
 
-      this.signalrService.AllFeedObservable.subscribe(ord => {
-        this.orders.push(ord);
-        this.orderService.addOrder(ord).subscribe();
-      });
+      
   }
 
     ngOnInit(): void {
       let cache = this.orderService.ordersCache;
       if(cache.length >= 1){
-        console.log(cache);
-        cache.forEach(o=>this.orders.push(o));
+        this.orders = cache;
+      
       }else{
         this.orderService.getOrders().subscribe(ord => {
-          ord.forEach(o => {
-            this.orders.push(o);
-            this.orderService.ordersCache.push(o);
-          });
+            this.orders = ord
+            this.orderService.ordersCache = ord;
+            console.log(ord);
+          ;
         });
       }
      
     }
+
+   
 
     selected: any[] = [];
   
@@ -78,10 +78,9 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     }
 
     async onCharge(x:Order){
-      let pk: PaymentObject = { Amount : x.totalAmount*100, Currency : "GBP" };
+      let pk: PaymentObject = { Amount : x.totalAmount*100, Currency : this.currencySymbol };
       this.paymentService.createOnlineIntent(pk).subscribe(r=>{
-        x.token = "tok_visa";
-        this.paymentService.processOnlinePayment(r, x.token).then((r:any)=>{
+        this.paymentService.processOnlinePayment(r, x.paymentToken).then((r:any)=>{
           this.paymentFeedback = r.status;
           x.payment = r.status;
           this.orderService.updateOrder(x.orderID,x).subscribe();

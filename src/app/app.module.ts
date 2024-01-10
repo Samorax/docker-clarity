@@ -41,6 +41,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { indexComponent } from './Index/indexComponent';
+import { SettingsComponent } from './Settings/settings.component';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { indexComponent } from './Index/indexComponent';
     loginComponent,
     registerComponent,
     logOutComponent,
-    loginMenuComponent
+    loginMenuComponent,
+    SettingsComponent,
   ],
   imports: [
     HttpClientModule,
@@ -88,7 +90,8 @@ import { indexComponent } from './Index/indexComponent';
       {path:'orders/overview', component: OrderOverviewComponent}, 
       {path:'orders/list', component: OrderListComponent},
       {path:'customers/overview',component:CustomerOverviewComponent}, 
-      {path:'customers/list', component: CustomerListComponent}] }
+      {path:'customers/list', component: CustomerListComponent},
+      {path:'settings', component:SettingsComponent}] }
     ]),
   ],
   providers: [SignalrService, ProductService, OrderService, CustomerService, AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],

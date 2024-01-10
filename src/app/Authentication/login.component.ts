@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 })
 
 export class loginComponent {
+  feedback:string ='';
   sendingForm: boolean = false;
   @Output() onOk: EventEmitter<boolean> = new EventEmitter<boolean>();
   credentials: loginCredentials = new loginCredentials();
@@ -18,8 +19,8 @@ export class loginComponent {
   onSubmit(f: any) {
     this.sendingForm = true;
     this.credentials = <loginCredentials>f;
-    this.authenticationService.logIn(this.credentials).subscribe(()=>{
+    this.authenticationService.logIn(this.credentials).subscribe((r)=>{
       this._router.navigateByUrl("/home");
-  })
+  },(er)=> this.feedback = "Invalid Email or Password !!");
   };
 }

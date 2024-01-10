@@ -6,6 +6,7 @@ import { ProductService } from "../Services/ProductService";
 import { OrderCartComponent } from "./OrderCart.component";
 import { Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
+import { paymentService } from "../Services/PaymentService";
 
 @Component({
     selector:'add-order',
@@ -13,7 +14,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 })
 
 export class OrderAddComponent implements OnInit, AfterViewInit{
-    constructor(private productService: ProductService, private sanitizer: DomSanitizer){}
+    currencySymbol:any = this.paymentSvr.currencySymbol;
+    constructor(private paymentSvr: paymentService, private productService: ProductService, private sanitizer: DomSanitizer){}
 
     ngAfterViewInit(): void {
         this.OrderCartModal.cart.subscribe(o=>{
@@ -31,18 +33,17 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     
 
     ngOnInit(): void {
+        this.productService.productssCache = [];
         this.productService.getProducts().subscribe(p=>{
             p.forEach(product=> {
                 this.convertImgByte(product).subscribe(p=>{
                     this.products.push(p)
                     this.productService.productssCache.push(p)
                 })
-                ;
             });
-        })
-        this.products = this.productService.productssCache;
-        
+        });
     }
+
     products:Product[] = [];
     selected:Product[] = [];
     totalAmount:number =0;
@@ -71,6 +72,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         this.show = true;
     }
     close(){
+        this.totalAmount = 0;
+        this.selected = [];
         this.show = false;
     }
 

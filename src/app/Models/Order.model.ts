@@ -10,6 +10,7 @@ export class Order {
   public orderDate?: any
   public payment!:any
   public customerID?: any
-  public token?:any 
+  public paymentToken?:any 
   public applicationUserID:any
+  public channel:any
 }

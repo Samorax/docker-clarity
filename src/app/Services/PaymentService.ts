@@ -2,19 +2,21 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http
 import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { PaymentObject } from "../Models/PaymentObject";
-import {Terminal, loadStripeTerminal} from "@stripe/terminal-js";
+import {Reader, Terminal, loadStripeTerminal} from "@stripe/terminal-js";
 import { terminalPaymentObject } from "../Models/TerminalPaymentObject";
 import { PaymentIntentRequest } from "../Models/PaymentIntentRequest";
 import { PaymentIntentResult, loadStripe } from "@stripe/stripe-js";
+import { resolve } from "path";
 
 @Injectable({
     providedIn:"root"
 })
 
 export class paymentService{
-  apiKey:string = "pk_test_51ODaLPF8K9SuxQBZrG92Ky72BznTAU0muIj0ZjaUXYrKBwMa9ZutGVVChc0UJX9MjfLLtU9oCN71iqf9NsRiFuOh002xGDndvw";
+  currencySymbol:any = localStorage.getItem('currency_iso_code');
+  apiKey:any = localStorage.getItem('apikey1');
     terminal!: Terminal;
-    baseUrl = "https://foodloyaleopenapi.azurewebsites.net/api/payment";
+    baseUrl = "http://localhost:5241/api/payment";
 
     httpOptions = {
       headers: new HttpHeaders({
@@ -55,20 +57,21 @@ export class paymentService{
     };
 
     connect2Reader(o:terminalPaymentObject){
-      this.discoverReader(o);
+      this.discoverReader();
     }
 
     processPayment(y:terminalPaymentObject): Promise<string>{
-      return new Promise(resolve=>{
+      return new Promise((resolve,err)=>{
+        let paymentStatus:string ='';
         this.createPaymentIntent(y).subscribe((r:any )=>{ console.log(r);
         this.terminal.setSimulatorConfiguration({testCardNumber: '4000000000009995'});
         this.terminal.collectPaymentMethod(r.client_secret).then((r:any)=>{
           if(r.error){
-            console.log("Something is wrong with Payment Method!!")
+            err("Something is wrong with Payment Method!!");
           }else{
             this.terminal.processPayment(r.paymentIntent).then((r:any)=>{
               if(r.error){
-                console.log("Payment could not be processed");
+                err("Payment could not be processed");
               }else if(r.paymentIntent){
                 resolve(r.paymentIntent.id);
               }})}})
@@ -95,39 +98,34 @@ export class paymentService{
         });  */
     };
 
-    discoverReader(o:terminalPaymentObject ){
-      let config = {simulated: true};
-      
+    discoverReader(): Promise<any>{
+      return new Promise((resolve,err)=>{
+        let config = {simulated: true};
+        let reader:any
       this.terminal.discoverReaders(config).then((r:any) => {
         if(r.error){
-          console.log(r.error);
+          err(r.error);
         }else if(r.discoveredReaders.length === 0){
-           console.log("No readers found")     
+           err("No readers found")     
         }else{
-          const reader = r.discoveredReaders[0];
-          this.connectReader(reader,o)
+          reader = r.discoveredReaders[0];
+          resolve(reader);
         }});
-    };
+        
+    })
+  };
 
-    connectReader(y:any,o:terminalPaymentObject ){
-      this.terminal.connectReader(y).then((connectResult:any) => {
+    connectReader(y:any):Promise<string>{
+      return new Promise ((resolve,err)=>{
+        let connectionStatus:string ='';
+        this.terminal.connectReader(y).then((connectResult:any) => {
         if (connectResult.error) {
-          console.log('Failed to connect: ', connectResult.error);
+           connectionStatus ='Failed to connect: '+ connectResult.error;
         } else {
-            console.log('Connected to reader: ', connectResult.reader.label);
-            this.processPayment(o).then(g=>{
-              console.log(g);
-              let p: PaymentIntentRequest = {PaymentIntentId : g};
-              this.capturePayment(p).subscribe((r:any)=> {
-                if(r.status === "succeeded"){
-                  console.log(r.status)
-                }else{
-                  console.log("payment is uncaptured");
-                }
-              });
-            })
+            connectionStatus = 'Connected to reader: '+ connectResult.reader.label;
         }
-      })
+        resolve(connectionStatus);
+      })})
     };
 
     //online payment service
@@ -142,8 +140,8 @@ export class paymentService{
     }
 
     processOnlinePayment(g:any, cardToken: string){
-      console.log(cardToken);
      return new Promise(async (resolve)=>{
+      console.log(cardToken);
       let stripe = await loadStripe(this.apiKey);
      stripe?.confirmCardPayment(g.client_secret,
       {payment_method: 

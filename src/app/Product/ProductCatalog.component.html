@@ -27,7 +27,7 @@
     <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
       <clr-dg-cell>{{element.code}}</clr-dg-cell>
       <clr-dg-cell>{{element.name}}</clr-dg-cell>
-      <clr-dg-cell>{{element.price}}</clr-dg-cell>
+      <clr-dg-cell>{{element.price | currency:currencySymbol}}</clr-dg-cell>
       <clr-dg-cell>{{element.category}}</clr-dg-cell>
     </clr-dg-row>
   
@@ -43,7 +43,7 @@
               </tr>
               <tr>
                 <td>Price:</td>
-                <td>{{element.price}}</td>
+                <td>{{element.price | currency:currencySymbol}}</td>
               </tr>
               <tr>
                 <td>Description:</td>
@@ -74,6 +74,6 @@
   </clr-datagrid>
 
  <add-product [products]="elements"></add-product>
-<edit-product></edit-product>
+<edit-product [products]="elements"></edit-product>
 <del-product></del-product>
   

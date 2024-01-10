@@ -1,39 +1,48 @@
 <div>
     <h2>Overview</h2>
 <br>
-    <p>{{totalRegisteredCustomers}} registered customers</p>
-    <p>{{totalMonthBirthdays}} Birthdays this month</p>
-    <p>{{totalRepeatCustomers}} Repeat customers</p>
-    <p>{{totalHighSpenders}} High Spenders</p>
+<div class="label label-green">
+    <span class="text">Registered customers</span>
+    <span class="badge">{{totalRegisteredCustomers}}</span>
+</div>
+<div class="label label-green">
+    <span class="text">Birthdays this month</span>
+    <span class="badge">{{totalMonthBirthdays}}</span>
+</div>
+<div class="label label-green">
+    <span class="text">Repeat customers</span>
+    <span class="badge">{{totalRepeatCustomers}}</span>
+</div>
+<div class="label label-purple">
+    <span class="text">High Spenders </span>
+    <span class="badge">{{totalHighSpenders}}</span>
 </div>
 
-<div class="clr-row">
+<div class="clr-row clr-no-gutters">
     <div class="clr-col-3">
-        <div class="card">
+    <div class="card">
             <div class="card-block">
                 <div class="card-title"> Weekly Rate of Repeat Customers</div>
                 <div  echarts [options]="WRepeatChartOption"></div>
             </div>
         </div>
-        
     </div>
-    <div class="clr-col-3">
+       <div class="clr-col-3">
         <div class="card">
             <div class="card-block">
                 <div class="card-title">Age Demograph of Repeat Customers</div>
                 <div  echarts [options]="rPieChart"></div>
             </div>
         </div>
-        
-    </div>
-    <div class="clr-col-3">
+       </div>
+       <div class="clr-col-3">
         <div class="card">
             <div class="card-block">
                 <div class="card-title">Age Demograph of Registered Customers</div>
                 <div echarts [options]="gPieChart"></div>
             </div>
         </div>
-        
+       </div>
     </div>
-    
 </div>
+        

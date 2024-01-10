@@ -21,40 +21,43 @@
         <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
     </clr-dg-column>
     <clr-dg-column [style.width.px]="250">Payment</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Date</clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any orders</clr-dg-placeholder>
     <clr-dg-row *clrDgItems="let element of orders" [clrDgItem]="element">
       <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
-      <clr-dg-cell>{{element.totalAmount}}</clr-dg-cell>
+      <clr-dg-cell>{{element.totalAmount | currency: currencySymbol}}</clr-dg-cell>
       <clr-dg-cell>{{element.orderStatus}}</clr-dg-cell>
       <clr-dg-cell> {{element.payment}}</clr-dg-cell>
+      <clr-dg-cell>{{element.orderDate | date}}</clr-dg-cell>
     </clr-dg-row>
   
    <clr-dg-detail *clrIfDetail="let element">
       <clr-dg-detail-header>Order No:{{element.orderID}}</clr-dg-detail-header>
       <clr-dg-detail-body>
-        <table>
-          <th>
+        
+        <table class="table">
+          <thead>
             <tr>
-              <td>Products</td>
-              <td>Prices</td>
+              <th>Products</th>
+              <th>Prices</th>
             </tr>
-          </th>
+          </thead>
          <tbody>
           <tr *ngFor="let product of element.products">
             <td>{{product.name}}</td>
-            <td>{{product.price}}</td>
+            <td>{{product.price | currency: currencySymbol}}</td>
           </tr>
          </tbody>
          <tfoot>
           <tr>
             <td>Total</td>
-            <td>{{element.totalAmount}}</td>
+            <td>{{element.totalAmount | currency: currencySymbol}}</td>
           </tr>
         </tfoot>
         </table>
-        <div >
-          <clr-select-container *ngIf="element.status == 'Approved'">
+        <div>
+          <clr-select-container *ngIf="element.payment !== 'succeeded'">
             <label>Select Status</label>
             <select  clrSelect name="status" #status (change)="element.status = status.value">
               <option value="Unapproved">Unapprove</option>
@@ -63,7 +66,7 @@
           </clr-select-container>
         </div>
        
-        <button *ngIf="element.payment != 'succeeded' && element.status == 'Approved'"  class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
+        <button *ngIf="element.payment !== 'succeeded'" class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
         
         
         <div *ngIf="paymentFeedback == 'succeeded'">

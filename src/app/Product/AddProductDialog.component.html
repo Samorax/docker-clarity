@@ -17,7 +17,7 @@
           <input clrInput type="text" name="Code" [(ngModel)]="product.code" />
         </clr-input-container>
         <clr-input-container>
-          <label >Price</label>
+          <label >Price {{ 0 | currency:currencySymbol}}</label>
           <input clrInput type="text" name="Price" [(ngModel)]="product.price" />
         </clr-input-container>
         <clr-select-container>

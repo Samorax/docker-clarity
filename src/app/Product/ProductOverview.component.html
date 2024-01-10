@@ -1,5 +1,22 @@
 <div>
     <h2>Overview</h2>
-    <p>{{productCount}}: products in Inventory</p>
-    <p>{{categoriesCount}}: product categories</p>
+    <br>
+    <div class="label label-green">
+        <span class="text">Number of Products</span>
+        <span class="badge">{{productCount}} </span>
+    </div>
+    <div class="label label-purple">
+        <span class="text">Number of Categories</span>
+        <span class="badge">{{categoriesCount}}</span>
+    </div>
+
+    <div class="clr-row">
+        <div class="clr-col">
+            <div class="card">
+                <div class="card-block">
+                    <div class="card-title">Product Demand (%)</div>
+                    <div  echarts [options]="productDemandChart"></div>
+                </div>
+        </div>
+    </div>
 </div>

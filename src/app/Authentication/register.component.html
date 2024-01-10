@@ -26,8 +26,12 @@
       </div>
       <div class="clr-row">
         <clr-input-container class="clr-col-6">
-          <label>City</label>
+          <label>County/State</label>
           <input clrInput [ngModel]="credentials.businessAddressCity" name="businessAddressCity" required />
+        </clr-input-container>
+        <clr-input-container class="clr-col-6">
+          <label>Postal Code/Zip Code</label>
+          <input clrInput [ngModel]="credentials.businessAddressPostalCode" name="businessAddressPostalCode" required />
         </clr-input-container>
         <clr-input-container class="clr-col-6">
           <label>Country</label>

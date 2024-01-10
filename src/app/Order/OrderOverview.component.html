@@ -1,15 +1,28 @@
 <div>
     <h2>Overview</h2>
-    <p>{{salesRevenue | async}} in Sales Revenue</p>
-    <p>{{numberApprovedOrders | async}} Approved Orders</p>
-    <p>{{numberUnApprovedOrders | async}} Unapproved Orders</p>
+    <br>
+    <div class="label label-black">
+        <span class="text">Revenue</span>
+        <span class="badge">{{salesRevenue | async | currency:currency}}</span>
+    </div>
+
+    <div class="label label-green">
+        <span class="text">Approved Orders</span> 
+        <span class="badge">{{numberApprovedOrders | async}}</span>
+    </div>
+
+
+    <div class="label label-red">
+        <span class="text">Unapproved Orders</span>
+        <span class="badge">{{numberUnApprovedOrders | async}}</span> 
+    </div>
 </div>
 
-<div class="clr-row">
-    <div class="clr-col-6">
+<div class="clr-row clr-no-gutters">
+    <div class="clr-col-6" style="border: none;">
         <div class="card">
             <div class="card-block">
-                <div class="card-title"> Weekly Rate of Repeat Customers</div>
+                <div class="card-title"> Monthly Sales</div>
                 <div  echarts [options]="saleChart | async"></div>
             </div>
         </div>
@@ -17,15 +30,15 @@
         <div class="clr-col-3">
             <div class="card">
                 <div class="card-block">
-                    <div class="card-title">Sales Revenue by Channel</div>
-                    <div  echarts [options]="saleChart | async"></div>
+                    <div class="card-title">Revenue by Channel</div>
+                    <div  echarts [options]="channelChart | async"></div>
                 </div>
             </div>
             </div>
             <div class="clr-col-3">
                 <div class="card">
                     <div class="card-block">
-                        <div class="card-title">Sales Revenue by Customer Segement</div>
+                        <div class="card-title">Revenue by Customer Segement</div>
                         <div  echarts [options]="customerChart | async"></div>
                     </div>
             </div>

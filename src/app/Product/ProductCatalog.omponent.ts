@@ -6,6 +6,7 @@ import { DeleteProductDialog } from "./DeleteProductDialog.Component";
 import { ProductService } from "../Services/ProductService";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Observable, from, of } from "rxjs";
+import { paymentService } from "../Services/PaymentService";
 
 @Component({
     selector:'app-productcatalog',
@@ -13,16 +14,15 @@ import { Observable, from, of } from "rxjs";
 })
 
 export class ProductCatalogComponent implements OnInit, AfterViewInit{
-
-  constructor(private productService: ProductService, private sanitizer: DomSanitizer) {
+  currencySymbol:any = this._paymentSvr.currencySymbol;
+  constructor(private productService: ProductService, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
    }
   
   
-
-
-  
   ngOnInit(): void {
-    this.loadInit();
+    this.loadInit().then((p)=>{
+      this.elements = p;
+    });
 
   }
 
@@ -33,25 +33,41 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
         this.productService.addProduct(prod)
           .subscribe(p => {
             this.convertImgByte(p).subscribe(p=>{
-              this.elements.push(p);
-              console.log(p.photosUrl);
+              this.productService.productssCache.push(p);
+              this.elements = this.productService.productssCache;
             });
             
-          });
-        this.modal.close();
+          },(err)=> console.log(err),()=>this.modal.close());
+        
       });
 
       this.editModal.onOk.subscribe(prod => {
         this.productService.updateProduct(prod.productID, prod)
-          .subscribe();
-        this.editModal.close();
+          .subscribe(()=>{
+            this.productService.getProducts().subscribe(p=> {
+              p.forEach(pr=> this.convertImgByte(pr).subscribe(p=>{
+                this.productService.productssCache = [];
+                this.productService.productssCache.push(p);
+              }))
+              this.elements = this.productService.productssCache;
+            },(err)=>{console.log(err)},()=>this.editModal.close() );
+          });
+        
       });
 
       this.delModal.onOk.subscribe(prods => {
         prods.forEach(p => {
-          this.productService.removeProduct(p.productID).subscribe();
+          this.productService.removeProduct(p.productID).subscribe(()=>{
+            this.productService.getProducts().subscribe(p=> {
+              p.forEach(pr=> this.convertImgByte(pr).subscribe(p=>{
+                this.productService.productssCache = [];
+                this.productService.productssCache.push(p);
+              }))
+              this.elements = this.productService.productssCache;
+            },(err)=>{console.log(err)},()=>this.delModal.close());
+          });
         })
-        this.delModal.close();
+        
       });
       
     }
@@ -80,16 +96,23 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
     this.delModal.open(this.selected);
   }
 
-  loadInit(){
-    this.productService.getProducts()
-      .subscribe(ps => ps.forEach(p => {
-        this.convertImgByte(p).subscribe(p=>{
-          this.elements.push(p);
-          this.productService.productssCache.push(p);
+  loadInit():Promise<Product[]>{
+    return new Promise((resolve)=>{
+      let cache = this.productService.productssCache;
+    if(cache.length != 0){
+      resolve(cache);
+    }else{
+      this.productService.getProducts().subscribe(p=>{
+        this.productService.productssCache = [];
+        p.forEach(pr=>{
+          this.convertImgByte(pr).subscribe(p=>{
+            this.productService.productssCache.push(p);
+          })
         })
-      }));
-    let cache = this.productService.productssCache;
-    return cache;
+       resolve(this.productService.productssCache);
+      })
+    }
+    });
     
   }
 
