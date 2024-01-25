@@ -10,7 +10,7 @@ export class apiKeyRequestService{
     constructor(private _httpClient: HttpClient){
 
     }
-    baseUrl:string = 'https://foodloyale-frontend.azurewebsites.net/api/apikeygenerator'
+    baseUrl:string = 'https://foodloyaleopenapi.azurewebsites.net/api/apikeygenerator'
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {

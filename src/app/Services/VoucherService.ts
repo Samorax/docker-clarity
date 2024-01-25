@@ -9,7 +9,7 @@ import { catchError, throwError } from "rxjs";
 
 export class voucherService{
     public getVoucherCache:voucher[] = [];
-    baseUrl:string = 'https://foodloyale-frontend.azurewebsites.net/api/vouchers/';
+    baseUrl:string = 'https://foodloyaleopenapi.azurewebsites.net/api/vouchers/';
 
     constructor(private _httpClient: HttpClient){}
 

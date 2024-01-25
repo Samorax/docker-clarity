@@ -8,7 +8,7 @@ import { Product } from "../Models/Product";
 })
 export class ProductService {
   productssCache: Product[] = [];
-  baseUrl = "https://foodloyale-frontend.azurewebsites.net/api/products/";
+  baseUrl = "https://foodloyaleopenapi.azurewebsites.net/api/products/";
 
    httpOptions = {
     headers: new HttpHeaders({

@@ -8,7 +8,7 @@ import { catchError, throwError } from "rxjs";
 })
 export class appUserService{
     constructor(private _httpClient: HttpClient){}
-    baseUrl:string = "https://foodloyale-frontend.azurewebsites.net/api/AppUser/";
+    baseUrl:string = "https://foodloyaleopenapi.azurewebsites.net/api/AppUser/";
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {

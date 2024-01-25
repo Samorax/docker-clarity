@@ -17,7 +17,7 @@ import { json } from "stream/consumers";
 })
 
 export class AuthenticationService {
-  baseUrl:string = "https://foodloyale-frontend.azurewebsites.net/api/"
+  baseUrl:string = "https://foodloyaleopenapi.azurewebsites.net/api/"
 
   constructor(private _httpClient: HttpClient,
      private _pService: ProductService, private _oService: OrderService, private _cService: CustomerService) { }
