@@ -1,29 +1,49 @@
-<form clrForm (ngSubmit)="onSubmit(paymentProviderForm)" #paymentProviderForm="ngForm">
-    <clr-select-container>
-        <label>Select Payment Provider</label>
-        <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
-            <option value="Stripe">Stripe</option>
-            <option value="Square">Square</option>
-            <option value="Ingenico">Ingenico</option>
-        </select>
-    </clr-select-container>
-    <div *ngIf="showStripeForms">
-        <clr-password-container>
-            <label>Publishable Key</label>
-            <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="paymentProvider.apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
-          </clr-password-container>
-          <clr-password-container>
-            <label>Secret Key</label>
-            <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
-          </clr-password-container>
-          <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-</form>
-<div *ngIf="showSpinner">
-    <clr-spinner clrInline>Processing</clr-spinner>
-</div>
-<clr-alert *ngIf="showFeeback" [clrAlertType]="'success'">
-    <clr-alert-item>
-      <span class="alert-text">{{feedBack}}</span>
-    </clr-alert-item>
-  </clr-alert>
+  <clr-accordion>
+    <clr-accordion-panel>
+      <clr-accordion-title>Payment Providers</clr-accordion-title>
+      <clr-accordion-content *clrIfExpanded>
+        <form clrForm (ngSubmit)="onSubmit(paymentProviderForm)" #paymentProviderForm="ngForm">
+          <clr-select-container>
+              <label>Select Payment Provider</label>
+              <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
+                  <option value="Stripe">Stripe</option>
+                  <option value="Square">Square</option>
+                  <option value="Ingenico">Ingenico</option>
+              </select>
+          </clr-select-container>
+          <div *ngIf="showStripeForms">
+              <clr-password-container>
+                  <label>Publishable Key</label>
+                  <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="paymentProvider.apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+                </clr-password-container>
+                <clr-password-container>
+                  <label>Secret Key</label>
+                  <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+                </clr-password-container>
+                <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+      </form>
+      <div *ngIf="showSpinner">
+          <clr-spinner clrInline>Processing</clr-spinner>
+      </div>
+      <clr-alert *ngIf="showFeeback" [clrAlertType]="'success'">
+          <clr-alert-item>
+            <span class="alert-text">{{feedBack}}</span>
+          </clr-alert-item>
+        </clr-alert>
+      </clr-accordion-content>
+    </clr-accordion-panel>
+  
+    <clr-accordion-panel>
+      <clr-accordion-title>Connect Website or Mobile App</clr-accordion-title>
+      <clr-accordion-content *clrIfExpanded>
+        <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
+        <span *ngIf="apiKey" class="label">{{apiKey}}</span>
+      </clr-accordion-content>
+    </clr-accordion-panel>
+  
+    <clr-accordion-panel>
+      <clr-accordion-title>FAQ</clr-accordion-title>
+      <clr-accordion-content *clrIfExpanded>Content 3</clr-accordion-content>
+    </clr-accordion-panel>
+  </clr-accordion>

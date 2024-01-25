@@ -1,0 +1,44 @@
+<div class="clr-row">
+    <clr-datagrid [(clrDgSelected)]="selected" class="clr-col-4">
+        <clr-dg-action-bar>
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+                <cds-icon shape="plus"></cds-icon> 
+                Add 
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+                <cds-icon shape="close"></cds-icon>
+                Delete
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+                <cds-icon shape="pencil"></cds-icon>
+                Edit
+         </button>
+            </div>
+        </clr-dg-action-bar>
+        
+        <clr-dg-column>Redeem Points</clr-dg-column>
+        <clr-dg-column>Rewards</clr-dg-column>
+       
+        <clr-dg-placeholder>We couldn't find any Rewards. Add Rewards</clr-dg-placeholder>
+        <clr-dg-row *clrDgItems="let element of rewards" [clrDgItem]="element">
+          <clr-dg-cell>{{element.redeemPoint}}</clr-dg-cell>
+          <clr-dg-cell>{{element.reward}}</clr-dg-cell>
+        </clr-dg-row>
+    </clr-datagrid>
+    <clr-datagrid class="clr-col">
+        <clr-dg-column>Product Name</clr-dg-column>
+        <clr-dg-column>Loyalty Points</clr-dg-column>
+       
+        <clr-dg-placeholder>We couldn't find any Products with Points. Add Loyalty Points to Products</clr-dg-placeholder>
+        <clr-dg-row *clrDgItems="let element of products" [clrDgItem]="element">
+          <clr-dg-cell>{{element.name}}</clr-dg-cell>
+          <clr-dg-cell>{{element.loyaltyPoints}}</clr-dg-cell>
+        </clr-dg-row>
+    </clr-datagrid>
+
+</div>
+
+<app-rewardsDialog [vouchers]="vouchers"></app-rewardsDialog>
+<edit-loyalty [reward]="reward" [vouchers]="vouchers" ></edit-loyalty>
+<del-loyalty [rewards]="selected"></del-loyalty>

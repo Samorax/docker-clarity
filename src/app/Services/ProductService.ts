@@ -8,14 +8,14 @@ import { Product } from "../Models/Product";
 })
 export class ProductService {
   productssCache: Product[] = [];
-  baseUrl = "http://localhost:5241/api/products/";
+  baseUrl = "https://foodloyale-frontend.azurewebsites.net/api/products/";
 
- /*  httpOptions = {
+   httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/x-www-form-urlencoded'
     }),
     
-  }; */
+  };  
   constructor(private _httpclient: HttpClient) {
 
   }
@@ -41,7 +41,7 @@ export class ProductService {
 
   }
 
-  updateProduct(Id: any, prod:Product) {
+  updateProduct(Id: any, prod:FormData) {
     return this._httpclient.put(this.baseUrl + Id, prod).
       pipe(catchError(this.handleError));
   }

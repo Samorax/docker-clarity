@@ -1,8 +1,7 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { Component, NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 
@@ -38,10 +37,19 @@ import { logOutComponent } from './Authentication/logout.component';
 import { loginMenuComponent } from './Authentication/loginmenu.component';
 import { authGuard } from './Authentication/auth.guard';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { indexComponent } from './Index/indexComponent';
 import { SettingsComponent } from './Settings/settings.component';
+import { voucherComponent } from './Reward/voucher.component';
+import { voucherService } from './Services/VoucherService';
+import { addVoucherDialogComponent } from './Reward/addVoucherDialog.component';
+import { loyaltyComponent } from './Reward/loyalty.component';
+import { addLoyaltyDialogComponent } from './Reward/addLoyaltyDialog.component';
+import { RewardService } from './Services/RewardService';
+import { editLoyaltyDialogComponent } from './Reward/editLoyaltyDialog.component';
+import { deleteLoyaltyDialogComponent } from './Reward/deleteLoyaltyDialog.component';
+import { editVoucherDialogComponent } from './Reward/editVoucherDialog.component';
+import { deleteVoucherDialogComponent } from './Reward/deleteVoucherDialog.component';
 
 
 @NgModule({
@@ -70,6 +78,14 @@ import { SettingsComponent } from './Settings/settings.component';
     logOutComponent,
     loginMenuComponent,
     SettingsComponent,
+    voucherComponent,
+    addVoucherDialogComponent,
+    editVoucherDialogComponent,
+    deleteVoucherDialogComponent,
+    addLoyaltyDialogComponent,
+    editLoyaltyDialogComponent,
+    deleteLoyaltyDialogComponent,
+    loyaltyComponent
   ],
   imports: [
     HttpClientModule,
@@ -91,10 +107,14 @@ import { SettingsComponent } from './Settings/settings.component';
       {path:'orders/list', component: OrderListComponent},
       {path:'customers/overview',component:CustomerOverviewComponent}, 
       {path:'customers/list', component: CustomerListComponent},
+      {path:'vouchers',component: voucherComponent},
+      {path:'loyaltyPoints',component:loyaltyComponent},
       {path:'settings', component:SettingsComponent}] }
     ]),
   ],
-  providers: [SignalrService, ProductService, OrderService, CustomerService, AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
+  providers: [
+    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService,
+     AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })
 export class AppModule { }

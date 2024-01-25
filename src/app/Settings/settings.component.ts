@@ -3,24 +3,29 @@ import { paymentProcessor } from "../Models/PaymentProcessor";
 import { NgForm } from "@angular/forms";
 import { appUserService } from "../Services/AppUserService";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
+import { paymentService } from "../Services/PaymentService";
+import { apiKeyRequestService } from "../Services/ApiKeyRequestService";
 
 @Component({
     templateUrl:'./settings.component.html',
     selector:'app-settings'
 })
 export class SettingsComponent implements OnInit{
-    paymentProvider: paymentProcessor = new paymentProcessor();
+    paymentProvider: any;
     appUserId:any = localStorage.getItem("user_id");
     appUser!:RegisterCredentials;
     feedBack!:string
     showSpinner:boolean = false;
     showFeeback:boolean = false;
-
-constructor(private _appUserSrv: appUserService){}
+    apiKey!:any;
+    showKey: boolean = false;
+constructor(private _appUserSrv: appUserService, 
+    private _paymentSvr:paymentService, private _apiKeySvr: apiKeyRequestService){}
 
     ngOnInit(): void {
         this._appUserSrv.getAppUserInfo()
-            .subscribe((r:any)=> {this.appUser = r; console.log(this.appUser);});
+            .subscribe((r:any)=> {this.appUser = r; 
+                this.paymentProvider = this.appUser.paymentProcessor});
     }
 
     
@@ -40,7 +45,7 @@ constructor(private _appUserSrv: appUserService){}
        
         this._appUserSrv.updateAppUserInfo(this.appUserId, this.appUser)
         .subscribe(
-            (r:any)=>{ this.feedBack = r; },
+            (r:any)=>{ this.feedBack = r; this._paymentSvr.createTerminal},
             (err:any)=> console.log(err),
             ()=> {
                 this.showStripeForms = false;
@@ -55,5 +60,12 @@ constructor(private _appUserSrv: appUserService){}
         }else{
             this.showStripeForms = false;
         }
+    }
+
+    onApiRequest(){
+        this._apiKeySvr.getApiKey().subscribe(k=>{
+            this.apiKey = k;
+            this.showKey = true;
+        },(er)=>console.log(er))
     }
 }

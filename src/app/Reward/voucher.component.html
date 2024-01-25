@@ -1,0 +1,61 @@
+<clr-datagrid [(clrDgSelected)]="selected">
+    <clr-dg-action-bar>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+            <cds-icon shape="plus"></cds-icon> 
+            Add 
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+            <cds-icon shape="close"></cds-icon>
+            Delete
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+            <cds-icon shape="pencil"></cds-icon>
+            Edit
+     </button>
+        </div>
+    </clr-dg-action-bar>
+    
+    <clr-dg-column >Name</clr-dg-column>
+    <clr-dg-column >Code
+        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+     </clr-dg-column>
+    <clr-dg-column>Credit Amount</clr-dg-column>
+    <clr-dg-column>Created date</clr-dg-column>
+    <clr-dg-column>Expiry date</clr-dg-column>
+    <clr-dg-column>Status</clr-dg-column>
+    <clr-dg-column>Activation</clr-dg-column>
+
+    <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let element of vouchers" [clrDgItem]="element">
+      <clr-dg-cell>{{element.voucherName}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherNumber}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherCreditAmount| currency:currencySymbol}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherCreationDate | date: 'medium'}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherExpirationDate | date: 'medium'}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherStatus? 'Active':'Expired'}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherActivation? 'Enabled':'Disabled'}}</clr-dg-cell>
+    </clr-dg-row>
+  
+   <clr-dg-detail *clrIfDetail="let element">
+      <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
+      <clr-dg-detail-body>
+        
+    </clr-dg-detail-body>
+    </clr-dg-detail> 
+  
+    <clr-dg-footer>
+      <clr-dg-pagination #pagination>
+        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+          Elements per page
+        </clr-dg-page-size>
+        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+        {{pagination.totalItems}} elements
+      </clr-dg-pagination>
+    </clr-dg-footer>
+  </clr-datagrid>
+
+ <add-voucher [vouchers]="vouchers"></add-voucher>
+<edit-voucher [voucher]="voucher"></edit-voucher>
+<del-voucher [vouchers]="selected"></del-voucher>
+  

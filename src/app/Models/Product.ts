@@ -7,4 +7,5 @@ export class Product {
   public description!: string
   public applicationUserID: any
   public photosUrl:any
+  public loyaltyPoints:any
 }

@@ -21,21 +21,27 @@ export class AddProductDialog{
 
   open(){
         this.show = true;
-        this.categories = this.getProductCategories(this.products);
+        this.getProductCategories(this.products).then(p=> this.categories = p);
   }
 
   close() {
     this.show = false;
   }
 
-  getProductCategories(p: Array<Product>){
+  getProductCategories(p: Array<Product>):Promise<string[]>{
+    return new Promise((resolve)=>{
     let cats: string[] = [];
-    p.forEach(p=> cats.push(p.category));
-    if(cats.length != 0){
-      cats = this.removeDuplicateStrings(cats);
+        let distinctCAtegories: string[] = [];
+        p.forEach(p=> cats.push(p.category));
+        if(cats.length != 0){
+          distinctCAtegories = cats.filter(this.onlyUnique)
+        resolve(distinctCAtegories);
+      }})
     }
-    return cats;
-  }
+
+    onlyUnique(value:any, index:any, array:any) {
+        return array.indexOf(value) === index;
+      }
 
   removeDuplicateStrings(x: string[]): string[] {
     const a: Array<string> = [];
@@ -102,8 +108,10 @@ handleFiles(files: FileList) {
     data.append("description",prod.Description);
     data.append("name",prod.Name);
     data.append("price",prod.Price);
+    data.append("loyaltyPoints",prod.LoyaltyPoints);
+
     data.append("photosUrl",this.fileInput[0]);
-    console.log(data.get('applicationUserID'));
+  
     this.onOk.emit(data);
   }
 }

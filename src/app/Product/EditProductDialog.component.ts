@@ -8,17 +8,19 @@ import { NgForm } from "@angular/forms";
 })
 
 export class EditProductDialog {
-  @Output() onOk: EventEmitter<Product> = new EventEmitter<Product>();
+  @Output() onOk: EventEmitter<any> = new EventEmitter<any>();
   product: Product = new Product();
   show: boolean = false;
   categories: Array<string> = [];
   addNewCategory: boolean = false;
   @Input()products!:Product[];
   @ViewChild('file')fileInput: any;
-  user: any = localStorage.getItem("user_id");
+
+  
 
   addCategory(category: string) {
     this.categories.push(category);
+    this.addNewCategory = false;
   }
 
   monitorValue() {
@@ -58,16 +60,23 @@ export class EditProductDialog {
   open(product: Product) {
     this.product = product;
     this.show = true;
-    this.categories = this.getProductCategories(this.products);
+    this.getProductCategories(this.products).then(p=> this.categories = p);
   }
-  getProductCategories(p: Product[]): string[] {
+
+  getProductCategories(p: Array<Product>):Promise<string[]>{
+    return new Promise((resolve)=>{
     let cats: string[] = [];
-    p.forEach(p=> cats.push(p.category));
-    if(cats.length != 0){
-      cats = this.removeDuplicateStrings(cats);
+        let distinctCAtegories: string[] = [];
+        p.forEach(p=> cats.push(p.category));
+        if(cats.length != 0){
+          distinctCAtegories = cats.filter(this.onlyUnique)
+        resolve(distinctCAtegories);
+      }})
     }
-    return cats;
-  }
+
+    onlyUnique(value:any, index:any, array:any) {
+        return array.indexOf(value) === index;
+      }
 
   removeDuplicateStrings(x: string[]): string[] {
     const a: Array<string> = [];
@@ -88,20 +97,29 @@ export class EditProductDialog {
   }
 
   onSubmit(f:NgForm) {
-    let prod = f.value;
-    prod.applicationUserID = this.user;
-
+    let prod = <Product>f.value;
+    
     let data = new FormData();
-    data.append('id',prod.ProductID);
-    data.append('applicationUserID',prod.applicationUserID);
-    data.append("category",prod.Category);
-    data.append("code",prod.Code);
-    data.append("description",prod.Description);
-    data.append("name",prod.Name);
-    data.append("price",prod.Price);
-    data.append("photosUrl",this.fileInput[0]);
-    console.log(data.get('applicationUserID'));
-    this.onOk.emit(this.product);
+    data.append('id',this.product.productID);
+    data.append('applicationUserID',this.product.applicationUserID);
+    data.append("category",prod.category);
+    data.append("code",prod.code);
+    data.append("description",prod.description);
+    data.append("name",prod.name);
+    data.append("price",prod.price);
+    data.append("photosUrl", this.checkIfPhotoFilePresent(this.fileInput[0]));
+
+    console.log(data.get('photosUrl'));
+
+    this.onOk.emit(data);
+  }
+
+  checkIfPhotoFilePresent(x:any){
+    if(x === undefined){
+      let s = <String>this.product.photosUrl;
+      return s.toString().split(',',2)[1];
+    }
+    return x;
   }
 
 }

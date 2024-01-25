@@ -66,39 +66,27 @@ export class ProductOverviewComponent implements OnInit{
     let cats: string[] = [];
         let distinctCAtegories: string[] = [];
         p.forEach(p=> cats.push(p.category));
-        console.log("categories:"+cats)
         if(cats.length != 0){
-          cats.forEach(c=>{
-            let duplicate:string[] = [];
-            for (let i = 0; i < cats.length; i++) {
-                const element = cats[i];
-                if(c === element){
-                    duplicate.push(element);
-                    console.log("duplicates"+ duplicate);
-                }
-            }
-            if(duplicate.length < 2){
-                distinctCAtegories.push(c);
-            
-            }else{
-                cats.splice(cats.indexOf(c),1);
-                console.log("cats:"+cats);
-            }
-          })
-        };
-        console.log("distinct categories:"+distinctCAtegories);
+          distinctCAtegories = cats.filter(this.onlyUnique)
         resolve(distinctCAtegories);
-      })
+      }})
     }
+
+    onlyUnique(value:any, index:any, array:any) {
+        return array.indexOf(value) === index;
+      }
 
     getProductDemandChart(){
         let wc: EChartsOption = {
             xAxis:{
                 type:"category",
+                axisTick:{ alignWithLabel:true},
+                axisLabel:{rotate:30},
                 data:this.getTheNamesOfProducts(this.products)
     
             },
             yAxis:{
+                axisLabel:{ formatter: '{value}%', align:'center'},
                 type:"value",
             },
             series: [
@@ -131,7 +119,11 @@ export class ProductOverviewComponent implements OnInit{
 
     getTheNamesOfProducts(p:Product[]):string[]{
         let names:string[]  = [];
-        p.forEach(pr=> names.push(pr.name));
+        p.forEach(pr=> 
+            {
+                names.push(pr.name);
+                console.log(pr.name);
+            });
         return names;
     }
 

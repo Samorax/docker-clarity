@@ -16,7 +16,7 @@ export class paymentService{
   currencySymbol:any = localStorage.getItem('currency_iso_code');
   apiKey:any = localStorage.getItem('apikey1');
     terminal!: Terminal;
-    baseUrl = "http://localhost:5241/api/payment";
+    baseUrl = "https://foodloyale-frontend.azurewebsites.net/api/payment";
 
     httpOptions = {
       headers: new HttpHeaders({

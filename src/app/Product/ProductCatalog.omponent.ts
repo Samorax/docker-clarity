@@ -14,6 +14,11 @@ import { paymentService } from "../Services/PaymentService";
 })
 
 export class ProductCatalogComponent implements OnInit, AfterViewInit{
+  ifError:boolean = false;
+  ifSuccess:boolean = false;
+  feedBackStatus:string = '';
+  feedBackMessage:string = '';
+
   currencySymbol:any = this._paymentSvr.currencySymbol;
   constructor(private productService: ProductService, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
    }
@@ -28,6 +33,8 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
 
 
     ngAfterViewInit(): void {
+
+      //add new product to the catalog
       this.modal.onOk.subscribe(prod =>
       {
         this.productService.addProduct(prod)
@@ -36,36 +43,56 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
               this.productService.productssCache.push(p);
               this.elements = this.productService.productssCache;
             });
+            this.ifSuccess = true;
+            this.feedBackStatus = 'success';
+            this.feedBackMessage = 'You have successfully addedd '+p.name+' to the collection';
             
-          },(err)=> console.log(err),()=>this.modal.close());
+          },(err:Error)=>
+          {
+            this.ifError = true;
+            this.feedBackStatus = 'warning';
+            this.feedBackMessage = 'Product not added to collection. Reason: '+ err.message;
+          },()=>this.modal.close());
         
       });
 
-      this.editModal.onOk.subscribe(prod => {
-        this.productService.updateProduct(prod.productID, prod)
-          .subscribe(()=>{
-            this.productService.getProducts().subscribe(p=> {
-              p.forEach(pr=> this.convertImgByte(pr).subscribe(p=>{
-                this.productService.productssCache = [];
-                this.productService.productssCache.push(p);
-              }))
-              this.elements = this.productService.productssCache;
-            },(err)=>{console.log(err)},()=>this.editModal.close() );
+      this.editModal.onOk.subscribe((prod:FormData) => {
+        
+        this.productService.updateProduct(prod.get("id"), prod)
+          .subscribe(
+            ()=>
+          { 
+            this.ifSuccess = true;
+            this.feedBackStatus = 'success';
+            this.feedBackMessage = prod.get('name')+' was successfully deleted from the collection.';
+          },
+          (err:Error)=>
+          {
+            this.ifError = true;
+            this.ifError = true;
+            this.feedBackStatus = 'warning';
+            this.feedBackMessage = prod.get('name')+' was not edited from the collection. Reason: '+err.message;
+
+          },()=>this.editModal.close());
           });
         
-      });
 
       this.delModal.onOk.subscribe(prods => {
         prods.forEach(p => {
           this.productService.removeProduct(p.productID).subscribe(()=>{
-            this.productService.getProducts().subscribe(p=> {
-              p.forEach(pr=> this.convertImgByte(pr).subscribe(p=>{
-                this.productService.productssCache = [];
-                this.productService.productssCache.push(p);
-              }))
-              this.elements = this.productService.productssCache;
-            },(err)=>{console.log(err)},()=>this.delModal.close());
-          });
+            let indexOfDeletedProduct = this.productService.productssCache.indexOf(p);
+            this.productService.productssCache.splice(indexOfDeletedProduct,1);
+
+            this.ifSuccess = true;
+            this.feedBackStatus = 'success';
+            this.feedBackMessage = p.name+' was successfully deleted from the collection.';
+          },
+          (err:Error)=>
+          {
+            this.ifError = true;
+            this.feedBackStatus = 'warning';
+            this.feedBackMessage = p.name+' was not deleted from the collection. Reason: '+err.message;
+          },()=> this.delModal.close());
         })
         
       });

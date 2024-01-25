@@ -6,4 +6,5 @@ export class CartOrder{
     code!: string
     cartOrderId:any
     orderId:any
+    
 }

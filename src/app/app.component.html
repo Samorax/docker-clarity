@@ -6,13 +6,18 @@
       </clr-alert-item>
     </clr-alert>
   </div>
-  <div *ngIf="loginStatus">
-    <clr-alert  [clrAlertType]="'success'" [clrAlertAppLevel]="true">
+  <div *ngIf="!paymentProvider">
+    <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
       <clr-alert-item>
-        <span class="alert-text">{{loginStatus}}</span>
+        <span class="alert-text">You have not selected a Payment Processor.</span>
+        <div class="alert-actions">
+          <button class="btn alert-action" (click)="onFixPaymentProcessor()">Fix</button>
+        </div>
       </clr-alert-item>
     </clr-alert>
   </div>
+
+
   
 <app-nav-menu [status]="Orderstatus" (loginStatus) = "loginStatus"></app-nav-menu>
   <router-outlet></router-outlet>

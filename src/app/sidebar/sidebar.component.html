@@ -1,5 +1,5 @@
 
-<clr-vertical-nav [clrVerticalNavCollapsible]="demoCollapsible">
+<clr-vertical-nav [clrVerticalNavCollapsible]="demoCollapsible" style="height: 100%;">
   <clr-vertical-nav-group routerLinkActive="active">
     <cds-icon shape="bundle" clrVerticalNavIcon></cds-icon>
     Products
@@ -22,6 +22,14 @@
     <clr-vertical-nav-group-children>
       <a clrVerticalNavLink routerLink="./customers/overview" routerLinkActive="active">Overview</a>
       <a clrVerticalNavLink routerLink="./customers/list" routerLinkActive="active">Registrar</a>
+    </clr-vertical-nav-group-children>
+  </clr-vertical-nav-group> 
+  <clr-vertical-nav-group routerLinkActive="active">
+    <cds-icon shape="users" clrVerticalNavIcon></cds-icon>
+    Rewards
+    <clr-vertical-nav-group-children>
+      <a clrVerticalNavLink routerLink="./vouchers" routerLinkActive="active">Vouchers</a>
+      <a clrVerticalNavLink routerLink="./loyaltyPoints" routerLinkActive="active">Loyalty Points</a>
     </clr-vertical-nav-group-children>
   </clr-vertical-nav-group> 
   <a clrVerticalNavLink routerLink="./settings" class="Settings">

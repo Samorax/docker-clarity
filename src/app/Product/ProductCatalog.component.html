@@ -1,3 +1,13 @@
+<clr-alert *ngIf="ifError" [clrAlertType]="feedBackStatus">
+  <clr-alert-item>
+<span class="alert-text">{{feedBackMessage}}</span>
+  </clr-alert-item>
+</clr-alert>
+<clr-alert *ngIf="ifSuccess" [clrAlertType]="feedBackStatus">
+  <clr-alert-item>
+    <span class="alert-text">{{feedBackMessage}}</span>
+  </clr-alert-item>
+</clr-alert>
 <clr-datagrid [(clrDgSelected)]="selected">
     <clr-dg-action-bar>
         <div class="btn-group">
@@ -52,6 +62,10 @@
               <tr>
                 <td>Code:</td>
                 <td>{{element.code}}</td>
+              </tr>
+              <tr>
+                <td>Loyalty Points:</td>
+                <td>{{element.loyaltyPoints}}</td>
               </tr>
             </table>
           </div>

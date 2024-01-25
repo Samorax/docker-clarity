@@ -1,0 +1,22 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Edit loyaltyPoints</h3>
+    <div class="modal-body" clrModalContent>
+      <form clrForm clrLayout="Horizontal" #rewardForm="ngForm" (ngSubmit)="onSubmit(rewardForm)" >
+        <clr-input-container>
+          <label>Reward Point</label>
+          <input clrInput type="text" name="redeemPoint" [(ngModel)]="reward.redeemPoint" />
+        </clr-input-container>
+        <clr-select-container>
+          <label>Vouchers</label>
+          <select clrSelect [value]="reward.reward" name="reward" [(ngModel)]="reward.reward">
+            <option *ngFor="let v of vouchers" value={{v.voucherName}}>{{v.voucherName}} {{v.voucherCreditAmount |currency:currencySymbol}}</option>
+            </select>
+        </clr-select-container>
+
+        <div class="modal-footer" clrModalActions>
+          <button class="btn btn-outline" (click)="show=false" >Cancel</button>
+          <button class="btn btn-primary" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </clr-modal>

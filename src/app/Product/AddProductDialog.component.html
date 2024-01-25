@@ -17,7 +17,7 @@
           <input clrInput type="text" name="Code" [(ngModel)]="product.code" />
         </clr-input-container>
         <clr-input-container>
-          <label >Price {{ 0 | currency:currencySymbol}}</label>
+          <label>Price {{ 0 | currency:currencySymbol}}</label>
           <input clrInput type="text" name="Price" [(ngModel)]="product.price" />
         </clr-input-container>
         <clr-select-container>
@@ -32,9 +32,13 @@
             <label>Add New Category</label>
             <input clrInput  type="text"  #kat/>
           </clr-input-container>
+          
           <button class="btn btn-primary" (click)="addCategory(kat.value)">Add</button>
         </div>
-       
+        <clr-input-container>
+          <label>Loyalty Point (Pts)</label>
+          <input clrInput type="text" name="LoyaltyPoints" [(ngModel)]="product.loyaltyPoints" placeholder="20"/>
+        </clr-input-container>
         
         <clr-textarea-container>
           <label class="clr-required-mark">Description</label>

@@ -237,7 +237,7 @@ export class CustomerOverviewComponent implements OnInit{
         for (let c = 0; c < x.length; c++) {
             const element = x[c];
             orderOfMonth.forEach(o=>{
-                if(o.customerID == element.customerID && o.totalAmount >= revenueAverage && highSpenders.indexOf(element) == -1){
+                if(o.customerID == element.customerID && o.totalAmount >= revenueAverage){
                     highSpenders.push(element);
                 }
             });

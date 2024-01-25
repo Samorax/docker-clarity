@@ -23,8 +23,7 @@
       <clr-select-container>
         <label>Select a Category</label>
         <select clrSelect name="category" [(ngModel)]="product.category" (change)="monitorValue()">
-          <option value="one">One</option>
-          <option value="two">Two</option>
+          <option *ngFor="let cat of categories" value="{{cat}}">{{cat}}</option>
           <option value="New">New Category</option>
         </select>
       </clr-select-container>

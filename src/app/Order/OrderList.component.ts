@@ -13,12 +13,14 @@ import { loadStripe } from "@stripe/stripe-js";
 
 @Component({
     selector:'app-orders',
-    templateUrl:'./OrderList.component.html'
+    templateUrl:'./OrderList.component.html',
+    styleUrl:'./OrderList.component.css'
 })
 
 export class OrderListComponent implements OnInit, AfterViewInit{
   paymentFeedback:any
   currencySymbol: string = this.paymentService.currencySymbol;
+  
 
   @ViewChild(OrderEditComponent) OrderEditModal!: OrderEditComponent;
   @ViewChild(OrderAddComponent) OrderAddModal!: OrderAddComponent;
@@ -42,8 +44,9 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         this.orderService.addOrder(o).subscribe(x=>this.orders.push(x));
       });
 
-      
   }
+
+
 
     ngOnInit(): void {
       let cache = this.orderService.ordersCache;
@@ -54,11 +57,10 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         this.orderService.getOrders().subscribe(ord => {
             this.orders = ord
             this.orderService.ordersCache = ord;
-            console.log(ord);
           ;
         });
       }
-     
+
     }
 
    
@@ -88,6 +90,15 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         })
       })
 
+      }
+
+      onDetailOpen(x: Order){
+        x.opened = true;
+        this.orderService.updateOrder(x.orderID,x).subscribe(()=>{
+          this.orderService.getOrders().subscribe((o:Order[])=>{
+            this.orderService.ordersCache = o;
+          })
+        })
       }
 
       onStatus(x:any){

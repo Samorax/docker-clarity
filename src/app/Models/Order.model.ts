@@ -13,4 +13,5 @@ export class Order {
   public paymentToken?:any 
   public applicationUserID:any
   public channel:any
+  public opened: any
 }

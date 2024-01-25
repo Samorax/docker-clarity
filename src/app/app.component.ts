@@ -8,6 +8,8 @@ import { OrderService } from './Services/OrderService';
 import { ProductService } from './Services/ProductService';
 import { CustomerService } from './Services/CustomerService';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { appUserService } from './Services/AppUserService';
+import { Router } from '@angular/router';
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -30,11 +32,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   order: any;
   show: any = false;
   Orderstatus:string = '';
+  paymentProvider: any;
 
   constructor(private signalrService: SignalrService,
-    private ordersrv: OrderService,private productsvr: ProductService,
-     private custsvr: CustomerService,
-      private paymentSrv: paymentService) {}
+    private ordersrv: OrderService,private _appUserSvr:appUserService,
+     private _route: Router) {}
+
 
 
   ngOnDestroy(): void {
@@ -60,13 +63,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
 
-    this.ordersrv.getOrders().subscribe(o=> this.ordersrv.ordersCache = o);
-    this.productsvr.getProducts().subscribe(p=> this.productsvr.productssCache = p);
-    this.custsvr.getCustomers().subscribe(c=> this.custsvr.customersCache = c);
-
-
-    this.paymentSrv.createTerminal();
-
+    this.checkPaymentTerminalStatus();
+    
     this.checkNetworkStatus();
 
     this.signalrService.init();
@@ -88,6 +86,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         au.play();
     }
 
+  checkPaymentTerminalStatus(){
+    this._appUserSvr.getAppUserInfo()
+    .subscribe((r:any)=> {
+        this.paymentProvider = r.paymentProcessor});
+  }
+
   checkNetworkStatus() {
     this.networkStatus = navigator.onLine;
     this.networkStatus$ = merge(
@@ -100,6 +104,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('status', status);
     this.networkStatus = status;
   });
+}
+
+onFixPaymentProcessor(){
+this._route.parseUrl('/home/settings');
 }
 
 
