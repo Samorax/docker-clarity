@@ -15,21 +15,21 @@
         </div>
     </clr-dg-action-bar>
     
-    <clr-dg-column [style.width.px]="250">Order No.</clr-dg-column>
-    <clr-dg-column [style.width.px]="250">Total Amount</clr-dg-column>
-    <clr-dg-column [style.width.px]="250">Status
-        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
-    </clr-dg-column>
-    <clr-dg-column [style.width.px]="250">Payment</clr-dg-column>
-    <clr-dg-column [style.width.px]="250">Date</clr-dg-column>
+    <clr-dg-column>Order No.</clr-dg-column>
+    <clr-dg-column>Total Amount</clr-dg-column>
+    <clr-dg-column>Channel</clr-dg-column>
+    <clr-dg-column>Date</clr-dg-column>
+    <clr-dg-column>Status
+      <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+  </clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any orders</clr-dg-placeholder>
     <clr-dg-row *clrDgItems="let element of orders" [clrDgItem]="element" [class.highlight]="element.opened">
       <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
       <clr-dg-cell>{{element.totalAmount | currency: currencySymbol}}</clr-dg-cell>
-      <clr-dg-cell>{{element.orderStatus}}</clr-dg-cell>
-      <clr-dg-cell> {{element.payment}}</clr-dg-cell>
+      <clr-dg-cell> {{element.channel}}</clr-dg-cell>
       <clr-dg-cell>{{element.orderDate | date:'medium'}}</clr-dg-cell>
+      <clr-dg-cell>{{element.orderStatus}}</clr-dg-cell>
     </clr-dg-row>
   <ng-template clrIfDetail let-element (clrIfDetailChange)= "onDetailOpen($event)">
    <clr-dg-detail>
@@ -38,7 +38,7 @@
         <div>Date: {{element.orderDate | date:'medium'}}</div>
         <div>Payment Type:{{element.payment}}</div>
         <div>Channel:{{element.channel}}</div>
-        <div>Status:{{element.orderStatus}</div>
+        <div>Status:{{element.orderStatus}}</div>
         <div>Notes:{{element.notes}}</div>
         <table class="table">
           <thead>
@@ -60,7 +60,9 @@
           </tr>
         </tfoot>
         </table>
-        <div>
+
+        <div *ngIf="element.channel !== 'On-Site'">
+          <div>
           <clr-select-container *ngIf="element.payment !== 'succeeded'">
             <label>Select Status</label>
             <select  clrSelect name="status" #status (change)="element.status = status.value">
@@ -71,6 +73,8 @@
         </div>
        
         <button *ngIf="element.payment !== 'succeeded'" class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
+        </div>
+       
         
         
         <div *ngIf="paymentFeedback == 'succeeded'">
@@ -103,4 +107,5 @@
   </clr-datagrid>
 
   <edit-order></edit-order>
-  <add-order></add-order>
+  <add-order [waiters]="waiters" [tables]="tables"></add-order>
+  <app-orderInSession [waiters]="waiters" [tables]="tables"></app-orderInSession>

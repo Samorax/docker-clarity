@@ -47,13 +47,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
-    this.signalrService.AllFeedObservable.subscribe(ord => {
-      this.ordersrv.addOrder(ord).subscribe(o=>{
-        this.ordersrv.ordersCache.push(o);
+    this.signalrService.AllOrderFeedObservable.subscribe(ord => {
+      console.log(ord);
+        this.ordersrv.ordersCache.push(ord);
         this.Orderstatus = 'info';
-        this.playSoundNotification();
-      })
     });
+    this.signalrService.AllBirthdayFeedObservable.subscribe(b=>{
+      console.log(b);
+    })
+
+    this.signalrService.AllOrderUpdateFeedObservable.subscribe(oU=>{
+      console.log(oU);
+    })
+
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 
 
@@ -70,14 +76,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.signalrService.init();
 
     // 2 - register for ALL relay
-    this.signalrService.listenToAllFeeds();
+    this.signalrService.listenToOrderFeeds();
+    this.signalrService.listenToBirthdayFeeds();
+    this.signalrService.listenToOrderUpdateFeeds();
 
     // 3 - subscribe to messages received
-    this.signalrService.AllFeedObservable
+   /* this.signalrService.AllFeedObservable
       .subscribe((res: any) => {
         console.log(res);
-      });
-  }
+      });*/
+  } 
 
    playSoundNotification(){
       let au = new Audio();

@@ -1,26 +1,25 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, Sanitizer, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { DomSanitizer } from "@angular/platform-browser";
+import { Observable, of } from "rxjs";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
-import { OrderService } from "../Services/OrderService";
-import { ProductService } from "../Services/ProductService";
-import { OrderCartComponent } from "./OrderCart.component";
-import { Observable, of } from "rxjs";
-import { DomSanitizer } from "@angular/platform-browser";
-import { paymentService } from "../Services/PaymentService";
-import { NgForm } from "@angular/forms";
-import { TableSessionService } from "../Services/TableSessionsService";
 import { TableSession } from "../Models/Session";
-import { Waiter } from "../Models/Waiter";
 import { Table } from "../Models/Table";
-import { TableService } from "../Services/TableService";
-import { WaiterService } from "../Services/WaiterService";
+import { Waiter } from "../Models/Waiter";
+import { paymentService } from "../Services/PaymentService";
+import { ProductService } from "../Services/ProductService";
+import { TableSessionService } from "../Services/TableSessionsService";
+import { OrderCartComponent } from "./OrderCart.component";
 
 @Component({
-    selector:'add-order',
-    templateUrl:'./OrderAdd.component.html'
+    selector:'app-orderInSession',
+    templateUrl:'./OrderInSessionEdit.component.html'
+
 })
 
-export class OrderAddComponent implements OnInit, AfterViewInit{
+export class OrderInSessionEditComponent{
+    order!:Order
     userId = localStorage.getItem("user_id");
     waiter:Waiter = new Waiter();
     @Input()waiters!:Waiter[];
@@ -118,12 +117,6 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         }); 
     }
 
-    //update session isPayable to true
-    //update or create order details
-    //update order.
-    onLockSession(){
-        
-    }
 
 
     onSelect(p:Product){
@@ -131,7 +124,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         this.totalAmount = this.getSum(this.selected);
     }
     
-    open(){
+    open(x:Order){
+        this.order = x;
         this.show = true;
     }
     close(){

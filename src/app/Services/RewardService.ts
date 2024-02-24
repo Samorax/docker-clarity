@@ -11,7 +11,7 @@ import { Rewards } from "../Models/Rewards";
 export class RewardService
 {
     rewardsCache: Rewards[] = [];
-    baseUrl = "https://foodloyaleopenapi.azurewebsites.net/api/rewards/";
+    baseUrl = "http://localhost:5241/api/rewards/";
   
      httpOptions = {
       headers: new HttpHeaders({

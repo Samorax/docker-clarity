@@ -7,6 +7,7 @@ import { EChartsOption } from "echarts";
 import { Observable } from "rxjs";
 import { promises } from "dns";
 import { OrderService } from "../Services/OrderService";
+import { orderDetail } from "../Models/OrderDetails";
 
 @Component({
     selector:'app-productoverview',
@@ -103,15 +104,16 @@ export class ProductOverviewComponent implements OnInit{
     calculatePercentageDemand(x:number,y: number): number{
         let totalNumberOfOrders: number =x;
         let totalNumberOfUniqueProduct: number = y;
-
+      
         return (totalNumberOfUniqueProduct/totalNumberOfOrders)*100;
     }
 
     getTotalNumberOfUniqueProducts(p:Product, o:Order[]){
-        let uniqueProductArray:CartOrder[] = [];
+        let uniqueProductArray: orderDetail[] = [];
         o.forEach(or=>{
-            let x = or.products.filter(pr=> p.name == pr.name);
+            let x = or.orderDetails.filter(pr=> p.productID == pr.productId);
             x.forEach(a=> uniqueProductArray.push(a));
+
             x = [];
         });
         return uniqueProductArray.length;
@@ -122,7 +124,7 @@ export class ProductOverviewComponent implements OnInit{
         p.forEach(pr=> 
             {
                 names.push(pr.name);
-                console.log(pr.name);
+              
             });
         return names;
     }
@@ -131,7 +133,7 @@ export class ProductOverviewComponent implements OnInit{
         let ns:number[] = [];
         p.forEach(pr => {
             let x = this.getTotalNumberOfUniqueProducts(pr,this.orders);
-            let n = this.calculatePercentageDemand(this.orders.length, x);
+          let n = this.calculatePercentageDemand(this.orders.length, x);
             ns.push(n);
         });
         return ns;

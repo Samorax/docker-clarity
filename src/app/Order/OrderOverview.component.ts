@@ -73,7 +73,6 @@ export class OrderOverviewComponent implements OnInit{
         let sep = 0; let oct = 0; let nov =0 ; let dec =0 ;
         o.forEach(o=>{
             let oDate = moment(o.orderDate).toDate();
-            console.log(oDate);
             let m = oDate.getUTCMonth();
             let oy = oDate.getUTCFullYear();
             let ny = new Date().getUTCFullYear();
@@ -81,7 +80,6 @@ export class OrderOverviewComponent implements OnInit{
                 switch (m) {
                     case 0:
                         jan += o.totalAmount;
-                        console.log(jan);
                         break;
                     case 1:
                         feb += o.totalAmount;
@@ -122,18 +120,19 @@ export class OrderOverviewComponent implements OnInit{
             }
         });
 
-        monthlySales["Jan"] = (jan/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Feb"] = (feb/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Mar"] = (mar/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Apr"] = (apr/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["May"] = (may/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Jun"] = (jun/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Jul"] = (jul/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Aug"] = (aug/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Sep"] = (sep/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Oct"]=  (oct/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Nov"] = (nov/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
-        monthlySales["Dec"] = (dec/jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec)*100;
+        monthlySales["Jan"] = (jan/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Feb"] = (feb/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Mar"] = (mar/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Apr"] = (apr/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["May"] = (may/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Jun"] = (jun/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Jul"] = (jul/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Aug"] = (aug/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Sep"] = (sep/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Oct"] = (oct/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Nov"] = (nov/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Dec"] = (dec/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+
 
         let wc: EChartsOption = {
             xAxis:{
@@ -195,10 +194,10 @@ export class OrderOverviewComponent implements OnInit{
                 case 'in-person':
                     inPersonRevenue += or.totalAmount;
                     break;
-                case 'online(mobile app)':
+                case 'mobile app':
                     onlineMobileAppRevenue += or.totalAmount;
                     break;
-                case 'online(website)':
+                case 'Website':
                     onlineWebsiteRevenue += or.totalAmount;
                     break;
                 default:
@@ -214,8 +213,8 @@ export class OrderOverviewComponent implements OnInit{
             series: [
                 {
                   data: [{value: percentageInPersonRevenue , name: "in-person"},
-                         {value: percentageOnlineMobileAppRevenue, name: "Online(mobile app)"},
-                         {value: percentageOnlineWebsiteRevenue ,name:'Online(website)'}],
+                         {value: percentageOnlineMobileAppRevenue, name: "mobile app"},
+                         {value: percentageOnlineWebsiteRevenue ,name:'Website'}],
                   type: 'pie',
                 },
               ],

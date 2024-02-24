@@ -95,7 +95,7 @@ export class CustomerOverviewComponent implements OnInit{
         let rCustomers = [];
         if(o.length > 1){
             for (let c = 0; c < y.length; c++) {
-                let r = o.filter(o=> o.customerID == y[c].customerID);
+                let r = o.filter(o=> o.customerID == y[c].id);
                 if(r.length >= 2){
                     rCustomers.push(y[c]);
                 } 
@@ -165,19 +165,22 @@ export class CustomerOverviewComponent implements OnInit{
                 monthOrder.forEach(o=>{
                     let dateOfMonth = new Date(o.orderDate).getDate();
                     if(dateOfMonth >= 1 && dateOfMonth <=7){
-                        if(element.customerID == o.customerID){
+                        if(element.id == o.customerID){
                             o1.push(o);
                         }
                     }else if( dateOfMonth >=8 && dateOfMonth <= 15){
-                        if(element.customerID == o.customerID){
+                        console.log("this is the week");
+                        console.log(element);
+                        console.log(o.customerID);
+                        if(element.id == o.customerID){
                             o2.push(o);
                         }
                     }else if(dateOfMonth >= 16 && dateOfMonth <= 23){
-                        if(element.customerID == o.customerID){
+                        if(element.id == o.customerID){
                             o3.push(o);
                         }
                     }else{
-                        if(element.customerID == o.customerID){
+                        if(element.id == o.customerID){
                             o4.push(o);
                         }
                     }
@@ -237,7 +240,7 @@ export class CustomerOverviewComponent implements OnInit{
         for (let c = 0; c < x.length; c++) {
             const element = x[c];
             orderOfMonth.forEach(o=>{
-                if(o.customerID == element.customerID && o.totalAmount >= revenueAverage){
+                if(o.customerID == element.id && o.totalAmount >= revenueAverage){
                     highSpenders.push(element);
                 }
             });

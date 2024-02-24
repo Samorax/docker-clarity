@@ -7,8 +7,8 @@
               <label>Select Payment Provider</label>
               <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
                   <option value="Stripe">Stripe</option>
-                  <option value="Square">Square</option>
-                  <option value="Ingenico">Ingenico</option>
+                  <option value="Adyen">Adyen</option>
+                  <option value="Dojo">Dojo</option>
               </select>
           </clr-select-container>
           <div *ngIf="showStripeForms">
@@ -22,6 +22,32 @@
                 </clr-password-container>
                 <button type="submit" class="btn btn-primary">Save</button>
           </div>
+          <div *ngIf="showDojoForms">
+            <clr-password-container>
+                <label>Api Key</label>
+                <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
+              </clr-password-container>
+              <clr-password-container>
+                <label>Account Id</label>
+                <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="paymentProvider.accountId" [(ngModel)]="paymentProvider.accountId"/>
+              </clr-password-container>
+              <clr-password-container>
+                <label>Software House Id</label>
+                <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="paymentProvider.softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
+              </clr-password-container>
+              <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+        <div *ngIf="showAdyenForms">
+          <clr-password-container>
+              <label>Publishable Key</label>
+              <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="paymentProvider.apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+            </clr-password-container>
+            <clr-password-container>
+              <label>Secret Key</label>
+              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+            </clr-password-container>
+            <button type="submit" class="btn btn-primary">Save</button>
+      </div>
       </form>
       <div *ngIf="showSpinner">
           <clr-spinner clrInline>Processing</clr-spinner>

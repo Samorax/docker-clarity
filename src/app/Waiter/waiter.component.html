@@ -1,0 +1,41 @@
+<clr-datagrid [(clrDgSelected)]="selected">
+    <clr-dg-action-bar>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+            <cds-icon shape="plus"></cds-icon> 
+            Add 
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+            <cds-icon shape="close"></cds-icon>
+            Delete
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+            <cds-icon shape="pencil"></cds-icon>
+            Edit
+     </button>
+        </div>
+    </clr-dg-action-bar>
+    
+    <clr-dg-column [style.width.px]="250">Waiter Id</clr-dg-column>
+    <clr-dg-column [style.width.px]="250">Name</clr-dg-column>
+  
+
+    <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let element of waiters" [clrDgItem]="element">
+      <clr-dg-cell>{{element.id}}</clr-dg-cell>
+      <clr-dg-cell>{{element.name}}</clr-dg-cell>
+      
+    </clr-dg-row>
+
+    <clr-dg-footer>
+      <clr-dg-pagination #pagination>
+        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+          Elements per page
+        </clr-dg-page-size>
+        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+        {{pagination.totalItems}} elements
+      </clr-dg-pagination>
+    </clr-dg-footer>
+  </clr-datagrid>
+
+  <app-addWaiter></app-addWaiter>

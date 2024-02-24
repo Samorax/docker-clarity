@@ -11,9 +11,9 @@ import { apiKeyRequestService } from "../Services/ApiKeyRequestService";
     selector:'app-settings'
 })
 export class SettingsComponent implements OnInit{
-    paymentProvider: any;
+    paymentProvider:paymentProcessor = new paymentProcessor();
     appUserId:any = localStorage.getItem("user_id");
-    appUser!:RegisterCredentials;
+    appUser!:any;
     feedBack!:string
     showSpinner:boolean = false;
     showFeeback:boolean = false;
@@ -30,6 +30,8 @@ constructor(private _appUserSrv: appUserService,
 
     
     showStripeForms:boolean = false;
+    showDojoForms:boolean = false;
+    showAdyenForms:boolean = false;
     
     onSubmit(x:NgForm){
         this.showSpinner = true;
@@ -57,8 +59,20 @@ constructor(private _appUserSrv: appUserService,
     onChange(x:string){
         if(x ==='Stripe'){
             this.showStripeForms = true;
-        }else{
+            this.showAdyenForms = false;
+            this.showDojoForms = false;
+        }else if(x === 'Dojo'){
+            this.showDojoForms = true;
+            this.showAdyenForms = false;
             this.showStripeForms = false;
+        }else if(x ==='Adyen'){
+            this.showAdyenForms = true;
+            this.showStripeForms = false;
+            this.showDojoForms = false;
+        }else{
+            this.showAdyenForms = false;
+            this.showStripeForms = false;
+            this.showDojoForms = false;
         }
     }
 

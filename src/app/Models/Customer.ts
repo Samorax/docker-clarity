@@ -1,5 +1,5 @@
 export class Customer{
-    public customerID!: string
+    public id!: string
     public firstName!: string
     public lastName!: string
     public birthday!: string

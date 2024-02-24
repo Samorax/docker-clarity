@@ -70,34 +70,36 @@ export class OrderCartComponent implements OnInit {
         this.TotalAmount = this.getSum(this.Products);
     }
 
-
+    onLockSession(){
+        
+    }
     onCharge(){
-        if(this.paymentMethod === 'Card'){
-            let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:this.PaymentSvr.currencySymbol}
-            this.PaymentSvr.discoverReader().then((result:Reader)=>{
-                this.spinnerStatus = true;
-                this.feedBack = "Reader discovered: "+result.label;
-                this.PaymentSvr.connectReader(result).then((status:string)=>{
-                    this.feedBack = status;
-                    this.PaymentSvr.processPayment(ob).then(g=>{
-                        let p: PaymentIntentRequest = {PaymentIntentId : g};
-                        this.PaymentSvr.capturePayment(p).subscribe((r:any)=> {
-                          this.feedBack = r.status;
-                          this.spinnerStatus = false;
-                          if(this.feedBack === 'succeeded'){
-                            this.createCartProducts(this.Products).then(p=>{
-                                this.newOder = {products : p,totalAmount:this.TotalAmount,opened:true, orderStatus:"Approved", 
-                                channel:'in-person', orderDate:Date.now(), orderID:0,customerID:0,payment:"succeeded", applicationUserID: this.appId }
-                                this.cart.emit(this.newOder);
-                            });
-                          }
-                        });
-                      },(err:any)=> {this.feedBack = err;  }); //if payment could not be processed.
-                })
-            },(er:any)=> {this.feedBack = er;}); //if reader is not discovered.
-        }else if(this.paymentMethod === 'Cash'){
+        //if(this.paymentMethod === 'Card'){
+        //    let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:this.PaymentSvr.currencySymbol}
+        //    this.PaymentSvr.discoverReader().then((result:Reader)=>{
+        //        this.spinnerStatus = true;
+        //        this.feedBack = "Reader discovered: "+result.label;
+        //        this.PaymentSvr.connectReader(result).then((status:string)=>{
+        //            this.feedBack = status;
+        //            this.PaymentSvr.processPayment(ob).then(g=>{
+        //                let p: PaymentIntentRequest = {PaymentIntentId : g};
+        //                this.PaymentSvr.capturePayment(p).subscribe((r:any)=> {
+        //                  this.feedBack = r.status;
+        //                  this.spinnerStatus = false;
+        //                  if(this.feedBack === 'succeeded'){
+        //                    this.createCartProducts(this.Products).then(p=>{
+        //                        this.newOder = {products : p,totalAmount:this.TotalAmount,opened:true, orderStatus:"Approved", 
+        //                        channel:'in-person', orderDate:Date.now(), orderID:0,customerID:0,payment:"succeeded", applicationUserID: this.appId }
+        //                        this.cart.emit(this.newOder);
+        //                    });
+        //                  }
+        //                });
+        //              },(err:any)=> {this.feedBack = err;  }); //if payment could not be processed.
+        //        })
+        //    },(er:any)=> {this.feedBack = er;}); //if reader is not discovered.
+        //}else if(this.paymentMethod === 'Cash'){
             
-        }
+        //}
            
         }
         

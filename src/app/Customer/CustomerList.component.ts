@@ -23,7 +23,7 @@ constructor(private customerService: CustomerService ){}
         this.deleteCustomerDialog.onOK.subscribe(custs=>{
             this.customerService.customersCache = [];
             custs.forEach(c=>{
-                this.customerService.removeCustomers(c.customerID);
+                this.customerService.removeCustomers(c.id);
             });
             this.customerService.getCustomers().subscribe(c=>{
                 c.forEach(cust=>{

@@ -50,6 +50,13 @@ import { editLoyaltyDialogComponent } from './Reward/editLoyaltyDialog.component
 import { deleteLoyaltyDialogComponent } from './Reward/deleteLoyaltyDialog.component';
 import { editVoucherDialogComponent } from './Reward/editVoucherDialog.component';
 import { deleteVoucherDialogComponent } from './Reward/deleteVoucherDialog.component';
+import { tableComponent } from './Table/table.component';
+import { TableService } from './Services/TableService';
+import { addTableDialogComponent } from './Table/addTableDialog.component';
+import { waiterComponent } from './Waiter/waiter.component';
+import { addWaiterDialogComponent } from './Waiter/addWaiterDialog.component';
+import { TableSessionService } from './Services/TableSessionsService';
+import { OrderInSessionEditComponent } from './Order/OrderInSessionEdit.Component';
 
 
 @NgModule({
@@ -85,7 +92,12 @@ import { deleteVoucherDialogComponent } from './Reward/deleteVoucherDialog.compo
     addLoyaltyDialogComponent,
     editLoyaltyDialogComponent,
     deleteLoyaltyDialogComponent,
-    loyaltyComponent
+    loyaltyComponent,
+    tableComponent,
+    addTableDialogComponent,
+    waiterComponent,
+    addWaiterDialogComponent,
+    OrderInSessionEditComponent
   ],
   imports: [
     HttpClientModule,
@@ -107,13 +119,15 @@ import { deleteVoucherDialogComponent } from './Reward/deleteVoucherDialog.compo
       {path:'orders/list', component: OrderListComponent},
       {path:'customers/overview',component:CustomerOverviewComponent}, 
       {path:'customers/list', component: CustomerListComponent},
+      {path:'tables/list', component:tableComponent},
+      {path:'waiters/list',component:waiterComponent},
       {path:'vouchers',component: voucherComponent},
       {path:'loyaltyPoints',component:loyaltyComponent},
       {path:'settings', component:SettingsComponent}] }
     ]),
   ],
   providers: [
-    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService,
+    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService,
      AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })

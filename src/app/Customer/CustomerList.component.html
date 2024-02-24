@@ -18,7 +18,7 @@
 
     <clr-dg-placeholder>We couldn't find any loyal customers!</clr-dg-placeholder>
     <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
-      <clr-dg-cell>{{element.customerID}}</clr-dg-cell>
+      <clr-dg-cell>{{element.id}}</clr-dg-cell>
       <clr-dg-cell>{{element.birthday}}</clr-dg-cell>
       <clr-dg-cell>{{element.email}}</clr-dg-cell>
     </clr-dg-row>
@@ -31,7 +31,7 @@
             <table>
               <tr>
                 <td>CustomerNo: </td>
-                <td>{{element.customerID}}</td>
+                <td>{{element.id}}</td>
               </tr>
 
                 <tr>

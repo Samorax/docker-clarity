@@ -1,8 +1,7 @@
-import { CartOrder } from "./CartOder"
-import { Product } from "./Product"
+import { orderDetail } from "./OrderDetails"
 
 export class Order {
-  public products!: Array<CartOrder>
+  public orderDetails!: Array<orderDetail>
   public totalAmount: any
   public orderID: any
   public orderStatus!:any
@@ -14,4 +13,8 @@ export class Order {
   public applicationUserID:any
   public channel:any
   public opened: any
+  public tableSessionId:any
+  public totalTax:any
+  public paidAmount:any
+
 }

@@ -8,6 +8,11 @@ import { OrderAddComponent } from "./OrderAdd.component";
 import { paymentService } from "../Services/PaymentService";
 import { PaymentObject } from "../Models/PaymentObject";
 import { loadStripe } from "@stripe/stripe-js";
+import { Table } from "../Models/Table";
+import { Waiter } from "../Models/Waiter";
+import { TableService } from "../Services/TableService";
+import { WaiterService } from "../Services/WaiterService";
+import { OrderInSessionEditComponent } from "./OrderInSessionEdit.Component";
 
 
 
@@ -18,14 +23,18 @@ import { loadStripe } from "@stripe/stripe-js";
 })
 
 export class OrderListComponent implements OnInit, AfterViewInit{
+  tables:Table[] = [];
+  waiters:Waiter[] = [];
+
   paymentFeedback:any
   currencySymbol: string = this.paymentService.currencySymbol;
   
-
+  @ViewChild(OrderInSessionEditComponent) OrderInSessionEditModal!: OrderInSessionEditComponent;
   @ViewChild(OrderEditComponent) OrderEditModal!: OrderEditComponent;
   @ViewChild(OrderAddComponent) OrderAddModal!: OrderAddComponent;
 
-  constructor(private signalrService: SignalrService, private orderService:OrderService, private paymentService: paymentService) {
+  constructor(private signalrService: SignalrService, private orderService:OrderService, private tableSvr:TableService, private waiterSvr:WaiterService, 
+    private paymentService: paymentService) {
 
   }
     ngAfterViewInit(): void {
@@ -44,6 +53,7 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         this.orderService.addOrder(o).subscribe(x=>this.orders.push(x));
       });
 
+
   }
 
 
@@ -61,6 +71,10 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         });
       }
 
+      this.getWaiters();
+      this.getTables();
+
+
     }
 
    
@@ -70,13 +84,28 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     
     orders: Array<Order> =[];
     
+    getWaiters(){
+      this.waiterSvr.getWaiters().subscribe((ws:any)=>this.waiters = ws);
+    }
+
+    getTables(){
+      this.tableSvr.getTables().subscribe((ts:any)=> this.tables = ts);
+    }
 
     onAdd(){
       this.OrderAddModal.open();
     }
 
+    //check the order channel of the order
+    //open the edit dialog accordingly
     onEdit(){
-      this.OrderEditModal.open(this.selected[0]);
+      let od = <Order>this.selected[0];
+      if(od.channel !== 'On-Site'){
+        this.OrderEditModal.open(od);
+      }else{
+        this.OrderInSessionEditModal.open(od)
+      }
+      
     }
 
     async onCharge(x:Order){
