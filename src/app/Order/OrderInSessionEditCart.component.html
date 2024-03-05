@@ -1,0 +1,53 @@
+<h3> Cart</h3>
+<div *ngIf="Products" style="height: 450px; border-radius: 2px;border-color: black;border-style: inset;position: relative;padding-bottom: 0;">
+    <table class="table table-vertical table-compact" style="margin-top: 0;">
+        <tbody>
+            <tr *ngFor="let product of Products" style="height:2%;">
+                <td>
+                    <cds-icon shape="close" (click)="onCancel(product)"></cds-icon>
+                </td>
+                <td class="left">{{product.name}}</td>
+                <td class="left">{{product.price}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="position: absolute;bottom: 0;overflow: hidden;">
+        <div class="clr-row" style="border-color: black;border-style: inset;">
+            <div class="clr-col-4" style="font-size: large; font-weight: 300;">Total:</div>
+            <div class="clr-col-8" style="font-size: large; font-weight: 300;">{{TotalAmount | currency:currencySymbol}}</div>
+        </div>
+        <button style="width:483px;margin-top: 0;margin-bottom: 0;"  class="btn btn-primary" (click)="onLockSession()">Lock Session</button>
+        <!-- <button style="width:483px;margin-top: 0;margin-bottom: 0;" [disabled]=" TotalAmount <= 0 ? true:false "  class="btn btn-primary" (click)="onLockSession()">Lock Session</button> -->
+    </div>
+    </div>
+    <form clrform>
+        <div class="clr-row">
+            <div class="clr-col">
+                <clr-select-container>
+                    <label>Apply Voucher ?</label>
+                    <select clrSelect name="voucher" #selectedVoucher (change)="onSelected(selectedVoucher.value)">
+                        <option *ngFor="let voucher of vouchers" value={{voucher.voucherNumber}}>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | currency:currencySymbol}}</option>
+                    </select>
+                </clr-select-container>
+            </div>
+            <div class="clr-col">
+                <button class="btn btn-primary" (click)="onApply()">Apply</button>
+            </div>
+        </div>
+        
+        <clr-radio-container>
+            <label>Payment Method</label>
+            <clr-radio-wrapper>
+              <input type="radio" clrRadio name="payment" #payment1 required value="Cash" (click)="onPaymentSelection(payment1.value)"/>
+              <label>Cash</label>
+            </clr-radio-wrapper>
+            <clr-radio-wrapper>
+              <input type="radio" clrRadio name="payment" #payment2 required value="Card" (click)="onPaymentSelection(payment2.value)"/>
+              <label>Card</label>
+            </clr-radio-wrapper>
+          </clr-radio-container>
+    </form>
+    <div *ngIf="spinnerStatus">
+        <clr-spinner clrInline>Processing</clr-spinner>
+        <span>{{feedBack}}</span>
+      </div>
