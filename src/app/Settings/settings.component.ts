@@ -24,8 +24,11 @@ constructor(private _appUserSrv: appUserService,
 
     ngOnInit(): void {
         this._appUserSrv.getAppUserInfo()
-            .subscribe((r:any)=> {this.appUser = r; 
-                this.paymentProvider = this.appUser.paymentProcessor});
+          .subscribe((r: any) => {
+            this.appUser = r;
+            if(this.appUser.paymentProcessor !== null){
+                this.paymentProvider = this.appUser.paymentProcessor;
+                }});
     }
 
     
@@ -38,16 +41,19 @@ constructor(private _appUserSrv: appUserService,
         let pp = <paymentProcessor>x.value;
         pp.apiKey1 = this.paymentProvider.apiKey1
         pp.apiKey2 = this.paymentProvider.apiKey2;
+        pp.accountId = this.paymentProvider.accountId;
+        pp.softwareHouseId = this.paymentProvider.softwareHouseId;
         pp.name = this.paymentProvider.name;
         pp.applicationUserID = this.appUserId;
         if(this.appUser !== undefined){
             this.appUser.paymentProcessor =  pp;
-        }
-        localStorage.setItem('apiKey2', this.appUser.paymentProcessor?.apiKey2 as string);
+      }
+       
+        localStorage.setItem('apiKey1', this.appUser.paymentProcessor?.apiKey1 as string);
        
         this._appUserSrv.updateAppUserInfo(this.appUserId, this.appUser)
         .subscribe(
-            (r:any)=>{ this.feedBack = r; this._paymentSvr.createTerminal},
+            (r:any)=>{ this.feedBack = r; /*this._paymentSvr.createTerminal*/},
             (err:any)=> console.log(err),
             ()=> {
                 this.showStripeForms = false;

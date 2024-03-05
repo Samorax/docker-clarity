@@ -30,7 +30,7 @@ export class TableService{
       }
 
     addTable(table: Table){
-        return this._httpClient.post(this.baseUrl,table, this.httpOptions)
+        return this._httpClient.post(this.baseUrl,table)
         .pipe(catchError(this.handleError))
     }
 

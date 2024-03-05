@@ -10,6 +10,7 @@ import { HubConnection } from "@microsoft/signalr";
   providedIn:'root'
 })
 export class SignalrService {
+  
   constructor(private _http: HttpClient) {
     
   }
@@ -17,31 +18,44 @@ export class SignalrService {
   private $orderFeed: Subject<any> = new Subject<any>();
   private $birthdayFeed: Subject<any> = new Subject<any>();
   private $orderUpdateFeed: Subject<any> = new Subject<any>();
+  private $tableSessionUpdateFeed: Subject<any> = new Subject<any>();
 
   hubConnection: any;
+  public get AllTableSessionUpdateFeedObservable():Observable<any>
+  {
+    return this.$tableSessionUpdateFeed.asObservable();
+  }
 
   public get AllOrderFeedObservable(): Observable<Order> {
     return this.$orderFeed.asObservable();
   };
-  public get AllBirthdayFeedObservable(): Observable<Order> {
+  public get AllBirthdayFeedObservable(): Observable<any> {
     return this.$birthdayFeed.asObservable();
   };
-  public get AllOrderUpdateFeedObservable(): Observable<Order> {
+  public get AllOrderUpdateFeedObservable(): Observable<any> {
     return this.$orderUpdateFeed.asObservable();
   };
 
+  //order updates from the website
   listenToOrderFeeds() {
-    (<HubConnection>this.hubConnection).on("ordered", (data: Order) => {
+    (<HubConnection>this.hubConnection).on("ordered", (data: any) => {
       this.$orderFeed.next(data);
     });
   }
 
+  //birthday updates of customers
   listenToBirthdayFeeds(){
     (<HubConnection>this.hubConnection).on("birthday",(data: any) =>{ this.$birthdayFeed.next(data)})
   }
 
+  //order updates from dojo payment terminal
   listenToOrderUpdateFeeds(){
-    (<HubConnection>this.hubConnection).on("orderUpdate",(data: Order) =>{ this.$orderUpdateFeed.next(data)})
+    (<HubConnection>this.hubConnection).on("orderUpdate",(data: any) =>{ this.$orderUpdateFeed.next(data); console.log(data,"oderupdate")})
+  }
+
+  //table-session updates from dojo payment terminal
+  listenToTableSessionUpdateFeeds(){
+    (<HubConnection>this.hubConnection).on("tableSessionUpdate",(data: any) =>{ this.$tableSessionUpdateFeed.next(data); console.log(data,"session")})
   }
 
   //private hubConnection: any;
@@ -63,6 +77,7 @@ export class SignalrService {
 
       this.hubConnection = new signalR.HubConnectionBuilder()
         .withUrl(info.url, options)
+        .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
@@ -74,6 +89,7 @@ export class SignalrService {
       this.listenToOrderFeeds();
       this.listenToBirthdayFeeds();
       this.listenToOrderUpdateFeeds();
+      this.listenToTableSessionUpdateFeeds();
     });
   };
  

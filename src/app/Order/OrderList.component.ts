@@ -13,6 +13,7 @@ import { Waiter } from "../Models/Waiter";
 import { TableService } from "../Services/TableService";
 import { WaiterService } from "../Services/WaiterService";
 import { OrderInSessionEditComponent } from "./OrderInSessionEdit.Component";
+import { OrderCartComponent } from "./OrderCart.component";
 
 
 
@@ -31,9 +32,12 @@ export class OrderListComponent implements OnInit, AfterViewInit{
   
   @ViewChild(OrderInSessionEditComponent) OrderInSessionEditModal!: OrderInSessionEditComponent;
   @ViewChild(OrderEditComponent) OrderEditModal!: OrderEditComponent;
-  @ViewChild(OrderAddComponent) OrderAddModal!: OrderAddComponent;
+  //@ViewChild(OrderCartComponent) OrderCartModal!: OrderCartComponent;
+  @ViewChild(OrderAddComponent)OrderAddModal!:OrderAddComponent;
+  @ViewChild(OrderInSessionEditComponent)orderInSession!:OrderInSessionEditComponent;
 
-  constructor(private signalrService: SignalrService, private orderService:OrderService, private tableSvr:TableService, private waiterSvr:WaiterService, 
+  constructor(private signalrService: SignalrService, private orderService: OrderService,
+    private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService,
     private paymentService: paymentService) {
 
   }
@@ -49,9 +53,26 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         });
       });
 
-      this.OrderAddModal.orderAddModal.subscribe(o=> {
-        this.orderService.addOrder(o).subscribe(x=>this.orders.push(x));
+      this.OrderAddModal.orda.subscribe(o => {
+          this.orders.push(o);
+          this.OrderAddModal.close();
+        });
+
+        this.orderInSession.OrderSessionCartModal.cart.subscribe(o=>{
+          console.log(o);
+          let index = this.orders.findIndex(x=> x.orderID === o.orderID);
+          this.orders[index] = o;
+
+          this.orderInSession.close();
+        })
+
+      this.signalrSVR.AllOrderUpdateFeedObservable.subscribe((o: any) => {
+        let x = this.orders.find(x => x.orderID === o.OrderID);
+        x!.orderStatus = o.OrderStatus;
+        x!.paidAmount = o.PaidAmount;
       });
+
+      
 
 
   }
@@ -89,7 +110,11 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     }
 
     getTables(){
-      this.tableSvr.getTables().subscribe((ts:any)=> this.tables = ts);
+      this.tableSvr.getTables().subscribe((ts:any)=>
+       {
+        let t = ts.filter((x:Table)=> x.status === 'Available');
+        this.tables = t;
+        });
     }
 
     onAdd(){

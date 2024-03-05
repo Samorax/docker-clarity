@@ -23,7 +23,7 @@
                   <option *ngFor="let w of waiters"  value="{{w.name}}">{{w.name}}</option>
                 </select>
               </clr-select-container>
-              <button class="btn btn-outline">Lock Session</button>
+              <!-- <button class="btn btn-outline">Add Session</button> -->
             </div>
             
           </form>
@@ -48,9 +48,9 @@
                   <!--   <li *ngFor='let product of products' (click)="onSelect(product)">
                         {{product.name}}
                       </li> -->
-                </div>
+                    </div>
               <div class="clr-col-4">
-                <order-cart [Products]="selected" [TotalAmount]="totalAmount"></order-cart>
+                <order-cart [Products]="selected" [TotalAmount]="totalAmount" [CartItems]="cartitems" [tableSession]="tableSession" (cart)="orda" [table]="table"  [sessionType]="sessionType"></order-cart>
             </div>
             </div>
            
@@ -62,4 +62,3 @@
 </div>
 
 
-  

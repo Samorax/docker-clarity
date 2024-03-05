@@ -23,7 +23,8 @@ export class addTableDialogComponent{
 
     onSubmit(t:NgForm){
        var x = <Table>t.value;
-       x.applicationUserID = this.appId;
+      x.applicationUserID = this.appId;
+      x.status.trim();
        this.isOK.emit(x);
     }
 }

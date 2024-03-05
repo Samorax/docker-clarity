@@ -1,8 +1,9 @@
 export class Table
 {
-    id:any
+    id?:any
     name!:string  
     maxCovers:any
-    status:any
-    applicationUserID:any
+    status!:string
+    applicationUserID?:any
+
 }

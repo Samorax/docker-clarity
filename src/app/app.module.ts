@@ -57,6 +57,7 @@ import { waiterComponent } from './Waiter/waiter.component';
 import { addWaiterDialogComponent } from './Waiter/addWaiterDialog.component';
 import { TableSessionService } from './Services/TableSessionsService';
 import { OrderInSessionEditComponent } from './Order/OrderInSessionEdit.Component';
+import { OrderInSessionEditCartComponent } from './Order/OrderInSessionEditCart.component';
 
 
 @NgModule({
@@ -97,7 +98,8 @@ import { OrderInSessionEditComponent } from './Order/OrderInSessionEdit.Componen
     addTableDialogComponent,
     waiterComponent,
     addWaiterDialogComponent,
-    OrderInSessionEditComponent
+    OrderInSessionEditComponent,
+    OrderInSessionEditCartComponent
   ],
   imports: [
     HttpClientModule,
@@ -127,7 +129,7 @@ import { OrderInSessionEditComponent } from './Order/OrderInSessionEdit.Componen
     ]),
   ],
   providers: [
-    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService,
+    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, 
      AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })

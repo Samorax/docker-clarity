@@ -1,13 +1,21 @@
-.card-lists{
-    height: 100%;
-    margin-top: 80px;
+.container{
+    padding: 80px;
+}
+section{
+    margin-bottom: 65px;
 }
 
-.card-lists ul{
+li{
     list-style-type: none;
-    padding: 5px;
 }
 
-.card-lists ul>li{
-    margin: 5px;
+.middle-button{
+    position: relative;
+    left: 50%;
+    right: 50%;
+}
+
+.list-inline-item{
+    display: inline;
+    margin: 15px;
 }

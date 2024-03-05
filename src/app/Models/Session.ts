@@ -10,5 +10,7 @@ export class TableSession
     finishedAt!:Date
     tableId:any
     waiterId!:any
+    waiter?:Waiter
     applicationUserID:any
+    table?:Table
 }

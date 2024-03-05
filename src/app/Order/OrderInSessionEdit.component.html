@@ -2,7 +2,7 @@
     <clr-modal [(clrModalOpen)]="show" clrModalSize="xl" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
         <h3 class="modal-title" clrModalTitle>Sessions</h3>
         <div class="modal-body" clrModalContent>
-          <form clrForm (ngSubmit)="saveSession(sessionForm)" #sessionForm="ngForm">
+          <form clrForm  #sessionForm="ngForm">
             <clr-select-container>
               <label>Select Type</label>
               <select clrSelect #select (change)=onChangeSessionType(select.value)>
@@ -13,13 +13,13 @@
             <div *ngIf="showDineInSessionForm">
               <clr-select-container>
                 <label>Select Table</label>
-                <select clrSelect name="tableName" #select [(ngModel)]="table" (change)="onChangeSessionTable(select.value)">
+                <select clrSelect name="tableName" #select [(ngModel)]="table.name" [value]="table?.name" (change)="onChangeSessionTable(select.value)" >
                   <option *ngFor="let t of tables" value="{{t.name}}">{{t.name}}</option>
                 </select>
               </clr-select-container>
               <clr-select-container>
                 <label>Select Waiter</label>
-                <select clrSelect name="waiterName" #selectwaiter [(ngModel)]="waiter" (change)="onChangeSessionWaiter(selectwaiter.value)">
+                <select clrSelect name="waiterName" #selectwaiter [(ngModel)]="waiter.name" [value]="waiter?.name" (change)="onChangeSessionWaiter(selectwaiter.value)">
                   <option *ngFor="let w of waiters"  value="{{w.name}}">{{w.name}}</option>
                 </select>
               </clr-select-container>
@@ -50,7 +50,7 @@
                       </li> -->
                 </div>
               <div class="clr-col-4">
-                <order-cart [Products]="selected" [TotalAmount]="totalAmount"></order-cart>
+                <order-EditCart [Products]="selected" [TotalAmount]="totalAmount" [order]="order" [tableSession]="tableSession" [CartItems]="cartitems"></order-EditCart>
             </div>
             </div>
            
@@ -62,4 +62,3 @@
 </div>
 
 
-  

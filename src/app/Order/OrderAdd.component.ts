@@ -14,6 +14,7 @@ import { Waiter } from "../Models/Waiter";
 import { Table } from "../Models/Table";
 import { TableService } from "../Services/TableService";
 import { WaiterService } from "../Services/WaiterService";
+import { CartItem } from "../Models/CartItem";
 
 @Component({
     selector:'add-order',
@@ -21,6 +22,7 @@ import { WaiterService } from "../Services/WaiterService";
 })
 
 export class OrderAddComponent implements OnInit, AfterViewInit{
+    @Output()orda:EventEmitter<Order> = new EventEmitter<Order>();
     userId = localStorage.getItem("user_id");
     waiter:Waiter = new Waiter();
     @Input()waiters!:Waiter[];
@@ -28,18 +30,17 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     table: Table = new Table();
     @Input()tables!:Table[];
 
-    sessionType: any;
+    sessionType: any = "Takeaway";
     tableSession:TableSession = new TableSession();
 
     showDineInSessionForm:boolean = false;
     currencySymbol:any = this.paymentSvr.currencySymbol;
-    constructor(private paymentSvr: paymentService, private tableSessionSvr: TableSessionService, 
+    constructor(private paymentSvr: paymentService, private tableSessionSvr: TableSessionService, private orderSvr:OrderService,private tableSvr:TableService, 
         private productService: ProductService, private sanitizer: DomSanitizer){}
 
     ngAfterViewInit(): void {
-        this.OrderCartModal.cart.subscribe(o=>{
-            this.orderAddModal.emit(o);
-            
+      this.OrderCartModal.cart.subscribe(o => {
+            this.orda.emit(o);
         })
 
     }
@@ -53,7 +54,6 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     
 
     ngOnInit(): void {
-        
         this.productService.productssCache = [];
         this.productService.getProducts().subscribe(p=>{
             p.forEach(product=> {
@@ -63,9 +63,13 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
                 })
             });
         });
+
+        
     }
 
     products:Product[] = [];
+    cartitems: CartItem[] = [];
+    
     selected:Product[] = [];
     totalAmount:number =0;
 
@@ -92,6 +96,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         this.showDineInSessionForm = true;
     }else{
         this.showDineInSessionForm = false;
+        
+        
     }
    }
 
@@ -101,6 +107,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         var x = this.tables.find(t=> t.name == y);
         this.tableSession.name = x!.name;
         this.tableSession.tableId = x!.id;
+        this.table = x!;
     }
 
     onChangeSessionWaiter(y:any){
@@ -118,17 +125,25 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         }); 
     }
 
-    //update session isPayable to true
-    //update or create order details
-    //update order.
-    onLockSession(){
-        
-    }
+    
+   
 
 
     onSelect(p:Product){
         this.selected.push(p);
         this.totalAmount = this.getSum(this.selected);
+        if(this.cartitems.length == 0){
+            let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
+            this.cartitems.push(c);
+        }else{
+            this.cartitems.forEach(x => {
+                if(x.productId == p.productID){
+                    x.count++;
+                }else{
+                    this.cartitems.push(x);
+                }
+            });
+        }
     }
     
     open(){

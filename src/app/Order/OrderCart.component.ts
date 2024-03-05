@@ -1,14 +1,19 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
 import { paymentService } from "../Services/PaymentService";
-import { terminalIcon } from "@cds/core/icon";
-import { terminalPaymentObject } from "../Models/TerminalPaymentObject";
 import { CartOrder } from "../Models/CartOder";
-import { PaymentIntentRequest } from "../Models/PaymentIntentRequest";
-import { Reader } from "@stripe/terminal-js";
 import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
+import { CartItem } from "../Models/CartItem";
+import { orderDetail } from "../Models/OrderDetails";
+import { TableSession } from "../Models/Session";
+import { TableSessionService } from "../Services/TableSessionsService";
+import { OrderDetailService } from "../Services/OrderDetailService";
+import { OrderService } from "../Services/OrderService";
+import { TableService } from "../Services/TableService";
+import { Table } from "../Models/Table";
+import { Waiter } from "../Models/Waiter";
 
 @Component({
     selector:'order-cart',
@@ -16,38 +21,42 @@ import { voucher } from "../Models/Voucher";
 })
 
 export class OrderCartComponent implements OnInit {
-    constructor(private PaymentSvr: paymentService, private _voucherSvr:voucherService){}
+    constructor(private PaymentSvr: paymentService, private tableSessionSvr: TableSessionService,
+        private orderDetailSvr:OrderDetailService,private orderSvr:OrderService,
+         private _voucherSvr:voucherService, private odSvr:OrderService, private tableSvr: TableService){}
 
     ngOnInit(): void {
         this.getVouchers();
-        
-        
     }
 
     appId = localStorage.getItem("user_id");
-    @Output() cart: EventEmitter<Order> = new EventEmitter<Order>();
+    @Output()cart: EventEmitter<Order> = new EventEmitter<Order>();
+    @Input()table!:Table;
     newOder!:Order;
     @Input()Products!: Product[];
     @Input()TotalAmount: number = 0;
+    @Input()CartItems!:CartItem[];
+    @Input()sessionType:any;
     feedBack!:string;
     spinnerStatus:boolean = false;
     vouchers:voucher[] = [];
     voucherToApply!: voucher;
-    currencySymbol:any;
+    currencySymbol:any = localStorage.getItem('currency_iso_code');
     payButtonStatus:boolean = false;
     paymentMethod!:string;
+    @Input()tableSession!:TableSession;
 
     getVouchers(){
         let cache = this._voucherSvr.getVoucherCache;
         if(cache.length != 0){
             this.vouchers = cache;
-            this.currencySymbol = localStorage.getItem('currency_iso_code');
+
         }else{
             this._voucherSvr.getVouchers().subscribe((v:any) => 
             {
                 this.vouchers = v;
                 this._voucherSvr.getVoucherCache = v;
-                this.currencySymbol = localStorage.getItem('currency_iso_code');
+                
             });
         }
     }
@@ -70,9 +79,58 @@ export class OrderCartComponent implements OnInit {
         this.TotalAmount = this.getSum(this.Products);
     }
 
+    //update session isPayable to true, if items are in cart.
+    //update or create order details
+    //update order.
+    //table status to occupied.
     onLockSession(){
+    if(this.sessionType === "Takeaway")
+    {
+        console.log("this is takeaway");
+        let cache = this.orderSvr.ordersCache;
+        let lastorderid = cache[cache.length - 1].orderID;
+
+        this.tableSession.name =  this.sessionType+" "+lastorderid;
+        let virtualTable :Table = {name: this.tableSession.name, maxCovers: 1, status:"Occupied", applicationUserID:this.appId};
+        let virtualWaiter:Waiter = {name: this.tableSession.name, applicationUserID:this.appId};
+        this.tableSession.waiter = virtualWaiter;
+        this.tableSession.table = virtualTable;
+        
+    }else{
+        this.table.status = 'Occupied';
+        this.tableSvr.updateTable(this.table,this.table.id).subscribe();
+    }
+      this.tableSession.applicationUserID = this.appId;
+      this.tableSession.createdAt = new Date();
+      this.tableSession.isPayable = this.CartItems.length >=1;
+      
+        //add session to database
+      this.tableSessionSvr.addSession(this.tableSession).subscribe((r: TableSession) => {
+           //create new order
+            let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
+        od.channel = "On-Site";od.totalAmount = (this.TotalAmount*100);od.tableSessionId = r.id;od.currency = this.currencySymbol;
+            //add order to database
+        this.odSvr.addOrder(od).subscribe(or => {
+                //emit order to parent component
+          
+          //if there are items in cart, create order details and add to database.
+                if(this.CartItems.length >=1){
+                    this.CartItems.forEach(x => {
+                        let o:orderDetail = {productId:x.productId, quantity:x.count,unitPrice:x.unitPrice*100,applicationUserID:this.appId, orderId:or.orderID};
+                        this.orderDetailSvr.addOrderDetail(o).subscribe();
+                });
+                
+              }
+             
+              this.CartItems = [];
+              this.cart.emit(or);
+              
+            //if Dine-In, then update a stored table
+        });
+        }); 
         
     }
+
     onCharge(){
         //if(this.paymentMethod === 'Card'){
         //    let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:this.PaymentSvr.currencySymbol}

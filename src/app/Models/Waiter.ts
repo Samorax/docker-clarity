@@ -1,6 +1,7 @@
 export class Waiter
 {
-    id:any
+    id?:any
     name!:string
     applicationUserID:any
+    tableSessionId?:any
 }

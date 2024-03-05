@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Observable, of } from "rxjs";
@@ -11,6 +11,9 @@ import { paymentService } from "../Services/PaymentService";
 import { ProductService } from "../Services/ProductService";
 import { TableSessionService } from "../Services/TableSessionsService";
 import { OrderCartComponent } from "./OrderCart.component";
+import { OrderService } from "../Services/OrderService";
+import { CartItem } from "../Models/CartItem";
+import { OrderInSessionEditCartComponent } from "./OrderInSessionEditCart.component";
 
 @Component({
     selector:'app-orderInSession',
@@ -18,28 +21,31 @@ import { OrderCartComponent } from "./OrderCart.component";
 
 })
 
-export class OrderInSessionEditComponent{
+export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
     order!:Order
     userId = localStorage.getItem("user_id");
-    waiter:Waiter = new Waiter();
-    @Input()waiters!:Waiter[];
+    waiter:any;
+    @Input()waiters!: Waiter[];
 
-    table: Table = new Table();
-    @Input()tables!:Table[];
+    table: any;
+    @Input()tables!: Table[];
 
     sessionType: any;
-    tableSession:TableSession = new TableSession();
+    tableSession!:TableSession;
 
     showDineInSessionForm:boolean = false;
     currencySymbol:any = this.paymentSvr.currencySymbol;
-    constructor(private paymentSvr: paymentService, private tableSessionSvr: TableSessionService, 
+    cartitems: CartItem[] = [];
+    constructor(private paymentSvr: paymentService, private orderSvr: OrderService,
         private productService: ProductService, private sanitizer: DomSanitizer){}
 
     ngAfterViewInit(): void {
-        this.OrderCartModal.cart.subscribe(o=>{
-            this.orderAddModal.emit(o);
-            
+        this.OrderSessionCartModal.cart.subscribe(o=>{
+            this.orderSessionUpdateModal.emit(o);
+ 
         })
+
+        console.log(this.order);
 
     }
 
@@ -53,6 +59,7 @@ export class OrderInSessionEditComponent{
 
     ngOnInit(): void {
         
+
         this.productService.productssCache = [];
         this.productService.getProducts().subscribe(p=>{
             p.forEach(product=> {
@@ -68,8 +75,8 @@ export class OrderInSessionEditComponent{
     selected:Product[] = [];
     totalAmount:number =0;
 
-    @Output() orderAddModal: EventEmitter<Order> = new EventEmitter<Order>();
-    @ViewChild(OrderCartComponent)OrderCartModal!: OrderCartComponent;
+    @Output() orderSessionUpdateModal: EventEmitter<Order> = new EventEmitter<Order>();
+    @ViewChild(OrderInSessionEditCartComponent)OrderSessionCartModal!: OrderInSessionEditCartComponent;
 
     show:boolean = false;
 
@@ -107,7 +114,7 @@ export class OrderInSessionEditComponent{
         this.tableSession.waiterId = x!.id;
     }
 
-    saveSession(x:NgForm){
+    /* saveSession(x:NgForm){
         this.tableSession.applicationUserID = this.userId;
         this.tableSession.createdAt = new Date();
          this.tableSessionSvr.addSession(this.tableSession).subscribe((r:TableSession)=>{
@@ -116,17 +123,38 @@ export class OrderInSessionEditComponent{
             this.orderAddModal.emit(od);
         }); 
     }
-
+ */
 
 
     onSelect(p:Product){
         this.selected.push(p);
         this.totalAmount = this.getSum(this.selected);
+        if(this.cartitems.length == 0){
+            let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
+            this.cartitems.push(c);
+        }else{
+            this.cartitems.forEach((x:any) => {
+                if(x.productId === p.productID){
+                    x.count++;
+                }else{
+                    let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
+                    this.cartitems.push(c);
+                }
+            });
+        }
     }
     
     open(x:Order){
         this.order = x;
+        
+        this.order.orderDetails.forEach(item=> this.selected.push(item.product));
+        this.totalAmount = this.getSum(this.selected);
+        this.tableSession = this.order.tableSession;
+        
+        this.waiter = this.tableSession.waiter;
+        this.table = this.tableSession.table;
         this.show = true;
+
     }
     close(){
         this.totalAmount = 0;

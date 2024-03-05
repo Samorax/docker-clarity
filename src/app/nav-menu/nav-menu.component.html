@@ -5,7 +5,7 @@
       <span class="title">Foodloyale</span>
     </a>
   </div>
-
+  
   <div *ngIf='_authService.isAuthenticated()' class="header-nav">
     <a routerLink="./home/orders/list" class="nav-link nav-icon">
       <cds-icon shape="bell" badge='status'></cds-icon>
