@@ -7,4 +7,14 @@ export class voucher{
     public voucherCreditAmount:any
     public voucherNumber:any
     public voucherActivation:any
+    public units!:number
+    public valueType!:voucherValueType
+    public keyword!:string
+    applicationUserID:any
+}
+
+export enum voucherValueType
+{
+    percentage,
+    actualValue
 }

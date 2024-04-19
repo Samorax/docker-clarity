@@ -26,8 +26,10 @@ constructor(private _appUserSrv: appUserService,
         this._appUserSrv.getAppUserInfo()
           .subscribe((r: any) => {
             this.appUser = r;
+            console.log(r);
             if(this.appUser.paymentProcessor !== null){
                 this.paymentProvider = this.appUser.paymentProcessor;
+                console.log(this.paymentProvider)
                 }});
     }
 
@@ -38,15 +40,19 @@ constructor(private _appUserSrv: appUserService,
     
     onSubmit(x:NgForm){
         this.showSpinner = true;
-        let pp = <paymentProcessor>x.value;
-        pp.apiKey1 = this.paymentProvider.apiKey1
-        pp.apiKey2 = this.paymentProvider.apiKey2;
-        pp.accountId = this.paymentProvider.accountId;
-        pp.softwareHouseId = this.paymentProvider.softwareHouseId;
-        pp.name = this.paymentProvider.name;
-        pp.applicationUserID = this.appUserId;
+        let pp = x.value;
+        
+        this.paymentProvider.apiKey1 = pp.apiKey1;
+        this.paymentProvider.apiKey2 = pp.apiKey2;
+        this.paymentProvider.accountId = pp.accountId;
+        this.paymentProvider.softwareHouseId = pp.softwareHouseId;
+        this.paymentProvider.name = pp.name;
+        this.paymentProvider.applicationUserID = this.appUserId;
         if(this.appUser !== undefined){
-            this.appUser.paymentProcessor =  pp;
+            this.appUser.paymentProcessor =  this.paymentProvider;
+            this.appUser.vatCharge = pp.vatCharge;
+            this.appUser.serviceCharge = pp.serviceCharge;
+            console.log(this.appUser);
       }
        
         localStorage.setItem('apiKey1', this.appUser.paymentProcessor?.apiKey1 as string);

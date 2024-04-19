@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, catchError, of, retry, throwError } from "rxjs";
-import { tap } from "rxjs/operators";
+import { tap, window } from "rxjs/operators";
 import { loginCredentials } from "../Models/LoginCredentials";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { TokenObject } from "../Models/TokenObject";
@@ -55,6 +55,9 @@ export class AuthenticationService {
     localStorage.setItem("expiry_date", JSON.stringify(expiresAt.valueOf()));
     localStorage.setItem("currency_iso_code", tokenObject.currency_iso_code);
     localStorage.setItem("apikey1", tokenObject.api_key_1);
+    localStorage.setItem("mSID",tokenObject.MessagingSID);
+    localStorage.setItem("vatCharge",tokenObject.vatCharge);
+    localStorage.setItem("serviceCharge",tokenObject.serviceCharge);
       
     }
 
@@ -73,6 +76,8 @@ export class AuthenticationService {
       localStorage.removeItem("expiry_date");
       localStorage.removeItem("currency_iso_code");
       localStorage.removeItem("apikey1");
+      localStorage.removeItem("mSID");
+
 
     this._pService.productssCache = [];
     this._cService.customersCache = [];

@@ -21,10 +21,13 @@ export class addTableDialogComponent{
         this.show = false;
     }
 
+
+
     onSubmit(t:NgForm){
        var x = <Table>t.value;
-      x.applicationUserID = this.appId;
-      x.status.trim();
-       this.isOK.emit(x);
+        x.type = 'real';
+        x.applicationUserID = this.appId;
+        x.status.trim();
+        this.isOK.emit(x);
     }
 }

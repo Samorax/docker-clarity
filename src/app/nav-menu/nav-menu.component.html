@@ -6,13 +6,29 @@
     </a>
   </div>
   
-  <div *ngIf='_authService.isAuthenticated()' class="header-nav">
-    <a routerLink="./home/orders/list" class="nav-link nav-icon">
-      <cds-icon shape="bell" badge='status'></cds-icon>
-    </a>
-  </div>
-  <div class="header-actions">
-    <app-loginmenu [isAuthenticated]="isAuthenticated"></app-loginmenu>
-  </div>
-      
+  <div *ngIf='_authService.isAuthenticated()' class="header-actions">
+    <clr-signpost class="header-actions">
+      <button class="nav-icon" aria-label="Icon Button Trigger" clrSignpostTrigger>
+        <cds-icon shape="bell" badge='status'>
+        </cds-icon>
+      </button>
+      <clr-signpost-content [clrPosition]="'bottom-middle'" *clrIfOpen="show">
+        <div *ngFor="let n of notifications">
+          <div class="card">
+            <div class="card-block">
+              <h4 class="card-title">{{n.type}}</h4>
+              <p class="card-text">{{n.texts}}</p>
+            </div>
+            <div class="card-footer">
+              <a class="card-click" (click)="onDismiss(n)">Dismiss</a>
+            </div>
+          </div>
+        </div>
+        
+      </clr-signpost-content>
+    </clr-signpost>
+    </div>
+    <app-loginmenu class="header-actions" [isAuthenticated]="isAuthenticated"></app-loginmenu>
+  
+  
 </header>

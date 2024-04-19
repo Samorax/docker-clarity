@@ -1,17 +1,34 @@
 <clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
     <h3 class="modal-title" clrModalTitle>Add loyaltyPoints</h3>
     <div class="modal-body" clrModalContent>
-      <form clrForm clrLayout="Horizontal" #rewardForm="ngForm" (ngSubmit)="onSubmit(rewardForm)" >
+      <form clrForm clrLayout="vertical" #rewardForm="ngForm" (ngSubmit)="onSubmit(rewardForm)" >
+        <clr-input-container>
+          <label>Title</label>
+          <input clrInput type="text" name="title" [(ngModel)]="reward.title" />
+        </clr-input-container>
+        <clr-textarea-container>
+          <label>Description</label>
+          <textarea clrTextarea type="text" name="description" [(ngModel)]="reward.description" required></textarea>
+        </clr-textarea-container>
+        <div class='clr-form-control'>
+          <label class='clr-control-label'>Photo</label>
+          <img class="img img-thumbnail img-responsive" src="https://placeholder.co/420x320" (click)="handleClickEvent()" id="img-thumb" style="width:200px;"/>
+          <input id="fileElem" [(ngModel)]="reward.rewardImage"  name="rewardImage" style="display:none" #file type="file" (change)="onfileLoaded(file.files)" class="form-control">
+        </div>
+        <clr-date-container>
+          <label>Expiry Date</label>
+          <input type="date" autocomplete="off" clrDate name="expiryDate" [(ngModel)]="reward.expiryDate" />
+        </clr-date-container>
         <clr-input-container>
           <label>Reward Point</label>
           <input clrInput type="text" name="redeemPoint" [(ngModel)]="reward.redeemPoint" />
         </clr-input-container>
-        <clr-select-container>
-          <label>Vouchers</label>
-          <select clrSelect type="text" name="reward" [(ngModel)]="reward.reward">
-            <option *ngFor="let v of vouchers" value={{v.voucherName}}>{{v.voucherName}} {{v.voucherCreditAmount |currency:currencySymbol}}</option>
-            </select>
-        </clr-select-container>
+        <clr-input-container>
+          <label>Units</label>
+          <input clrInput type="text" name="units" [(ngModel)]="reward.units" />
+        </clr-input-container>
+
+
 
         <div class="modal-footer" clrModalActions>
           <button class="btn btn-outline" (click)="show=false" >Cancel</button>

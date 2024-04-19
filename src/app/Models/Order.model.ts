@@ -8,7 +8,8 @@ export class Order {
   public notes?: any
   public orderDate?: any
   public payment!: any
-  public currency:any
+  public vatCharge:any
+  public serviceCharge:any
   public customerID?: any
   public paymentToken?:any 
   public applicationUserID:any
@@ -18,5 +19,7 @@ export class Order {
   public tableSession:any
   public totalTax:any
   public paidAmount:any
+  public type:any
+
 
 }

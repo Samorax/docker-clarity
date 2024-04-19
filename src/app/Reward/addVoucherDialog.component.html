@@ -7,11 +7,26 @@
           <input clrInput type="text" name="voucherName" [(ngModel)]="voucher.voucherName" />
         </clr-input-container>
         <clr-input-container>
-          <label>Code #</label>
-          <input clrInput type="text" name="voucherNumber" [(ngModel)]="voucher.voucherNumber" />
+          <label>Keyword</label>
+          <input clrInput type="text" name="keyword" [(ngModel)]="voucher.keyword" />
         </clr-input-container>
+        <clr-select-container>
+          <label>Value Type</label>
+          <select clrSelect type="text" #valueType name="valueType" [(ngModel)]="voucher.valueType"  >
+            <option value="percentage">Percentage</option>
+            <option value="actualValue">ActualValue</option>
+          </select>
+        </clr-select-container>
         <clr-input-container>
+          <label>Units</label>
+          <input clrInput type="text" name="units" [(ngModel)]="voucher.units"/>
+        </clr-input-container>
+        <clr-input-container *ngIf="valueType.value === 'actualValue'">
           <label >Credit Amount {{ 0 | currency:currencySymbol}}</label>
+          <input clrInput type="text" name="voucherCreditAmount" [(ngModel)]="voucher.voucherCreditAmount" />
+        </clr-input-container>
+        <clr-input-container *ngIf="valueType.value === 'percentage'">
+          <label >Percentage</label>
           <input clrInput type="text" name="voucherCreditAmount" [(ngModel)]="voucher.voucherCreditAmount" />
         </clr-input-container>
         <clr-date-container>

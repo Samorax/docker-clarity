@@ -15,6 +15,8 @@ export class EditProductDialog {
   addNewCategory: boolean = false;
   @Input()products!:Product[];
   @ViewChild('file')fileInput: any;
+  allergens:Array<string> = ['Celery','Cereals','Crustaceans','Eggs','Fish','Lupin','Milk','Molluscs','Mustard','Nuts','Peanuts','Sesame seeds','Soya','Sulphur Dioxide'];
+  allergenSelection:Array<string>=[];
 
   
 
@@ -85,7 +87,6 @@ export class EditProductDialog {
         let current: string = x[i];
         if (current == r ) {
           a.push(current);
-          console.log("current"+a);
           break;
         }
       }
@@ -97,7 +98,7 @@ export class EditProductDialog {
   }
 
   onSubmit(f:NgForm) {
-    let prod = <Product>f.value;
+    let prod = f.value;
     
     let data = new FormData();
     data.append('id',this.product.productID);
@@ -107,17 +108,20 @@ export class EditProductDialog {
     data.append("description",prod.description);
     data.append("name",prod.name);
     data.append("price",prod.price);
+    data.append("loyaltyPoints",prod.loyaltyPoints);
     data.append("photosUrl", this.checkIfPhotoFilePresent(this.fileInput[0]));
-
-    console.log(data.get('photosUrl'));
-
+    data.append("allergens",prod.multiSelect);
+    
     this.onOk.emit(data);
   }
 
   checkIfPhotoFilePresent(x:any){
     if(x === undefined){
       let s = <String>this.product.photosUrl;
-      return s.toString().split(',',2)[1];
+       let y = s.toString().split(',',2)[1];
+       let r = y.split(' ',2)[0];
+       
+       return r;
     }
     return x;
   }

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
-import { Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, Subject, of } from "rxjs";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
 import { TableSession } from "../Models/Session";
@@ -14,6 +14,8 @@ import { OrderCartComponent } from "./OrderCart.component";
 import { OrderService } from "../Services/OrderService";
 import { CartItem } from "../Models/CartItem";
 import { OrderInSessionEditCartComponent } from "./OrderInSessionEditCart.component";
+import { OrderCartService } from "../Services/OrderCartService";
+import { CartOrder } from "../Models/CartOder";
 
 @Component({
     selector:'app-orderInSession',
@@ -29,24 +31,28 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
 
     table: any;
     @Input()tables!: Table[];
+    appId = localStorage.getItem("user_id");
 
     sessionType: any;
     tableSession!:TableSession;
 
     showDineInSessionForm:boolean = false;
     currencySymbol:any = this.paymentSvr.currencySymbol;
-    cartitems: CartItem[] = [];
-    constructor(private paymentSvr: paymentService, private orderSvr: OrderService,
-        private productService: ProductService, private sanitizer: DomSanitizer){}
+    cart:CartItem[] = [];
+    cartitems = new Subject<CartItem>();
+    cartOrders!: Observable<CartOrder[]>;
+    selectedDetails = [];
+    cartOrderToUpdate: CartOrder[] = [];
+    constructor(private paymentSvr: paymentService, private orderSvr: OrderService, private cartOrderSVR: OrderCartService,
+        private productService: ProductService, private sanitizer: DomSanitizer){
+            this.cartOrders = this.cartOrderSVR.getCartOrders();
+        }
 
     ngAfterViewInit(): void {
         this.OrderSessionCartModal.cart.subscribe(o=>{
             this.orderSessionUpdateModal.emit(o);
  
         })
-
-        console.log(this.order);
-
     }
 
     convertImgByte(x: Product):Observable<Product>{
@@ -58,9 +64,6 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
     
 
     ngOnInit(): void {
-        
-
-        this.productService.productssCache = [];
         this.productService.getProducts().subscribe(p=>{
             p.forEach(product=> {
                 this.convertImgByte(product).subscribe(p=>{
@@ -73,18 +76,18 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
 
     products:Product[] = [];
     selected:Product[] = [];
-    totalAmount:number =0;
+    totalAmount = new BehaviorSubject<number>(0);
 
     @Output() orderSessionUpdateModal: EventEmitter<Order> = new EventEmitter<Order>();
     @ViewChild(OrderInSessionEditCartComponent)OrderSessionCartModal!: OrderInSessionEditCartComponent;
 
     show:boolean = false;
 
-    getSum(p: Product[]):number{
+    getSum(p: CartItem[]):number{
         let sum = 0;
         if(p.length >=1){
             p.forEach(pr=>{
-                sum = sum+pr.price
+                sum += pr.unitPrice*pr.count;
             })
         }
         return sum;
@@ -127,37 +130,48 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
 
 
     onSelect(p:Product){
-        this.selected.push(p);
-        this.totalAmount = this.getSum(this.selected);
-        if(this.cartitems.length == 0){
-            let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
-            this.cartitems.push(c);
+        //this.selected.push(p);
+        
+        if(this.cart.length === 0){
+            let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
+            let nCartOrder: CartOrder = {name:cy.name,count:cy.count,price:cy.unitPrice,applicationUserID:this.appId,orderId:this.order.orderID,cartOrderId:this.appId,dateCreated:new Date()}
+            this.cartOrderSVR.addCartOrder(nCartOrder).subscribe(c=> {this.cartOrderToUpdate.push(c); cy.recordId= c.recordId;this.cart.push(cy);});
         }else{
-            this.cartitems.forEach((x:any) => {
-                if(x.productId === p.productID){
-                    x.count++;
-                }else{
-                    let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
-                    this.cartitems.push(c);
-                }
-            });
-        }
+            let dup = this.cart.filter(i=>i.name === p.name);
+            if(dup.length === 0){
+                let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
+                let nCartOrder: CartOrder = {name:cy.name,count:cy.count,price:cy.unitPrice,applicationUserID:this.appId,orderId:this.order.orderID,cartOrderId:this.appId,dateCreated:new Date()}
+                this.cartOrderSVR.addCartOrder(nCartOrder).subscribe(c=> {this.cartOrderToUpdate.push(c); cy.recordId= c.recordId;this.cart.push(cy);});
+            }else{
+                let index = this.cart.indexOf(dup[0]);
+                this.cart[index].count++;
+                this.cartOrders.subscribe(c=> {
+                    let nCartOrder:any = c.find(c=> c.name === this.cart[index].name);
+                    nCartOrder.count++;
+                   this.cartOrderSVR.updateCartOrder(nCartOrder).subscribe();
+                });
+            }
     }
+            this.totalAmount.next(this.getSum(this.cart));
+        }
     
     open(x:Order){
+        console.log(x);
         this.order = x;
+        this.showDineInSessionForm = x.tableSession.name.includes('Takeaway')?false:true;
+        this.cartOrders.subscribe(c=>{c.forEach(y=>{this.cart.push({name: y.name, count :y.count, unitPrice:y.price,recordId:y.recordId})});  
+        this.totalAmount.next(this.getSum(this.cart));      
+        });
         
-        this.order.orderDetails.forEach(item=> this.selected.push(item.product));
-        this.totalAmount = this.getSum(this.selected);
         this.tableSession = this.order.tableSession;
-        
+
         this.waiter = this.tableSession.waiter;
         this.table = this.tableSession.table;
         this.show = true;
 
     }
     close(){
-        this.totalAmount = 0;
+        this.cart = [];
         this.selected = [];
         this.show = false;
     }

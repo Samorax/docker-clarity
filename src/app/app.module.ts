@@ -58,6 +58,13 @@ import { addWaiterDialogComponent } from './Waiter/addWaiterDialog.component';
 import { TableSessionService } from './Services/TableSessionsService';
 import { OrderInSessionEditComponent } from './Order/OrderInSessionEdit.Component';
 import { OrderInSessionEditCartComponent } from './Order/OrderInSessionEditCart.component';
+import { editTableDialogComponent } from './Table/editTableDialog.component';
+import { delTableDialogComponent } from './Table/delTableDialog.component';
+import { delWaiterComponent } from './Waiter/delWaiterDialog.component';
+import { editWaiterComponent } from './Waiter/editWaiterDialog.component';
+import { SmsService } from './Services/SmsService';
+import { broadcastDialogComponent } from './Reward/broadcastDialog.component';
+import { OrderCartService } from './Services/OrderCartService';
 
 
 @NgModule({
@@ -99,7 +106,12 @@ import { OrderInSessionEditCartComponent } from './Order/OrderInSessionEditCart.
     waiterComponent,
     addWaiterDialogComponent,
     OrderInSessionEditComponent,
-    OrderInSessionEditCartComponent
+    OrderInSessionEditCartComponent,
+    editTableDialogComponent,
+    delTableDialogComponent,
+    delWaiterComponent,
+    editWaiterComponent,
+    broadcastDialogComponent,
   ],
   imports: [
     HttpClientModule,
@@ -129,7 +141,7 @@ import { OrderInSessionEditCartComponent } from './Order/OrderInSessionEditCart.
     ]),
   ],
   providers: [
-    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, 
+    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,
      AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })

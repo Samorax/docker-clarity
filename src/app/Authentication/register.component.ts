@@ -29,7 +29,12 @@ export class registerComponent {
       state: v.businessInformation.businessAddressCity,
       postalCode: v.businessInformation.businessAddressPostalCode,
       country: v.businessInformation.businessAddressCountry,
-      email: v.contact.email, firstName: v.contact.firstName, lastName: v.contact.lastName, password: v.loginDetails.password, accountType : v.loginDetails.accountType
+      email: v.contact.email,
+      firstName: v.contact.firstName,
+      lastName: v.contact.lastName,
+      phoneNumber:v.contact.phoneNumber,
+      password: v.loginDetails.password,
+      accountType : v.loginDetails.accountType
 
     };
     //console.log(credentials);

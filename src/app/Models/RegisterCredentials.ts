@@ -12,5 +12,6 @@ export class RegisterCredentials {
   public email!: string
   public password!: string
   public accountType!: string
+  public phoneNumber!:any
   public paymentProcessor?: paymentProcessor
 }

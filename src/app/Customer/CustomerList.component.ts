@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
 import { Customer } from "../Models/Customer";
 import { CustomerService } from "../Services/CustomerService";
 import { DeleteCustomerDialogComponent } from "./DeleteCustomerDialog.component";
+import { SignalrService } from "../Services/Signalr.Service";
 
 @Component({
     selector:'app-customers',
@@ -13,8 +14,9 @@ import { DeleteCustomerDialogComponent } from "./DeleteCustomerDialog.component"
 
 export class CustomerListComponent implements OnInit, AfterViewInit{
     elements: Customer[] = [];
+    currency: any = localStorage.getItem('currency_iso_code');
     @ViewChild(DeleteCustomerDialogComponent) deleteCustomerDialog!: DeleteCustomerDialogComponent;
-constructor(private customerService: CustomerService ){}
+constructor(private customerService: CustomerService, private signalrSVR:SignalrService ){}
 
 
 
@@ -32,7 +34,18 @@ constructor(private customerService: CustomerService ){}
                 });
             })
             this.deleteCustomerDialog.close();
-        })
+        });
+
+        //replace the old customer with updated version in the cache
+        this.signalrSVR.AllCustomerUpdateFeedObservable.subscribe(c=>{
+            let index = this.customerService.customersCache.findIndex(cust=>cust.id === c.id);
+            this.customerService.customersCache[index] = c;
+        });
+
+        //add new customer to the cache
+        this.signalrSVR.AllNewCustomerFeedObservable.subscribe(c=>{
+            this.customerService.customersCache.push(c);
+        });
     }
 
     ngOnInit(): void {

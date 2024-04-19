@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
 import { SignalrService } from "../Services/Signalr.Service";
@@ -14,6 +14,11 @@ import { TableService } from "../Services/TableService";
 import { WaiterService } from "../Services/WaiterService";
 import { OrderInSessionEditComponent } from "./OrderInSessionEdit.Component";
 import { OrderCartComponent } from "./OrderCart.component";
+import { CustomerService } from "../Services/CustomerService";
+import { Customer } from "../Models/Customer";
+import { ProductService } from "../Services/ProductService";
+import { voucherService } from "../Services/VoucherService";
+import { voucher } from "../Models/Voucher";
 
 
 
@@ -26,74 +31,75 @@ import { OrderCartComponent } from "./OrderCart.component";
 export class OrderListComponent implements OnInit, AfterViewInit{
   tables:Table[] = [];
   waiters:Waiter[] = [];
+  products:Product[] = [];
+  vouchers: voucher[] = [];
+
+  @Output()lastOrderId:EventEmitter<any> = new EventEmitter();
+  lastId:any;
 
   paymentFeedback:any
   currencySymbol: string = this.paymentService.currencySymbol;
+
+  showChargeButton:boolean = true;
   
   @ViewChild(OrderInSessionEditComponent) OrderInSessionEditModal!: OrderInSessionEditComponent;
   @ViewChild(OrderEditComponent) OrderEditModal!: OrderEditComponent;
   //@ViewChild(OrderCartComponent) OrderCartModal!: OrderCartComponent;
   @ViewChild(OrderAddComponent)OrderAddModal!:OrderAddComponent;
   @ViewChild(OrderInSessionEditComponent)orderInSession!:OrderInSessionEditComponent;
+  
 
-  constructor(private signalrService: SignalrService, private orderService: OrderService,
+  constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,
     private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService,
-    private paymentService: paymentService) {
+    private paymentService: paymentService, private productSVR: ProductService) {
 
   }
     ngAfterViewInit(): void {
       this.OrderEditModal.editdialog.subscribe(o=>{
         this.orderService.updateOrder(o.orderID,o).subscribe();
-        this.orderService.ordersCache = [];
         this.orderService.getOrders().subscribe(ord => {
-          ord.forEach(o => {
-            this.orders.push(o);
-            this.orderService.ordersCache.push(o);
-          });
+              this.orders = ord;
+          
         });
       });
 
       this.OrderAddModal.orda.subscribe(o => {
-          this.orders.push(o);
+          this.orders.unshift(o);
           this.OrderAddModal.close();
         });
 
-        this.orderInSession.OrderSessionCartModal.cart.subscribe(o=>{
-          console.log(o);
+        this.orderInSession.OrderSessionCartModal.cart.subscribe((o:any)=>{
+          
           let index = this.orders.findIndex(x=> x.orderID === o.orderID);
           this.orders[index] = o;
-
           this.orderInSession.close();
-        })
+        },(er:Error)=>console.log(er));
 
       this.signalrSVR.AllOrderUpdateFeedObservable.subscribe((o: any) => {
-        let x = this.orders.find(x => x.orderID === o.OrderID);
-        x!.orderStatus = o.OrderStatus;
-        x!.paidAmount = o.PaidAmount;
+        let ord = JSON.parse(o);
+        let x = this.orders.findIndex((x:any) => x.OrderID === ord.orderID);
+        this.orders[x].orderStatus = ord.OrderStatus;
+        
       });
-
-      
-
-
   }
 
 
 
     ngOnInit(): void {
-      let cache = this.orderService.ordersCache;
-      if(cache.length >= 1){
-        this.orders = cache;
       
-      }else{
         this.orderService.getOrders().subscribe(ord => {
-            this.orders = ord
-            this.orderService.ordersCache = ord;
+            this.orders = ord;
+            //index is 0 because the list is in ascending order.
+            //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
+            this.lastId = this.orders[0].orderID;
           ;
         });
-      }
+      
 
       this.getWaiters();
       this.getTables();
+      this.getProducts();
+      this.getVouchers();
 
 
     }
@@ -104,9 +110,17 @@ export class OrderListComponent implements OnInit, AfterViewInit{
   
     
     orders: Array<Order> =[];
-    
+    getVouchers(){
+      this.voucherSVR.getVouchers().subscribe((v:any)=> this.vouchers = v);
+    }
+
+    getProducts(){
+      this.productSVR.getProducts().subscribe(p=> this.products = p);
+    }
+
     getWaiters(){
-      this.waiterSvr.getWaiters().subscribe((ws:any)=>this.waiters = ws);
+      this.waiterSvr.getWaiters().subscribe((ws:Waiter[])=>
+        this.waiters = ws.filter(s=>s.name.includes("Takeaway")==false));
     }
 
     getTables(){
@@ -118,13 +132,16 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     }
 
     onAdd(){
+      this.OrderAddModal.lastorderId = this.lastId;
       this.OrderAddModal.open();
+      
     }
 
     //check the order channel of the order
     //open the edit dialog accordingly
     onEdit(){
       let od = <Order>this.selected[0];
+      console.log(od);
       if(od.channel !== 'On-Site'){
         this.OrderEditModal.open(od);
       }else{
@@ -133,18 +150,68 @@ export class OrderListComponent implements OnInit, AfterViewInit{
       
     }
 
-    async onCharge(x:Order){
-      let pk: PaymentObject = { Amount : x.totalAmount*100, Currency : this.currencySymbol };
-      this.paymentService.createOnlineIntent(pk).subscribe(r=>{
-        this.paymentService.processOnlinePayment(r, x.paymentToken).then((r:any)=>{
-          this.paymentFeedback = r.status;
-          x.payment = r.status;
+    //if order is approved; get the payment intent id from the server
+    //store the returned id temporarily, using the order id as a key.
+    onApprove(x:Order,y:string){
+      if(y === "Approved" && x.orderStatus !== 'Approved'){
+        let pk: PaymentObject = { Amount : x.totalAmount*100, Currency : this.currencySymbol, SetupIntentId:x.paymentToken, OrderId: x.orderID,Description:`This sale is for order with reference ${x.orderID}`};
+        this.paymentService.createDojoPaymentIntent(pk).subscribe((r:any)=>{
+          localStorage.setItem(x.orderID,r);
+          this.showChargeButton = false;
+          x.orderStatus = "Approved";
+        },(er)=>
+        {this.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
+        console.log(er)
+        },()=> {
+          let o = this.orderService.ordersCache.findIndex(o=>o.orderID === x.orderID);
+          this.orderService.ordersCache[o]=x;
           this.orderService.updateOrder(x.orderID,x).subscribe();
-
-        })
-      })
-
+        });
+      }else if(x.orderStatus === 'Approved'){
+          this.showChargeButton = false;
+      }else{
+        x.orderStatus = "Unapproved";
       }
+    }
+
+    //update customer loyalty points.
+    //if seller clicks charge button, send request to server to charge card
+    //if charge response is succeful, give feedback and clear temporary storage.
+    //otherwise, show error message and enable retry.
+    onCharge(x:Order){
+      let paymentToken:any = localStorage.getItem(x.orderID);
+       this.paymentService.chargeDojoPayment(paymentToken).subscribe((r:any)=>{
+        if(r.status === "Successful"){
+          localStorage.removeItem(x.orderID);
+          this.paymentFeedback = `Payment is ${r.status}`;
+          this.showChargeButton = true;
+          x.orderStatus = 'Completed';
+          x.payment = 'Paid';
+          }
+        },(er)=>console.log(er),()=> 
+        { 
+           this.custSVR.getCustomer(x.customerID).subscribe((c:Customer)=>{
+            let pts:number = 0;
+            x.orderDetails.forEach(o=>{
+              let product = this.products.find(p=>p.name === o.name);
+              let voucher:any = this.vouchers.find(v=>v.voucherNumber === o.name);
+              voucher.units--;
+              this.voucherSVR.updateVoucher(voucher.voucherId,voucher);
+              pts = pts + product?.loyaltyPoints;
+            });
+            c.loyaltyPoints = pts;
+            this.custSVR.updateCustomer(x.customerID,c).subscribe(); 
+      });
+          let o = this.orderService.ordersCache.findIndex(o=>o.orderID === x.orderID);
+          this.orderService.ordersCache[o]=x;
+          this.orderService.updateOrder(x.orderID,x).subscribe();
+        }) 
+      }
+
+      /* this.paymentService.processOnlinePayment(r, x.paymentToken).then((r:any)=>{
+        this.paymentFeedback = r.status;
+        x.payment = r.status;
+        this.orderService.updateOrder(x.orderID,x).subscribe(); */
 
       onDetailOpen(x: Order){
         x.opened = true;

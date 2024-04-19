@@ -1,0 +1,28 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Update {{table.name}}</h3>
+    <div class="modal-body" clrModalContent>
+      <form clrForm clrLayout="Horizontal" #tableForm="ngForm" (ngSubmit)="onSubmit(tableForm)" >
+        <clr-input-container>
+          <label>Name</label>
+          <input clrInput type="text" name="name" [(ngModel)]="table.name" />
+        </clr-input-container>
+        <clr-input-container>
+            <label>Capacity</label>
+            <input clrInput type="text" name="maxCovers" [(ngModel)]="table.maxCovers" placeholder="12" />
+          </clr-input-container>
+        <clr-select-container>
+          <label>Status</label>
+          <select clrSelect name="status" [(ngModel)]="table.status">
+            <option value="Pending Available">Pending Available</option>
+            <option value="Occupied">Occupied</option>
+            <option value="Available">Available</option>
+          </select>
+        </clr-select-container>
+
+        <div class="modal-footer" clrModalActions>
+          <button class="btn btn-outline" (click)="show=false" >Cancel</button>
+          <button class="btn btn-primary" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </clr-modal>

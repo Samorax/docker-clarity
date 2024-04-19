@@ -23,43 +23,28 @@ export class ProductOverviewComponent implements OnInit{
     productDemandChart!: EChartsOption
 
     ngOnInit(): void {
-        this.initialize().then(p=>{
-            this.products = p;
-            this.productCount = p.length;
-
-            this.getOrders().then(o=>{
-                this.orders = o;
-                this.productDemandChart = this.getProductDemandChart();
-            })
-            
-            this.getProductCategories(this.products).then(x=>{
-                this.categoriesCount = x.length;
-            });
-        })
-       
-    };
-
-    initialize():Promise<Product[]>{
-        return new Promise((resolve)=>{
-            if(this.productSvr.productssCache.length != 0){
-                resolve(this.productSvr.productssCache)
-            }else{
-                this.productSvr.getProducts().subscribe(p=>{
-                 resolve(p);   
-                })
-            };
-        }); 
-    };
-
-    getOrders():Promise<Order[]>{
-        return new Promise((resolve)=>{
-            if(this.orderSvr.ordersCache.length != 0){
-                resolve(this.orderSvr.ordersCache);
-            }else{
-                this.orderSvr.getOrders().subscribe(or=> resolve(or));
-            };
-        })
+        this.initialize();
         
+    };
+
+    initialize(){
+                this.productSvr.getProducts().subscribe(p=>{
+                    this.products = p;
+                    this.productCount = p.length;
+                    this.getProductCategories(p).then(x=>{
+                        this.categoriesCount = x.length;
+                    });
+                    this.getOrders();
+                });
+    }
+
+    getOrders(){
+                this.orderSvr.getOrders().subscribe(or=> 
+                    {
+                        this.orderSvr.ordersCache = or;
+                        this.orders = or;
+                        this.productDemandChart = this.getProductDemandChart();
+                    });
     }
 
     getProductCategories(p: Array<Product>):Promise<string[]>{
@@ -110,8 +95,8 @@ export class ProductOverviewComponent implements OnInit{
 
     getTotalNumberOfUniqueProducts(p:Product, o:Order[]){
         let uniqueProductArray: orderDetail[] = [];
-        o.forEach(or=>{
-            let x = or.orderDetails.filter(pr=> p.productID == pr.productId);
+        o.filter(o=>o.orderStatus === "Completed").forEach(or=>{
+            let x = or.orderDetails.filter(pr=> p.name === pr.name);
             x.forEach(a=> uniqueProductArray.push(a));
 
             x = [];

@@ -25,9 +25,7 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
   
   
   ngOnInit(): void {
-    this.loadInit().then((p)=>{
-      this.elements = p;
-    });
+    this.loadInit();
 
   }
 
@@ -60,18 +58,18 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
         
         this.productService.updateProduct(prod.get("id"), prod)
           .subscribe(
-            ()=>
+            (r)=>
           { 
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
-            this.feedBackMessage = prod.get('name')+' was successfully deleted from the collection.';
+            this.feedBackMessage = `${prod.get('name')} was successfully updated.`;
           },
           (err:Error)=>
           {
             this.ifError = true;
             this.ifError = true;
             this.feedBackStatus = 'warning';
-            this.feedBackMessage = prod.get('name')+' was not edited from the collection. Reason: '+err.message;
+            this.feedBackMessage =`${prod.get('name')} was not edited. Reason: ${err.message}`;
 
           },()=>this.editModal.close());
           });
@@ -119,29 +117,19 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
           this.editModal.open(this.selected[0]);
         }
 
-  onDelete() {
-    this.delModal.open(this.selected);
-  }
+    onDelete() {
+      this.delModal.open(this.selected);
+    }
 
-  loadInit():Promise<Product[]>{
-    return new Promise((resolve)=>{
-      let cache = this.productService.productssCache;
-    if(cache.length != 0){
-      resolve(cache);
-    }else{
+  loadInit(){
       this.productService.getProducts().subscribe(p=>{
-        this.productService.productssCache = [];
         p.forEach(pr=>{
           this.convertImgByte(pr).subscribe(p=>{
-            this.productService.productssCache.push(p);
-          })
-        })
-       resolve(this.productService.productssCache);
-      })
-    }
-    });
-    
-  }
+            this.elements.push(p);
+          });
+        });
+      });
+    };
 
  
 }

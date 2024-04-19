@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { voucher } from "../Models/Voucher";
+import { voucher, voucherValueType } from "../Models/Voucher";
 
 @Component({
     templateUrl:'./addVoucherDialog.component.html',
@@ -13,6 +13,8 @@ export class addVoucherDialogComponent{
     show:boolean = false;
     voucher:voucher = new voucher();
     currencySymbol:any  = localStorage.getItem('currency_iso_code');
+    appUserId:any = localStorage.getItem("user_id");
+    
     
 
 
@@ -29,6 +31,7 @@ export class addVoucherDialogComponent{
         vc.voucherCreationDate = new Date();
         vc.voucherStatus = true;
         vc.voucherExpirationDate = new Date(vc.voucherExpirationDate);
+        vc.applicationUserID = this.appUserId;
         this.isOk.emit(vc);
     }
 }

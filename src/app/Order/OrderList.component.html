@@ -27,7 +27,7 @@
     <clr-dg-row *clrDgItems="let element of orders" [clrDgItem]="element" [class.highlight]="element.opened">
       <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
       <clr-dg-cell>{{element.totalAmount | currency: currencySymbol}}</clr-dg-cell>
-      <clr-dg-cell> {{element.channel}}</clr-dg-cell>
+      <clr-dg-cell>{{element.channel}}</clr-dg-cell>
       <clr-dg-cell>{{element.orderDate | date:'medium'}}</clr-dg-cell>
       <clr-dg-cell>{{element.orderStatus}}</clr-dg-cell>
     </clr-dg-row>
@@ -40,18 +40,26 @@
         <div>Channel:{{element.channel}}</div>
         <div>Status:{{element.orderStatus}}</div>
         <div>Notes:{{element.notes}}</div>
+        <div *ngIf="element.type === 'Dine-In'">
+          <div>Waiter:{{element.tableSession.waiter.name}}</div>
+          <div>Table:{{element.tableSession.table.name}}</div>
+        </div>
         <table class="table">
           <thead>
             <tr>
               <th>Products</th>
               <th>Prices</th>
+              <th>Units</th>
             </tr>
           </thead>
          <tbody>
-          <tr *ngFor="let product of element.products">
-            <td>{{product.name}}</td>
-            <td>{{product.price | currency: currencySymbol}}</td>
+          <tr *ngFor="let detail of element.orderDetails">
+            <td>{{detail.name}}</td>
+            <td>{{detail.unitPrice | currency: currencySymbol}}</td>
+            <td>{{detail.quantity}}</td>
           </tr>
+          <tr><td>Service Charge</td><td>{{element.serviceCharge  | currency: currencySymbol}}</td></tr>
+          <tr><td>VAT</td><td>{{element.vatCharge | currency: currencySymbol}}</td></tr>
          </tbody>
          <tfoot>
           <tr>
@@ -65,14 +73,14 @@
           <div>
           <clr-select-container *ngIf="element.payment !== 'succeeded'">
             <label>Select Status</label>
-            <select  clrSelect name="status" #status (change)="element.status = status.value">
+            <select  clrSelect name="status" #status (change)="onApprove(element, status.value)">
               <option value="Unapproved">Unapprove</option>
               <option value="Approved">Approve</option>
             </select>
           </clr-select-container>
         </div>
        
-        <button *ngIf="element.payment !== 'succeeded'" class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
+        <button *ngIf="element.payment !== 'succeeded'" [disabled]='showChargeButton' class="btn btn-primary" (click)="onCharge(element)">Charge Payment</button>
         </div>
        
         
@@ -107,5 +115,5 @@
   </clr-datagrid>
 
   <edit-order></edit-order>
-  <add-order [waiters]="waiters" [tables]="tables"></add-order>
+  <add-order [waiters]="waiters" [tables]="tables" ></add-order>
   <app-orderInSession [waiters]="waiters" [tables]="tables"></app-orderInSession>

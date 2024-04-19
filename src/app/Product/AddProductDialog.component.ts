@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
 import { NgForm } from "@angular/forms";
+import { Allergen } from "../Models/Allergen";
 
 @Component({
     templateUrl:'./AddProductDialog.component.html',
@@ -18,6 +19,8 @@ export class AddProductDialog{
   @Output() onOk: EventEmitter<any> = new EventEmitter<any>();
   @Input()products!: Array<Product>
   @ViewChild('file')fileInput: any;
+  allergens:Array<string> = ['Celery','Cereals','Crustaceans','Eggs','Fish','Lupin','Milk','Molluscs','Mustard','Nuts','Peanuts','Sesame seeds','Soya','Sulphur Dioxide'];
+  allergenSelection:Array<string>=[];
 
   open(){
         this.show = true;
@@ -27,6 +30,8 @@ export class AddProductDialog{
   close() {
     this.show = false;
   }
+
+
 
   getProductCategories(p: Array<Product>):Promise<string[]>{
     return new Promise((resolve)=>{
@@ -100,6 +105,12 @@ handleFiles(files: FileList) {
   onSubmit(f:NgForm) {
     let prod = f.value;
     prod.applicationUserID = this.user;
+    
+    
+  /*  this.allergenSelection.forEach(a=>{
+      let x:Allergen = {name:a};
+      prod.allergens.push(x);
+    }); */
 
     let data = new FormData();
     data.append('applicationUserID',prod.applicationUserID);
@@ -109,9 +120,9 @@ handleFiles(files: FileList) {
     data.append("name",prod.Name);
     data.append("price",prod.Price);
     data.append("loyaltyPoints",prod.LoyaltyPoints);
-
     data.append("photosUrl",this.fileInput[0]);
-  
+    data.append("allergens", prod.multiSelect)
+    console.log(prod);
     this.onOk.emit(data);
   }
 }

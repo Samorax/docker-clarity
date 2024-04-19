@@ -30,12 +30,17 @@ export class OrderDetailService {
       }
 
       addOrderDetail(x:orderDetail){
-        return this._httpClient.post(this.baseUrl,x)
+        return this._httpClient.post<orderDetail>(this.baseUrl,x)
         .pipe(catchError(this.handleError));
       }
 
       updateOrderDetail(x:orderDetail, id:any){
         return this._httpClient.put(this.baseUrl+id,x)
+        .pipe(catchError(this.handleError));
+      }
+
+      removeOrderDetail(id:any){
+        return this._httpClient.delete(this.baseUrl+id)
         .pipe(catchError(this.handleError));
       }
 

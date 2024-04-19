@@ -1,13 +1,13 @@
+import { Product } from "./Product";
 
 
 export class orderDetail
 {
         orderDetailId?: any;
-        productId: any;
         orderId: any;
+        name:any
         unitPrice: any;
         quantity: any
-        product?: any;
         order?: any;
         applicationUserID: any;
 

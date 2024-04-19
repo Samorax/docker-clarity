@@ -3,13 +3,14 @@ import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
 import { Observable, Subscription, fromEvent, map, merge, of } from 'rxjs';
-import { paymentService } from './Services/PaymentService';
 import { OrderService } from './Services/OrderService';
-import { ProductService } from './Services/ProductService';
-import { CustomerService } from './Services/CustomerService';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { appUserService } from './Services/AppUserService';
 import { Router } from '@angular/router';
+import { Notifications, notificationType } from './Models/Notification';
+import { Order } from './Models/Order.model';
+import { CustomerDto } from './Models/CustomerDto';
+import { Customer } from './Models/Customer';
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -26,10 +27,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   networkStatus$: Subscription = Subscription.EMPTY;
 
   loginStatus!:string;
-
+  notifications:Notifications[] = [];
   isAuthenticated?: Observable<boolean>
   allFeedSubscription: any;
-  order: any;
+  order!: Order;
   show: any = false;
   Orderstatus:string = '';
   paymentProvider: any;
@@ -47,18 +48,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
-    this.signalrService.AllOrderFeedObservable.subscribe(ord => {
-      console.log(ord);
-        this.ordersrv.ordersCache.push(ord);
-        this.Orderstatus = 'info';
+    this.signalrService.AllOrderFeedObservable.subscribe((ord:any) => {
+        this.order = ord;
+        this.ordersrv.ordersCache.unshift(this.order);
+        let n:Notifications = {type: notificationType.order, texts: `You have a new order ref:${this.order.orderID} from ${this.order.channel}` }
+        this.notifications.unshift(n);
+        this.navcomponent.show = true;
+        
     });
-    this.signalrService.AllBirthdayFeedObservable.subscribe(b=>{
-      console.log(b);
+
+    this.signalrService.AllBirthdayFeedObservable.subscribe((c:CustomerDto)=>{
+      let n:Notifications = {type: notificationType.birthday, texts: `Customer ref:${c.id} birthday is next week.` };
+      this.notifications.unshift(n);
+      this.navcomponent.show = true;
+    });
+
+    this.signalrService.AllNewCustomerFeedObservable.subscribe((c:Customer)=>{
+      let n:Notifications = {type: notificationType.customer, texts: `A new customer just registered ${c.id}.` };
+      this.notifications.unshift(n);
+      this.navcomponent.show = true;
     })
 
-    this.signalrService.AllOrderUpdateFeedObservable.subscribe(oU=>{
-      console.log(oU);
-    })
 
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 

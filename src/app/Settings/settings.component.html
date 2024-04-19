@@ -12,42 +12,48 @@
               </select>
           </clr-select-container>
           <div *ngIf="showStripeForms">
+            <clr-password-container>
+                <label>Publishable Key</label>
+                <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+              </clr-password-container>
               <clr-password-container>
-                  <label>Publishable Key</label>
-                  <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="paymentProvider.apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
-                </clr-password-container>
-                <clr-password-container>
-                  <label>Secret Key</label>
-                  <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
-                </clr-password-container>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <label>Secret Key</label>
+                <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+              </clr-password-container>
           </div>
           <div *ngIf="showDojoForms">
-            <clr-password-container>
-                <label>Api Key</label>
-                <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
-              </clr-password-container>
-              <clr-password-container>
-                <label>Account Id</label>
-                <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="paymentProvider.accountId" [(ngModel)]="paymentProvider.accountId"/>
-              </clr-password-container>
-              <clr-password-container>
-                <label>Software House Id</label>
-                <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="paymentProvider.softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
-              </clr-password-container>
-              <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-        <div *ngIf="showAdyenForms">
           <clr-password-container>
-              <label>Publishable Key</label>
-              <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="paymentProvider.apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+              <label>Api Key</label>
+              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
             </clr-password-container>
             <clr-password-container>
-              <label>Secret Key</label>
-              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="paymentProvider.apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+              <label>Account Id</label>
+              <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="accountId" [(ngModel)]="paymentProvider.accountId"/>
             </clr-password-container>
-            <button type="submit" class="btn btn-primary">Save</button>
-      </div>
+            <clr-password-container>
+              <label>Software House Id</label>
+              <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
+            </clr-password-container>
+          </div>
+          <div *ngIf="showAdyenForms">
+        <clr-password-container>
+            <label>Publishable Key</label>
+            <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+          </clr-password-container>
+          <clr-password-container>
+            <label>Secret Key</label>
+            <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+          </clr-password-container>
+          </div>
+          <clr-input-container>
+            <label>VAT Rate (%):</label>
+            <input clrInput placeholder="20" name="vatCharge" [(ngModel)]="appUser.vatCharge"/>
+          </clr-input-container>
+          <clr-input-container>
+            <label>Service Charge (%):</label>
+            <input clrInput placeholder="20" name="serviceCharge" [(ngModel)]="appUser.serviceCharge"/>
+          </clr-input-container>
+          <button type="submit" class="btn btn-primary">Save</button>
       </form>
       <div *ngIf="showSpinner">
           <clr-spinner clrInline>Processing</clr-spinner>

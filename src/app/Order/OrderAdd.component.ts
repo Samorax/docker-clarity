@@ -4,7 +4,7 @@ import { Product } from "../Models/Product";
 import { OrderService } from "../Services/OrderService";
 import { ProductService } from "../Services/ProductService";
 import { OrderCartComponent } from "./OrderCart.component";
-import { Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
 import { paymentService } from "../Services/PaymentService";
 import { NgForm } from "@angular/forms";
@@ -15,6 +15,7 @@ import { Table } from "../Models/Table";
 import { TableService } from "../Services/TableService";
 import { WaiterService } from "../Services/WaiterService";
 import { CartItem } from "../Models/CartItem";
+import { CartOrder } from "../Models/CartOder";
 
 @Component({
     selector:'add-order',
@@ -26,6 +27,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     userId = localStorage.getItem("user_id");
     waiter:Waiter = new Waiter();
     @Input()waiters!:Waiter[];
+
+    lastorderId:any
 
     table: Table = new Table();
     @Input()tables!:Table[];
@@ -71,18 +74,18 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     cartitems: CartItem[] = [];
     
     selected:Product[] = [];
-    totalAmount:number =0;
+    totalAmount = new BehaviorSubject<number>(0);
 
     @Output() orderAddModal: EventEmitter<Order> = new EventEmitter<Order>();
     @ViewChild(OrderCartComponent)OrderCartModal!: OrderCartComponent;
 
     show:boolean = false;
 
-    getSum(p: Product[]):number{
+    getSum(p: CartItem[]):number{
         let sum = 0;
         if(p.length >=1){
             p.forEach(pr=>{
-                sum = sum+pr.price
+                sum += pr.unitPrice*pr.count
             })
         }
         return sum;
@@ -130,27 +133,28 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
 
 
     onSelect(p:Product){
-        this.selected.push(p);
-        this.totalAmount = this.getSum(this.selected);
-        if(this.cartitems.length == 0){
-            let c:CartItem= {productId: p.productID, count : 1, unitPrice:p.price};
-            this.cartitems.push(c);
+        //this.selected.push(p);
+        if(this.cartitems.length === 0){
+            let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
+            this.cartitems.push(cy);
         }else{
-            this.cartitems.forEach(x => {
-                if(x.productId == p.productID){
-                    x.count++;
-                }else{
-                    this.cartitems.push(x);
-                }
-            });
-        }
+            let dup = this.cartitems.filter(i=>i.name === p.name);
+            if(dup.length === 0){
+                let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
+                this.cartitems.push(cy);
+            }else{
+                let index = this.cartitems.indexOf(dup[0]);
+                this.cartitems[index].count++;
     }
+            
+    }
+    this.totalAmount.next(this.getSum(this.cartitems));
+}
     
     open(){
         this.show = true;
     }
     close(){
-        this.totalAmount = 0;
         this.selected = [];
         this.show = false;
     }

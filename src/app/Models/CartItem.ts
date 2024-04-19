@@ -1,5 +1,6 @@
 export class CartItem{
-    productId:any
+    name:any
     count!:number
     unitPrice:any
+    recordId?:any
 }

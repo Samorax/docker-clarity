@@ -17,6 +17,7 @@ export class paymentService{
   apiKey:any = localStorage.getItem('apikey1');
     terminal!: Terminal;
     baseUrl = "http://localhost:5241/api/payment";
+    dojoBaseUrl = "http://localhost:5241/api/dojo";
 
     httpOptions = {
       headers: new HttpHeaders({
@@ -127,6 +128,16 @@ export class paymentService{
         resolve(connectionStatus);
       })})
     };
+
+    createDojoPaymentIntent(x: PaymentObject){
+      return this._httpclient.post(this.dojoBaseUrl+ `/paymentintent`,x)
+      .pipe(catchError(this.handleError));
+    }
+
+    chargeDojoPayment(paymentIntentToken:string){
+      return this._httpclient.get(this.dojoBaseUrl+`/charge/${paymentIntentToken}`)
+      .pipe(catchError(this.handleError));
+    }
 
     //online payment service
     createOnlineIntent(y:any){

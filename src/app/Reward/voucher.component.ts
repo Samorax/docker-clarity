@@ -5,6 +5,8 @@ import { addVoucherDialogComponent } from "./addVoucherDialog.component";
 import { editLoyaltyDialogComponent } from "./editLoyaltyDialog.component";
 import { deleteVoucherDialogComponent } from "./deleteVoucherDialog.component";
 import { editVoucherDialogComponent } from "./editVoucherDialog.component";
+import { broadcastDialogComponent } from "./broadcastDialog.component";
+import { SmsService } from "../Services/SmsService";
 
 @Component({
     templateUrl:'./voucher.component.html',
@@ -21,10 +23,17 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(addVoucherDialogComponent)addVDC!: addVoucherDialogComponent;
     @ViewChild(editVoucherDialogComponent)editVDC!: editVoucherDialogComponent;
     @ViewChild(deleteVoucherDialogComponent)delVDC!: deleteVoucherDialogComponent;
+    @ViewChild(broadcastDialogComponent)bDC!:broadcastDialogComponent;
 
-    constructor(private _voucherSvr: voucherService){}
+    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService){}
 
     ngAfterViewInit(): void {
+        this.bDC.isOk.subscribe(m=>{
+            this.smsSVR.sendMessage(m).subscribe(r=>{
+                console.log(r);
+            })
+        });
+
         this.addVDC.isOk.subscribe(v=>{
             this._voucherSvr.addVoucher(v).subscribe((v:any)=>{
                 this._voucherSvr.getVoucherCache.push(v);
@@ -79,6 +88,10 @@ export class voucherComponent implements OnInit, AfterViewInit{
 
     onDelete(){
         this.delVDC.open();
+    }
+
+    onBroadcast(){
+        this.bDC.open(this.selected[0]);
     }
 
 }

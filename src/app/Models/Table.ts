@@ -4,6 +4,7 @@ export class Table
     name!:string  
     maxCovers:any
     status!:string
+    type!:string
     applicationUserID?:any
 
 }

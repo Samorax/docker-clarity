@@ -1,3 +1,5 @@
+import { Allergen } from "./Allergen"
+
 export class Product {
   public productID:any
   public name: any
@@ -8,4 +10,5 @@ export class Product {
   public applicationUserID: any
   public photosUrl:any
   public loyaltyPoints:any
+  public allergens!:string
 }

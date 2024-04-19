@@ -8,6 +8,8 @@ import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
 import { editLoyaltyDialogComponent } from "./editLoyaltyDialog.component";
 import { deleteLoyaltyDialogComponent } from "./deleteLoyaltyDialog.component";
+import { Observable, of } from "rxjs";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
     templateUrl:'./loyalty.component.html',
@@ -29,17 +31,22 @@ export class loyaltyComponent implements OnInit, AfterViewInit
     currencySymbol: any;
     
 
-    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService, private _rewardsSvr:RewardService){}
+    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,
+         private _rewardsSvr:RewardService){}
 
     ngAfterViewInit(): void {
         this.addLoyalty.isOk.subscribe(r=>{
             this._rewardsSvr.addRewards(r).subscribe((r:any)=>{
-                this._rewardsSvr.rewardsCache.push(r);
+                this.convertImgByte(r).subscribe(r=>{
+                    this._rewardsSvr.rewardsCache.push(r);
+                })
             },(err)=>{},()=> this.addLoyalty.close());
         });
 
-        this.editLoyalty.isOk.subscribe(r=>{
-            this._rewardsSvr.updateRewards(r.rewardsId,r).subscribe(()=>{
+        this.editLoyalty.isOk.subscribe((r:FormData)=>{
+            let id = r.get('rewardsId');
+            console.log(id);
+            this._rewardsSvr.updateRewards(id,r).subscribe(()=>{
 
             },(er)=>console.log(er),()=>this.editLoyalty.close())
         });
@@ -78,8 +85,13 @@ export class loyaltyComponent implements OnInit, AfterViewInit
             this.rewards = cache;
         }else{
             this._rewardsSvr.getRewards().subscribe(r=>{
-                this.rewards = r;
-                this._rewardsSvr.rewardsCache = r;
+                r.forEach(rt=>{
+                    this.convertImgByte(rt).subscribe(rx=>{
+                        this.rewards = [];
+                        this.rewards.push(rx);
+                        this._rewardsSvr.rewardsCache.push(rx);
+                    })
+                })
             })
         }
     }
@@ -112,6 +124,14 @@ export class loyaltyComponent implements OnInit, AfterViewInit
         this.reward = this.selected[0];
         this.editLoyalty.open();
     }
+
+    
+
+    convertImgByte(x: Rewards):Observable<Rewards>{
+        let objectURL = 'data:image/jpeg;base64,' + x.rewardImage;
+        x.rewardImage = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+        return of(x);
+    };
 
     
 }

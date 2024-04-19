@@ -1,5 +1,5 @@
-<div class="clr-row">
-    <clr-datagrid [(clrDgSelected)]="selected" class="clr-col-4">
+
+    <clr-datagrid [(clrDgSelected)]="selected">
         <clr-dg-action-bar>
             <div class="btn-group">
               <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
@@ -13,32 +13,37 @@
               <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
                 <cds-icon shape="pencil"></cds-icon>
                 Edit
-         </button>
+              </button>
+              
             </div>
         </clr-dg-action-bar>
         
+        <clr-dg-column>Title</clr-dg-column>
         <clr-dg-column>Redeem Points</clr-dg-column>
-        <clr-dg-column>Rewards</clr-dg-column>
+        <clr-dg-column>Created Date</clr-dg-column>
+        <clr-dg-column>Expiry Date</clr-dg-column>
+        <clr-dg-column>Units</clr-dg-column>
        
         <clr-dg-placeholder>We couldn't find any Rewards. Add Rewards</clr-dg-placeholder>
         <clr-dg-row *clrDgItems="let element of rewards" [clrDgItem]="element">
+          <clr-dg-cell>{{element.title}}</clr-dg-cell>
           <clr-dg-cell>{{element.redeemPoint}}</clr-dg-cell>
-          <clr-dg-cell>{{element.reward}}</clr-dg-cell>
+          <clr-dg-cell>{{element.createdDate| date}}</clr-dg-cell>
+          <clr-dg-cell>{{element.expiryDate | date}}</clr-dg-cell>
+          <clr-dg-cell>{{element.units}}</clr-dg-cell>
+          <clr-dg-row-detail *clrIfExpanded>
+            <div class="clr-row">
+              <div class="clr-col">{{element.description}}</div>
+              <div class="clr-col">
+                <img [src]="element.rewardImage" alt="reward_image" height="200px" width="200px"/>
+              </div>
+            </div>
+          </clr-dg-row-detail>
         </clr-dg-row>
     </clr-datagrid>
-    <clr-datagrid class="clr-col">
-        <clr-dg-column>Product Name</clr-dg-column>
-        <clr-dg-column>Loyalty Points</clr-dg-column>
-       
-        <clr-dg-placeholder>We couldn't find any Products with Points. Add Loyalty Points to Products</clr-dg-placeholder>
-        <clr-dg-row *clrDgItems="let element of products" [clrDgItem]="element">
-          <clr-dg-cell>{{element.name}}</clr-dg-cell>
-          <clr-dg-cell>{{element.loyaltyPoints}}</clr-dg-cell>
-        </clr-dg-row>
-    </clr-datagrid>
-
-</div>
+    
 
 <app-rewardsDialog [vouchers]="vouchers"></app-rewardsDialog>
 <edit-loyalty [reward]="reward" [vouchers]="vouchers" ></edit-loyalty>
 <del-loyalty [rewards]="selected"></del-loyalty>
+

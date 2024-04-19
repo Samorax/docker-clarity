@@ -23,7 +23,6 @@
                   <option *ngFor="let w of waiters"  value="{{w.name}}">{{w.name}}</option>
                 </select>
               </clr-select-container>
-              <button class="btn btn-outline">Lock Session</button>
             </div>
             
           </form>
@@ -50,7 +49,7 @@
                       </li> -->
                 </div>
               <div class="clr-col-4">
-                <order-EditCart [Products]="selected" [TotalAmount]="totalAmount" [order]="order" [tableSession]="tableSession" [CartItems]="cartitems"></order-EditCart>
+                <order-EditCart [Products]="selected" [SubTotal]="totalAmount" [order]="order" [tableSession]="tableSession"  [orders]="cart"></order-EditCart>
             </div>
             </div>
            

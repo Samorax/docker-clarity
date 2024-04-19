@@ -1,0 +1,32 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Notify Customers about Voucher</h3>
+    <div class="modal-body" clrModalContent>
+    <form clrForm clrLayout="Horizontal"  (ngSubmit)="onSubmit(broadcastForm);" #broadcastForm="ngForm">
+    <clr-combobox-container>
+        <label>Favorite States</label>
+        <clr-combobox [(ngModel)]="selected" name="names"  clrMulti="true" required>
+          <ng-container *clrOptionSelected="let selected">
+            {{ selected }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let receiver of recepients; field: 'name'" [clrValue]="receiver.firstName+' '+ receiver.lastName" >
+              {{receiver.firstName}} {{receiver.lastName}}
+            </clr-option>
+          </clr-options>
+        </clr-combobox>
+        <clr-control-helper>Helper text</clr-control-helper>
+        <clr-control-error>There was an error</clr-control-error>
+      </clr-combobox-container>
+      
+      <clr-textarea-container>
+        <label class="clr-required-mark">Message</label>
+        <textarea clrTextarea name="Description" [(ngModel)]="message.Message" required></textarea>
+      </clr-textarea-container>
+
+      <div class="modal-footer" clrModalActions>
+      <button class="btn btn-outline" (click)="show=false" >Cancel</button>
+      <button class="btn btn-primary" type="submit">Send</button>
+    </div>
+</form>
+</div>
+</clr-modal>

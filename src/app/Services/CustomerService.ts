@@ -8,6 +8,7 @@ import { Customer } from "../Models/Customer";
 })
 
 export class CustomerService{
+    
     customersCache: Customer[] = [];
     constructor(private _httpClient: HttpClient) { }
     baseUrl: string = "http://localhost:5241/api/customers/"
@@ -28,7 +29,16 @@ export class CustomerService{
       }
       return throwError(() => new Error('Something bad happened; please try again later.'));
     }
-  
+
+    updateCustomer(customerID: any, c: Customer) {
+      return this._httpClient.put(this.baseUrl+customerID,c)
+        .pipe(retry(3),catchError(this.handleError));
+    }
+
+    getCustomer(customerID: any) {
+      return this._httpClient.get<Customer>(this.baseUrl+customerID)
+      .pipe(retry(3),catchError(this.handleError));
+    }
   
     getCustomers(){
       return this._httpClient.get<Customer[]>(this.baseUrl).

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
 import { paymentService } from "../Services/PaymentService";
@@ -14,20 +14,37 @@ import { OrderService } from "../Services/OrderService";
 import { TableService } from "../Services/TableService";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
+import { BehaviorSubject, Observable, map, of } from "rxjs";
+import { OrderCartService } from "../Services/OrderCartService";
 
 @Component({
     selector:'order-EditCart',
     templateUrl:'./OrderInSessionEditCart.component.html'
 })
 
-export class OrderInSessionEditCartComponent implements OnInit {
-    constructor(private PaymentSvr: paymentService, private tableSessionSvr: TableSessionService,
-        private orderSvr:OrderService, private  oddSVr: OrderDetailService,
+export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
+    constructor(
+        private orderSvr:OrderService, private  oddSVr: OrderDetailService, private cartOrderSVR: OrderCartService,
          private _voucherSvr:voucherService){}
+
+    ngAfterViewInit(): void {
+        this.SubTotal.subscribe(s=>{
+            let vat:any = localStorage.getItem('vatCharge');
+            let sCharge:any = localStorage.getItem('serviceCharge');
+            this.VatCharge = (vat/100)*s;
+            this.ServiceCharge = (sCharge/100)*s;
+            this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
+       });
+
+        /* this.CartItems.subscribe(c=>{
+        this.orders.push(c);
+    });  */
+    }
 
     ngOnInit(): void {
         this.getVouchers();
     }
+
 
     appId = localStorage.getItem("user_id");
     @Output()cart: EventEmitter<Order> = new EventEmitter<Order>();
@@ -35,8 +52,8 @@ export class OrderInSessionEditCartComponent implements OnInit {
     newOder!:Order;
     @Input()order!:Order;
     @Input()Products!: Product[];
-    @Input()TotalAmount: number = 0;
-    @Input()CartItems!:CartItem[];
+    @Input()SubTotal!:BehaviorSubject<number>;
+    @Input()CartItems!:Observable<CartItem>;
     @Input()sessionType:any;
     feedBack!:string;
     spinnerStatus:boolean = false;
@@ -46,6 +63,11 @@ export class OrderInSessionEditCartComponent implements OnInit {
     payButtonStatus:boolean = false;
     paymentMethod!:string;
     @Input()tableSession!:TableSession;
+    VatCharge:any;
+    ServiceCharge:any;
+    TotalAmount:any
+    @Input()orders!:CartItem[];
+    prevCartOrder:CartItem[] = [];
 
     getVouchers(){
         let cache = this._voucherSvr.getVoucherCache;
@@ -67,17 +89,20 @@ export class OrderInSessionEditCartComponent implements OnInit {
     }
 
     onApply(){
-        this.TotalAmount = this.TotalAmount - this.voucherToApply.voucherCreditAmount; 
-        if(this.TotalAmount <= 0){
+        this.SubTotal.pipe(map(s=>{
+            this.SubTotal.next(s - this.voucherToApply.voucherCreditAmount); 
+            if(s <= 0){
             this.payButtonStatus = true;
             this.spinnerStatus = true;
             this.feedBack = 'Payment Succeeded!!'
         }
+        }))
     }
     
-    onCancel(p:Product){
-        this.Products.splice(this.Products.indexOf(p),1);
-        this.TotalAmount = this.getSum(this.Products);
+    onCancel(p:CartItem){
+        this.orders.splice(this.orders.indexOf(p),1);
+        this.cartOrderSVR.deleteCartOrder(p.recordId).subscribe();
+        this.SubTotal.next(this.getSum(this.orders));
     }
 
     //update session isPayable to true, if items are in cart.
@@ -85,20 +110,47 @@ export class OrderInSessionEditCartComponent implements OnInit {
     //update order.
     //table status to occupied.
     onLockSession(){
-      this.tableSession.isPayable = this.CartItems.length >=1;
+      this.tableSession.isPayable = this.orders.length >=1;
       this.order.tableSession = this.tableSession;
-      this.order.totalAmount = this.TotalAmount*100;
-      if(this.CartItems.length >=1){
-        this.CartItems.forEach((x:CartItem )=> {
-            let o:orderDetail = {productId:x.productId, quantity:x.count,unitPrice:x.unitPrice,applicationUserID:this.appId, orderId:this.order.orderID};
-            this.oddSVr.addOrderDetail(o).subscribe();
-    })};
-    //console.log(this.order);
-    this.orderSvr.updateOrder(this.order.orderID,this.order).subscribe((o:any)=>{
-        this.cart.emit(o);
-    });
+      this.order.totalAmount = this.TotalAmount;
+    
+      //for the past session - remove all the details of the order
+      this.order.orderDetails.forEach(o=>{
+        this.oddSVr.removeOrderDetail(o.orderDetailId).subscribe();
+      });
+      
+
+      //for the current session - add the details of the order
+     this.createNewOrder(this.order,this.orders).subscribe(o=>{
+        o.serviceCharge = this.ServiceCharge; o.vatCharge = this.VatCharge;
+        this.orderSvr.updateOrder(o.orderID,o).subscribe((o:any)=>{
+            console.log(o);
+            this.cart.emit(o);
+        });
+     })
+    
         
     }
+
+    createNewOrder(x:Order,y:CartItem[])
+      {
+        return new Observable<Order>((observer)=>{
+            let details: orderDetail[] = [];
+            
+            y.forEach(o=>{
+              let detail:orderDetail = {orderId:this.order.orderID,name:o.name,unitPrice:o.unitPrice,quantity:o.count,applicationUserID:this.appId};
+              details.push(detail);
+            });
+
+            x.orderDetails = details;
+            details.forEach(o=>this.oddSVr.addOrderDetail(o).subscribe(o=>{
+                x.orderDetails.push(o);
+              }));
+
+            observer.next(x);
+            
+        });
+      }
 
     onCharge(){
         //if(this.paymentMethod === 'Card'){
@@ -135,17 +187,17 @@ export class OrderInSessionEditCartComponent implements OnInit {
     }
     
 
-    getSum(p: Product[]):number{
+    getSum(p: CartItem[]):number{
         let sum = 0;
         if(p.length >=1){
             p.forEach(pr=>{
-                sum = sum+pr.price
+                sum += pr.unitPrice
             })
         }
         return sum;
     }
 
-    createCartProducts(y:Product[]):Promise<CartOrder[]>{
+    /* createCartProducts(y:Product[]):Promise<CartOrder[]>{
         return new Promise((resolve)=>{
             let cartProducts: CartOrder[] = [];
             if(y.length !== 0){
@@ -157,7 +209,7 @@ export class OrderInSessionEditCartComponent implements OnInit {
             resolve(cartProducts);
         });
         
-    }
+    } */
 
 
 

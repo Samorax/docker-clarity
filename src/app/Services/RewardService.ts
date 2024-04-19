@@ -38,12 +38,12 @@ export class RewardService
         .pipe(catchError(this.handleError));
     }
 
-    addRewards(r:Rewards){
+    addRewards(r:any){
         return this._httpclient.post(this.baseUrl,r)
         .pipe(catchError(this.handleError));
     }
 
-    updateRewards(id:any,r:Rewards)
+    updateRewards(id:any,r:any)
     {
         return this._httpclient.put(this.baseUrl+id,r)
         .pipe(catchError(this.handleError));

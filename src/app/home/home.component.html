@@ -1,5 +1,49 @@
 <div class="content-container">
-    <app-sidebar></app-sidebar>
+    
+<clr-vertical-nav [clrVerticalNavCollapsible]="demoCollapsible" class="sidenav">
+    <clr-vertical-nav-group routerLinkActive="active">
+      <cds-icon shape="bundle" clrVerticalNavIcon></cds-icon>
+      Products
+      <clr-vertical-nav-group-children>
+        <a clrVerticalNavLink [routerLink]="['./products/overview']" routerLinkActive="active">Overview</a>
+        <a clrVerticalNavLink routerLink="./products/catalog" routerLinkActive="active">List</a>
+      </clr-vertical-nav-group-children>
+    </clr-vertical-nav-group>
+    <clr-vertical-nav-group routerLinkActive="active">
+      <cds-icon shape="shopping-cart" clrVerticalNavIcon></cds-icon>
+      Orders
+      <clr-vertical-nav-group-children>
+        <a clrVerticalNavLink routerLink="./orders/overview" routerLinkActive="active">Overview</a>
+        <a clrVerticalNavLink routerLink="./orders/list" routerLinkActive="active">List</a>
+        <a clrVerticalNavLink routerLink="./tables/list" routerLinkActive="active">Tables</a>
+        <a clrVerticalNavLink routerLink="./waiters/list" routerLinkActive="active">Waiters</a>
+      </clr-vertical-nav-group-children>
+    </clr-vertical-nav-group>
+    <clr-vertical-nav-group routerLinkActive="active">
+      <cds-icon shape="users" clrVerticalNavIcon></cds-icon>
+      Customers
+      <clr-vertical-nav-group-children>
+        <a clrVerticalNavLink routerLink="./customers/overview" routerLinkActive="active">Overview</a>
+        <a clrVerticalNavLink routerLink="./customers/list" routerLinkActive="active">List</a>
+      </clr-vertical-nav-group-children>
+    </clr-vertical-nav-group> 
+    <clr-vertical-nav-group routerLinkActive="active">
+      <cds-icon shape="users" clrVerticalNavIcon></cds-icon>
+      Rewards
+      <clr-vertical-nav-group-children>
+        <a clrVerticalNavLink routerLink="./vouchers" routerLinkActive="active">Vouchers</a>
+        <a clrVerticalNavLink routerLink="./loyaltyPoints" routerLinkActive="active">Rewards</a>
+      </clr-vertical-nav-group-children>
+    </clr-vertical-nav-group> 
+    <a clrVerticalNavLink routerLink="./settings" class="Settings">
+      <cds-icon shape="cog" clrVerticalNavIcon></cds-icon>
+      Settings
+    </a>
+  </clr-vertical-nav>
+  
+  
+    
+    
     <div class="content-area" >
         <router-outlet></router-outlet>
     </div>

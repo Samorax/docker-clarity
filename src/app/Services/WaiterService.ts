@@ -29,17 +29,22 @@ export class WaiterService{
       }
 
     getWaiters(){
-        return this._httpClient.get(this.baseUrl).
+        return this._httpClient.get<Waiter[]>(this.baseUrl).
         pipe(catchError(this.handleError))
     }
 
     addWaiter(waiter: Waiter){
-        return this._httpClient.post(this.baseUrl,waiter)
+        return this._httpClient.post<Waiter>(this.baseUrl,waiter)
         .pipe(catchError(this.handleError))
     }
 
     updateWaiter(waiter:Waiter, id:any){
         return this._httpClient.put(this.baseUrl+id,waiter)
         .pipe(catchError(this.handleError))
+    }
+
+    deleteWaiter(waiter:Waiter){
+      return this._httpClient.delete(this.baseUrl+waiter.id)
+      .pipe(catchError(this.handleError))
     }
 }

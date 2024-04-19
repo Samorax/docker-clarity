@@ -41,7 +41,6 @@ export class OrderOverviewComponent implements OnInit{
                 this._orderService.getOrders()
                 .subscribe(o=>{
                     cache = o;
-                    this._orderService.ordersCache = o;
                     resolve(cache);
                 });
             }
@@ -50,7 +49,7 @@ export class OrderOverviewComponent implements OnInit{
 
     getRevenue(o: Order[]):Observable<number>{
         let revenue = 0;
-        o.forEach(o=> revenue += o.totalAmount);
+        o.filter(o=>o.orderStatus === 'Completed').forEach(o=> revenue += o.totalAmount);
         return of(revenue);
     };
 
@@ -71,7 +70,7 @@ export class OrderOverviewComponent implements OnInit{
         let monthlySales: stringDictionay = {"Jan":0, "Feb":0, 'Mar':0, 'Apr':0,"May":0, "Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0};
         let jan = 0; let feb =0; let mar =0; let apr = 0; let may =0; let jun = 0; let jul =0; let aug =0;
         let sep = 0; let oct = 0; let nov =0 ; let dec =0 ;
-        o.forEach(o=>{
+        o.filter(o=>o.orderStatus === "Completed").forEach(o=>{
             let oDate = moment(o.orderDate).toDate();
             let m = oDate.getUTCMonth();
             let oy = oDate.getUTCFullYear();
@@ -162,7 +161,7 @@ export class OrderOverviewComponent implements OnInit{
         let segement: stringDictionay = {"Unregistered":0,"Registered":0};
         let anonymous = 0; let registered = 0;
         if(o.length >= 1){
-            o.forEach(o=>{
+            o.filter(o=>o.orderStatus === "Completed").forEach(o=>{
                 if(o.customerID == 0){
                     anonymous += o.totalAmount;
                 }else{
@@ -189,12 +188,12 @@ export class OrderOverviewComponent implements OnInit{
         let inPersonRevenue:number = 0;
         let onlineMobileAppRevenue:number = 0;
         let onlineWebsiteRevenue:number = 0;
-        o.forEach(or=>{
+        o.filter(o=>o.orderStatus === "Completed").forEach(or=>{
             switch (or.channel) {
-                case 'in-person':
+                case 'In-Person':
                     inPersonRevenue += or.totalAmount;
                     break;
-                case 'mobile app':
+                case 'Mobile App':
                     onlineMobileAppRevenue += or.totalAmount;
                     break;
                 case 'Website':

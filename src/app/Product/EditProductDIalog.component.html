@@ -34,6 +34,25 @@
         </clr-input-container>
         <button class="btn btn-primary" (click)="addCategory(kat.value)">Add</button>
       </div>
+      <clr-input-container>
+        <label>Loyalty Point (Pts)</label>
+        <input clrInput type="text" name="loyaltyPoints" [(ngModel)]="product.loyaltyPoints" placeholder="20"/>
+      </clr-input-container>
+      <clr-combobox-container>
+        <label>Favorite States</label>
+        <clr-combobox [(ngModel)]="allergenSelection" name="multiSelect" clrMulti="true" required>
+          <ng-container *clrOptionSelected="let selected">
+            {{ selected }}
+          </ng-container>
+          <clr-options>
+            <clr-option *clrOptionItems="let allergen of allergens; field: 'name'" [clrValue]="allergen">
+              {{allergen}}
+            </clr-option>
+          </clr-options>
+        </clr-combobox>
+        <clr-control-helper>Helper text</clr-control-helper>
+        <clr-control-error>There was an error</clr-control-error>
+      </clr-combobox-container>
       <clr-textarea-container>
         <label class="clr-required-mark">Description</label>
         <textarea clrTextarea name="description" [(ngModel)]="product.description" required></textarea>

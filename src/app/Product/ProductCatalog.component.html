@@ -67,6 +67,12 @@
                 <td>Loyalty Points:</td>
                 <td>{{element.loyaltyPoints}}</td>
               </tr>
+              <tr *ngIf="element.allergens">
+                <td>Allergens:</td>
+                <td *ngFor="let allergen of element.allergens.split(',')">
+                  <span class="label">{{allergen}}</span>
+                </td>
+              </tr>
             </table>
           </div>
           <div class="clr-col-6">

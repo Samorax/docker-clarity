@@ -39,6 +39,11 @@ export class TableService{
         .pipe(catchError(this.handleError))
     }
 
+    deleteTable(table:Table){
+      return this._httpClient.delete(this.baseUrl+table.id)
+      .pipe(catchError(this.handleError));
+    }
+
     getTables(){
         return this._httpClient.get(this.baseUrl)
         .pipe(catchError(this.handleError))
