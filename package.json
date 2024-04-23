@@ -29,6 +29,7 @@
     "jest-editor-support": "*",
     "moments": "^0.0.2",
     "ngx-echarts": "^17.1.0",
+    "ngx-material-timepicker": "^13.1.1",
     "run-script-os": "*",
     "rxjs": "~7.8.0",
     "stripe.js": "^0.0.1",

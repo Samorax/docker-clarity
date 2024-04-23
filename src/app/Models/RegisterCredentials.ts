@@ -1,3 +1,4 @@
+import { OpenTimes } from "./OpenTimes"
 import { paymentProcessor } from "./PaymentProcessor"
 
 export class RegisterCredentials {
@@ -14,4 +15,5 @@ export class RegisterCredentials {
   public accountType!: string
   public phoneNumber!:any
   public paymentProcessor?: paymentProcessor
+  openingTimes?:any
 }

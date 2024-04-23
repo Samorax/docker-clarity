@@ -5,6 +5,8 @@ import { appUserService } from "../Services/AppUserService";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { paymentService } from "../Services/PaymentService";
 import { apiKeyRequestService } from "../Services/ApiKeyRequestService";
+import { OpenTimes } from "../Models/OpenTimes";
+import { Subject } from "rxjs";
 
 @Component({
     templateUrl:'./settings.component.html',
@@ -19,6 +21,9 @@ export class SettingsComponent implements OnInit{
     showFeeback:boolean = false;
     apiKey!:any;
     showKey: boolean = false;
+    opentime:OpenTimes = new OpenTimes();
+    times:OpenTimes[] = [];
+
 constructor(private _appUserSrv: appUserService, 
     private _paymentSvr:paymentService, private _apiKeySvr: apiKeyRequestService){}
 
@@ -37,7 +42,25 @@ constructor(private _appUserSrv: appUserService,
     showStripeForms:boolean = false;
     showDojoForms:boolean = false;
     showAdyenForms:boolean = false;
+
+    onAddOpenTime(x:NgForm){
+        let o = <OpenTimes>x.value;
+        this.times.push(o);
+    }
     
+    onSaveOpenTimes(){
+        console.log(this.appUser)
+        if(this.appUser.OpeningTimes == null)
+            this.appUser.OpeningTimes = [];
+        this.times.forEach(x=>this.appUser.OpeningTimes.push(x));
+        this._appUserSrv.updateAppUserInfo(this.appUserId,this.appUser).subscribe();
+    }
+
+    onDeleteOpenTimes(x:OpenTimes){
+        let i = this.times.indexOf(x);
+        this.times.splice(i,1);
+    }
+
     onSubmit(x:NgForm){
         this.showSpinner = true;
         let pp = x.value;

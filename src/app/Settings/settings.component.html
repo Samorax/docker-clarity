@@ -67,10 +67,52 @@
     </clr-accordion-panel>
   
     <clr-accordion-panel>
-      <clr-accordion-title>Connect Website or Mobile App</clr-accordion-title>
+      <clr-accordion-title>Setup Website or Mobile App</clr-accordion-title>
       <clr-accordion-content *clrIfExpanded>
-        <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
-        <span *ngIf="apiKey" class="label">{{apiKey}}</span>
+        <div>
+          <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
+          <span *ngIf="apiKey" class="label">{{apiKey}}</span>
+        </div>
+        <div class="clr-row">
+          <form #opentimes = ngForm (ngSubmit)="onAddOpenTime(opentimes)" class="clr-col-6">
+            <div class="clr-row">
+              <clr-input-container class="clr-col">
+                <label>Day</label>
+                <input clrInput name="day" [(ngModel)]="opentime.day"/>
+              </clr-input-container>
+              <clr-input-container class="clr-col">
+                <label>StartTime</label>
+                <input clrInput [ngxTimepicker]="picker" name="startTime" [(ngModel)]="opentime.startTime">
+                <ngx-material-timepicker #picker></ngx-material-timepicker>
+              </clr-input-container>
+              <clr-input-container class="clr-col">
+                <label>EndTime</label>
+                <input clrInput [ngxTimepicker]="picker1" name="endTime" [(ngModel)]="opentime.endTime">
+                <ngx-material-timepicker #picker1></ngx-material-timepicker>
+              </clr-input-container>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </form>
+          <div class="clr-col-6">
+            <table>
+              <thead>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>Closing Time</th>
+              </thead>
+              <tbody>
+                <tr *ngFor="let o of times">
+                <td>{{o.day}}</td>
+                <td>{{o.startTime}}</td>
+                <td>{{o.endTime}}</td>
+                <td><button type="button" class="btn btn-primary" (click)="onDeleteOpenTimes(o)">Delete</button></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" (click)="onSaveOpenTimes()" class="btn btn-primary">Save</button>
+        </div>
+       
       </clr-accordion-content>
     </clr-accordion-panel>
   

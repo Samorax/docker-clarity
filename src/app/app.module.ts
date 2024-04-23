@@ -65,6 +65,7 @@ import { editWaiterComponent } from './Waiter/editWaiterDialog.component';
 import { SmsService } from './Services/SmsService';
 import { broadcastDialogComponent } from './Reward/broadcastDialog.component';
 import { OrderCartService } from './Services/OrderCartService';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 
 @NgModule({
@@ -119,6 +120,7 @@ import { OrderCartService } from './Services/OrderCartService';
     FormsModule,
     BrowserAnimationsModule,
     ClarityModule,
+    NgxMaterialTimepickerModule,
     NgxEchartsModule.forRoot({echarts: ()=>import('echarts')}),
     RouterModule.forRoot([
       {path:'', component: indexComponent},
