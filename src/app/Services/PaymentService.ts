@@ -17,7 +17,7 @@ export class paymentService{
   apiKey:any = localStorage.getItem('apikey1');
     terminal!: Terminal;
     baseUrl = "http://localhost:5241/api/payment";
-    dojoBaseUrl = "http://localhost:5241/api/dojo";
+    dojoBaseUrl = "http://localhost:5241/api/payment";
 
     httpOptions = {
       headers: new HttpHeaders({

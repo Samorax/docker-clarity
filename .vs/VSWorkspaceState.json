@@ -3,9 +3,9 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\home",
-    "\\src\\app\\Index"
+    "\\src\\app\\Services",
+    "\\src\\app\\Settings"
   ],
-  "SelectedNode": "\\src\\app\\Index\\indexComponent.html",
+  "SelectedNode": "\\src\\app\\Services\\PaymentService.ts",
   "PreviewInSolutionExplorer": false
 }

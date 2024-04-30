@@ -14,7 +14,8 @@ import { Subject } from "rxjs";
 })
 export class SettingsComponent implements OnInit{
     paymentProvider:paymentProcessor = new paymentProcessor();
-    appUserId:any = localStorage.getItem("user_id");
+    appUserId: any = localStorage.getItem("user_id");
+    currency: any = localStorage.getItem('currency_iso_code');
     appUser!:any;
     feedBack!:string
     showSpinner:boolean = false;
@@ -31,7 +32,7 @@ constructor(private _appUserSrv: appUserService,
         this._appUserSrv.getAppUserInfo()
           .subscribe((r: any) => {
             this.appUser = r;
-            console.log(r);
+            this.times = this.appUser.openingTimes;
             if(this.appUser.paymentProcessor !== null){
                 this.paymentProvider = this.appUser.paymentProcessor;
                 console.log(this.paymentProvider)
@@ -44,16 +45,14 @@ constructor(private _appUserSrv: appUserService,
     showAdyenForms:boolean = false;
 
     onAddOpenTime(x:NgForm){
-        let o = <OpenTimes>x.value;
-        this.times.push(o);
+      let o = <OpenTimes>x.value;
+      o.applicationUserID = this.appUserId;
+      this.times.push(o);
     }
     
     onSaveOpenTimes(){
-        console.log(this.appUser)
-        if(this.appUser.OpeningTimes == null)
-            this.appUser.OpeningTimes = [];
-        this.times.forEach(x=>this.appUser.OpeningTimes.push(x));
-        this._appUserSrv.updateAppUserInfo(this.appUserId,this.appUser).subscribe();
+      this.appUser.openingTimes = this.times;
+      this._appUserSrv.updateAppUserInfo(this.appUserId,this.appUser).subscribe();
     }
 
     onDeleteOpenTimes(x:OpenTimes){
@@ -74,7 +73,8 @@ constructor(private _appUserSrv: appUserService,
         if(this.appUser !== undefined){
             this.appUser.paymentProcessor =  this.paymentProvider;
             this.appUser.vatCharge = pp.vatCharge;
-            this.appUser.serviceCharge = pp.serviceCharge;
+          this.appUser.serviceCharge = pp.serviceCharge;
+          this.appUser.deliveryFee = pp.deliveryFee;
             console.log(this.appUser);
       }
        

@@ -26,6 +26,7 @@
             ],
             "styles": [
               "node_modules/@clr/ui/clr-ui.min.css",
+              "src/style.css"
               
 
             ],
@@ -95,5 +96,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "3f4db2e6-7f4e-48cc-85f6-e528e826d6a0"
   }
 }
