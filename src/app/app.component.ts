@@ -11,6 +11,7 @@ import { Notifications, notificationType } from './Models/Notification';
 import { Order } from './Models/Order.model';
 import { CustomerDto } from './Models/CustomerDto';
 import { Customer } from './Models/Customer';
+import { SwPush } from '@angular/service-worker';
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -36,7 +37,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   paymentProvider: any;
 
   constructor(private signalrService: SignalrService,
-    private ordersrv: OrderService,private _appUserSvr:appUserService,
+    private ordersrv: OrderService,private _appUserSvr:appUserService, private readonly swPush:SwPush,
      private _route: Router) {}
 
 
@@ -69,6 +70,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.navcomponent.show = true;
     })
 
+    
+    
+
 
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 
@@ -78,6 +82,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
+    if(!this.swPush.isEnabled){
+        let token:any = localStorage.getItem('access_token');
+        this.swPush.requestSubscription({serverPublicKey:token}).then((r)=>{
+        });
+    }
 
     this.checkPaymentTerminalStatus();
     

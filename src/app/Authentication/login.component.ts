@@ -20,7 +20,7 @@ export class loginComponent {
     this.sendingForm = true;
     this.credentials = <loginCredentials>f;
     this.authenticationService.logIn(this.credentials).subscribe((r)=>{
-      this._router.navigateByUrl("/home");
+      this._router.navigate(["home"]);
   },(er)=> this.feedback = "Invalid Email or Password !!");
   };
 }

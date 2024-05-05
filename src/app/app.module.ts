@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -66,6 +66,8 @@ import { SmsService } from './Services/SmsService';
 import { broadcastDialogComponent } from './Reward/broadcastDialog.component';
 import { OrderCartService } from './Services/OrderCartService';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 
 @NgModule({
@@ -123,10 +125,10 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     NgxMaterialTimepickerModule,
     NgxEchartsModule.forRoot({echarts: ()=>import('echarts')}),
     RouterModule.forRoot([
-      {path:'', component: indexComponent},
-      { path: 'login', component: loginComponent },
-      { path: 'register', component: registerComponent },
-      { path: 'logout', component: logOutComponent },
+      { path:'', component: indexComponent, pathMatch:'full'},
+      { path: 'login', component: loginComponent, pathMatch:'full' },
+      { path: 'register', component: registerComponent, pathMatch:'full' },
+      { path: 'logout', component: logOutComponent, pathMatch:'full' },
       { path: 'home', component: HomeComponent, canActivate:[authGuard],
     children:[
       {path:'products/overview', component:ProductOverviewComponent},
@@ -139,8 +141,15 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
       {path:'waiters/list',component:waiterComponent},
       {path:'vouchers',component: voucherComponent},
       {path:'loyaltyPoints',component:loyaltyComponent},
-      {path:'settings', component:SettingsComponent}] }
+      {path:'settings', component:SettingsComponent}] },
+      {path: '**', component:PageNotFoundComponent, pathMatch:'full'}
     ]),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,

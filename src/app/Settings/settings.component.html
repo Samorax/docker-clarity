@@ -1,17 +1,47 @@
   <clr-accordion>
     <clr-accordion-panel>
-      <clr-accordion-title>Payment Providers</clr-accordion-title>
+      <clr-accordion-title>Integrations</clr-accordion-title>
       <clr-accordion-content *clrIfExpanded>
-        <form clrForm (ngSubmit)="onSubmit(paymentProviderForm)" #paymentProviderForm="ngForm">
-          <clr-select-container>
-              <label>Select Payment Provider</label>
-              <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
-                  <option value="Stripe">Stripe</option>
-                  <option value="Adyen">Adyen</option>
-                  <option value="Dojo">Dojo</option>
-              </select>
-          </clr-select-container>
-          <div *ngIf="showStripeForms">
+        <div class="clr-row">
+          <div class="clr-col-lg-5 clr-col-md-8 clr-col-12">
+            <div class="card">
+              <div class="card-header">Payment Processor</div>
+              <form clrForm (ngSubmit)="onSubmit(paymentProviderForm)" #paymentProviderForm="ngForm">
+              <div class="card-block">
+                <clr-select-container>
+                  <label>Select Payment Provider</label>
+                  <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
+                      <option value="Stripe">Stripe</option>
+                      <option value="Adyen">Adyen</option>
+                      <option value="Dojo">Dojo</option>
+                  </select>
+                </clr-select-container>
+
+              <div *ngIf="showStripeForms">
+                <clr-password-container>
+                    <label>Publishable Key</label>
+                    <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
+                  </clr-password-container>
+                  <clr-password-container>
+                    <label>Secret Key</label>
+                    <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
+                  </clr-password-container>
+              </div>
+              <div *ngIf="showDojoForms">
+              <clr-password-container>
+                  <label>Api Key</label>
+                  <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
+                </clr-password-container>
+                <clr-password-container>
+                  <label>Account Id</label>
+                  <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="accountId" [(ngModel)]="paymentProvider.accountId"/>
+                </clr-password-container>
+                <clr-password-container>
+                  <label>Software House Id</label>
+                  <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
+                </clr-password-container>
+              </div>
+              <div *ngIf="showAdyenForms">
             <clr-password-container>
                 <label>Publishable Key</label>
                 <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
@@ -20,45 +50,31 @@
                 <label>Secret Key</label>
                 <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
               </clr-password-container>
+              </div>
+             
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+            </div>
           </div>
-          <div *ngIf="showDojoForms">
-          <clr-password-container>
-              <label>Api Key</label>
-              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
-            </clr-password-container>
-            <clr-password-container>
-              <label>Account Id</label>
-              <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="accountId" [(ngModel)]="paymentProvider.accountId"/>
-            </clr-password-container>
-            <clr-password-container>
-              <label>Software House Id</label>
-              <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
-            </clr-password-container>
-          </div>
-          <div *ngIf="showAdyenForms">
-        <clr-password-container>
-            <label>Publishable Key</label>
-            <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
-          </clr-password-container>
-          <clr-password-container>
-            <label>Secret Key</label>
-            <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
-          </clr-password-container>
-          </div>
-          <clr-input-container>
-            <label>VAT Rate (%):</label>
-            <input clrInput placeholder="20" name="vatCharge" [(ngModel)]="appUser.vatCharge"/>
-          </clr-input-container>
-          <clr-input-container>
-            <label>Service Charge (%):</label>
-            <input clrInput placeholder="20" name="serviceCharge" [(ngModel)]="appUser.serviceCharge"/>
-          </clr-input-container>
-          <clr-input-container>
-            <label>Delivery Fee ({{0 | currency}}):</label>
-            <input clrInput placeholder="3" name="deliveryFee" [(ngModel)]="appUser.deliveryFee"/>
-          </clr-input-container>
-          <button type="submit" class="btn btn-primary">Save</button>
-      </form>
+            <div class="clr-col-lg-5 clr-col-md-8 clr-col-12">
+              <div class="card">
+                <div class="card-header">Connect Website or Mobile App</div>
+                <div class="card-block">
+                  <div>
+                    <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
+                    <span *ngIf="apiKey" class="label">{{apiKey}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+        </div>
+       
+          
+        
+        
+       
       <div *ngIf="showSpinner">
           <clr-spinner clrInline>Processing</clr-spinner>
       </div>
@@ -71,57 +87,92 @@
     </clr-accordion-panel>
   
     <clr-accordion-panel>
-      <clr-accordion-title>Setup Website or Mobile App</clr-accordion-title>
+      <clr-accordion-title>Restaurant Settings</clr-accordion-title>
       <clr-accordion-content *clrIfExpanded>
-        <div>
-          <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
-          <span *ngIf="apiKey" class="label">{{apiKey}}</span>
+        <div class="clr-row">
+          <div class="clr-col-4">
+            <div class="card">
+              <div class="card-header">Payments</div>
+              <div class="card-block">
+                <clr-input-container>
+                  <label>VAT Rate (%):</label>
+                  <input clrInput placeholder="20" name="vatCharge" [(ngModel)]="appUser.vatCharge"/>
+                </clr-input-container>
+                <clr-input-container>
+                  <label>Service Charge (%):</label>
+                  <input clrInput placeholder="20" name="serviceCharge" [(ngModel)]="appUser.serviceCharge"/>
+                </clr-input-container>
+                <clr-input-container>
+                  <label>Delivery Fee ({{0 | currency}}):</label>
+                  <input clrInput placeholder="3" name="deliveryFee" [(ngModel)]="appUser.deliveryFee"/>
+                </clr-input-container>
+              </div>
+            </div>
+          </div>
+          <div class="clr-col-8">
+            <div class="card">
+              <div class="card-header">Operating Hours</div>
+              <div class="card-block clr-row">
+                <form #opentimes = ngForm (ngSubmit)="onAddOpenTime(opentimes)" class="clr-col-4">
+                  <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                      <label>Day</label>
+                      <input clrInput name="day" [(ngModel)]="opentime.day"/>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                      <label>StartTime</label>
+                      <input clrInput [ngxTimepicker]="picker" name="startTime" [(ngModel)]="opentime.startTime">
+                      <ngx-material-timepicker #picker></ngx-material-timepicker>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                      <label>EndTime</label>
+                      <input clrInput [ngxTimepicker]="picker1" name="endTime" [(ngModel)]="opentime.endTime">
+                      <ngx-material-timepicker #picker1></ngx-material-timepicker>
+                    </clr-input-container>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+                <div class="clr-col-8">
+                  <table class="table compact no-border vertical">
+                    <thead>
+                      <th>Day</th>
+                      <th>Start Time</th>
+                      <th>Closing Time</th>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let o of times">
+                      <td>{{o.day}}</td>
+                      <td>{{o.startTime}}</td>
+                      <td>{{o.endTime}}</td>
+                      <td><button type="button" class="btn btn-secondary" (click)="onDeleteOpenTimes(o)">Delete</button></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <button type="button" (click)="onSaveOpenTimes()" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="clr-row">
-          <form #opentimes = ngForm (ngSubmit)="onAddOpenTime(opentimes)" class="clr-col-6">
-            <div class="clr-row">
-              <clr-input-container class="clr-col">
-                <label>Day</label>
-                <input clrInput name="day" [(ngModel)]="opentime.day"/>
-              </clr-input-container>
-              <clr-input-container class="clr-col">
-                <label>StartTime</label>
-                <input clrInput [ngxTimepicker]="picker" name="startTime" [(ngModel)]="opentime.startTime">
-                <ngx-material-timepicker #picker></ngx-material-timepicker>
-              </clr-input-container>
-              <clr-input-container class="clr-col">
-                <label>EndTime</label>
-                <input clrInput [ngxTimepicker]="picker1" name="endTime" [(ngModel)]="opentime.endTime">
-                <ngx-material-timepicker #picker1></ngx-material-timepicker>
-              </clr-input-container>
+          <div class="clr-col-4">
+            <div class="card">
+              <div class="card-header">Delivery</div>
+              <div class="card-block">
+                <clr-input-container>
+                  <label>Delivery Distance (miles)</label>
+                  <input clrInput name="deliveryDistance"/>
+                </clr-input-container>
+                <clr-input-container>
+                  <label>Delivery Fee</label>
+                  <input clrInput name="deliveryFee"/>
+                </clr-input-container>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary">Add</button>
-          </form>
-          <div class="clr-col-6">
-            <table>
-              <thead>
-                <th>Day</th>
-                <th>Start Time</th>
-                <th>Closing Time</th>
-              </thead>
-              <tbody>
-                <tr *ngFor="let o of times">
-                <td>{{o.day}}</td>
-                <td>{{o.startTime}}</td>
-                <td>{{o.endTime}}</td>
-                <td><button type="button" class="btn btn-primary" (click)="onDeleteOpenTimes(o)">Delete</button></td>
-              </tr>
-              </tbody>
-            </table>
           </div>
-          <button type="button" (click)="onSaveOpenTimes()" class="btn btn-primary">Save</button>
         </div>
        
+       
       </clr-accordion-content>
-    </clr-accordion-panel>
-  
-    <clr-accordion-panel>
-      <clr-accordion-title>FAQ</clr-accordion-title>
-      <clr-accordion-content *clrIfExpanded>Content 3</clr-accordion-content>
     </clr-accordion-panel>
   </clr-accordion>

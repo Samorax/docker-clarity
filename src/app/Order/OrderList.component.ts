@@ -187,26 +187,34 @@ export class OrderListComponent implements OnInit, AfterViewInit{
           this.showChargeButton = true;
           x.orderStatus = 'Completed';
           x.payment = 'Paid';
-          }
-        },(er)=>console.log(er),()=> 
-        { 
-           this.custSVR.getCustomer(x.customerID).subscribe((c:Customer)=>{
-            let pts:number = 0;
-            x.orderDetails.forEach(o=>{
-              let product = this.products.find(p=>p.name === o.name);
-              let voucher:any = this.vouchers.find(v=>v.voucherNumber === o.name);
+          };
+          
+        },(er)=>console.log(er),()=> this.updateCustomer(x))}
+      
+      private updateCustomer(order:Order)
+      {
+        this.custSVR.getCustomer(order.customerID).subscribe((c:Customer)=>{
+          let pts:number = 0;
+          order.orderDetails.forEach(o=>{
+            let product = this.products.find(p=>p.name === o.name);
+            let voucher:any = this.vouchers.find(v=>v.voucherNumber === o.name);
+            if(voucher != undefined){
               voucher.units--;
               this.voucherSVR.updateVoucher(voucher.voucherId,voucher);
-              pts = pts + product?.loyaltyPoints;
-            });
-            c.loyaltyPoints = pts;
-            this.custSVR.updateCustomer(x.customerID,c).subscribe(); 
-      });
-          let o = this.orderService.ordersCache.findIndex(o=>o.orderID === x.orderID);
-          this.orderService.ordersCache[o]=x;
-          this.orderService.updateOrder(x.orderID,x).subscribe();
-        }) 
+            }
+            pts += product?.loyaltyPoints;
+          });
+          c.loyaltyPoints += pts;
+          c.totalAmountSpent += order.totalAmount
+          console.log(c.totalAmountSpent,'Amount Spent');
+          console.log(order.totalAmount,'order amount');
+          this.custSVR.updateCustomer(order.customerID,c).subscribe(); 
+          });
+        let o = this.orderService.ordersCache.findIndex(o=>o.orderID === order.orderID);
+        this.orderService.ordersCache[o]=order;
+        this.orderService.updateOrder(order.orderID,order).subscribe();
       }
+      
 
       /* this.paymentService.processOnlinePayment(r, x.paymentToken).then((r:any)=>{
         this.paymentFeedback = r.status;

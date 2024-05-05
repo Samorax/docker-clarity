@@ -3,9 +3,8 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\Services",
-    "\\src\\app\\Settings"
+    "\\src\\app\\Order"
   ],
-  "SelectedNode": "\\src\\app\\Services\\PaymentService.ts",
+  "SelectedNode": "\\src\\app\\Order\\OrderList.component.ts",
   "PreviewInSolutionExplorer": false
 }

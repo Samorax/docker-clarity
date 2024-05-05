@@ -60,18 +60,13 @@ constructor(private customerService: CustomerService, private signalrSVR:Signalr
     }
 
     loadInit(){
-        let cache = this.customerService.customersCache;
-        if(cache.length >= 1){
-         cache.forEach(c=>this.elements.push(c));
-        }else{
          this.customerService.getCustomers().subscribe(c=>{
              c.forEach(cust => {
                  this.elements.push(cust);
-                 this.customerService.customersCache.push(cust);
+                
              });
          })
         }
-    }
 
     
 
