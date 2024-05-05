@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { catchError, throwError } from "rxjs";
 import { Rewards } from "../Models/Rewards";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
@@ -11,7 +12,7 @@ import { Rewards } from "../Models/Rewards";
 export class RewardService
 {
     rewardsCache: Rewards[] = [];
-    baseUrl = "http://localhost:5241/api/rewards/";
+    baseUrl = AppComponent.apiBaseUrl+"api/rewards/";
   
      httpOptions = {
       headers: new HttpHeaders({

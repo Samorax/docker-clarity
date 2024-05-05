@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { voucher } from "../Models/Voucher";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { catchError, throwError } from "rxjs";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
@@ -9,7 +10,7 @@ import { catchError, throwError } from "rxjs";
 
 export class voucherService{
     public getVoucherCache:voucher[] = [];
-    baseUrl:string = 'http://localhost:5241/api/vouchers/';
+    baseUrl:string = AppComponent.apiBaseUrl+"/api/vouchers/"
 
     constructor(private _httpClient: HttpClient){}
 

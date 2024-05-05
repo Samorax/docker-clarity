@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http
 import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { orderDetail } from "../Models/OrderDetails";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
@@ -11,7 +12,7 @@ export class OrderDetailService {
     constructor(private _httpClient: HttpClient) {
     }
 
-    baseUrl:string = 'http://localhost:5241/api/orderDetails/'
+    baseUrl:string = AppComponent.apiBaseUrl+"/api/orderDetails/"
 
     httpOptions = {
         headers: new HttpHeaders({

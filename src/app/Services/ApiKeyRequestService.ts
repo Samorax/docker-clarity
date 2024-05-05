@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
@@ -10,7 +11,7 @@ export class apiKeyRequestService{
     constructor(private _httpClient: HttpClient){
 
     }
-    baseUrl:string = 'http://localhost:5241/api/apikeygenerator'
+    baseUrl:string = AppComponent.apiBaseUrl+"/api/apikeygenerator"
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {

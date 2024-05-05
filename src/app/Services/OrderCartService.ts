@@ -3,6 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { CartItem } from "../Models/CartItem";
 import { CartOrder } from "../Models/CartOder";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
@@ -11,7 +12,7 @@ import { CartOrder } from "../Models/CartOder";
 export class OrderCartService{
     
     _httpClient = inject(HttpClient);
-    baseUrl:string = 'http://localhost:5241/api/cartorders/'
+    baseUrl:string = AppComponent.apiBaseUrl+"/api/cartorders/"
 
     httpOptions = {
         headers: new HttpHeaders({

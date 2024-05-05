@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http
 import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { Waiter } from "../Models/Waiter";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:"root"
@@ -9,7 +10,7 @@ import { Waiter } from "../Models/Waiter";
 
 export class WaiterService{
     constructor(private _httpClient:HttpClient){}
-    baseUrl = "http://localhost:5241/api/waiters/";
+    baseUrl = AppComponent.apiBaseUrl+"/api/waiters/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

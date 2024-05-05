@@ -7,6 +7,7 @@ import { terminalPaymentObject } from "../Models/TerminalPaymentObject";
 import { PaymentIntentRequest } from "../Models/PaymentIntentRequest";
 import { PaymentIntentResult, loadStripe } from "@stripe/stripe-js";
 import { resolve } from "path";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:"root"
@@ -16,8 +17,8 @@ export class paymentService{
   currencySymbol:any = localStorage.getItem('currency_iso_code');
   apiKey:any = localStorage.getItem('apikey1');
     terminal!: Terminal;
-    baseUrl = "http://localhost:5241/api/payment";
-    dojoBaseUrl = "http://localhost:5241/api/payment";
+    baseUrl = AppComponent.apiBaseUrl+"/api/payment";
+    dojoBaseUrl = AppComponent.apiBaseUrl+"/api/payment";
 
     httpOptions = {
       headers: new HttpHeaders({

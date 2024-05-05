@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { catchError, throwError } from "rxjs";
 import { Table } from "../Models/Table";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:"root"
@@ -10,7 +11,7 @@ import { Table } from "../Models/Table";
 
 export class TableService{
     constructor(private _httpClient:HttpClient){}
-    baseUrl = "http://localhost:5241/api/tables/";
+    baseUrl = AppComponent.apiBaseUrl+"/api/tables/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

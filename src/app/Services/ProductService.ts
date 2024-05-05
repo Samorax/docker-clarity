@@ -2,13 +2,14 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Observable, catchError, retry, throwError } from "rxjs";
 import { Product } from "../Models/Product";
+import { AppComponent } from "../app.component";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   productssCache: Product[] = [];
-  baseUrl = "http://localhost:5241/api/products/";
+  baseUrl =  AppComponent.apiBaseUrl+'api/products/';
 
    httpOptions = {
     headers: new HttpHeaders({

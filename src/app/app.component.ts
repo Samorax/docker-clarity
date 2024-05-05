@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, isDevMode } from '@angular/core';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
@@ -12,6 +12,7 @@ import { Order } from './Models/Order.model';
 import { CustomerDto } from './Models/CustomerDto';
 import { Customer } from './Models/Customer';
 import { SwPush } from '@angular/service-worker';
+import { environment, prodEnvironment } from '../environment/environment';
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -35,10 +36,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   show: any = false;
   Orderstatus:string = '';
   paymentProvider: any;
+  static apiBaseUrl:string
 
   constructor(private signalrService: SignalrService,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private readonly swPush:SwPush,
-     private _route: Router) {}
+     private _route: Router) {
+      AppComponent.apiBaseUrl = !isDevMode ? prodEnvironment.apiBaseUrl: environment.apiBaseUrl;
+     }
 
 
 

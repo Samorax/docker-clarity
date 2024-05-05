@@ -11,13 +11,14 @@ import { OrderService } from "./OrderService";
 import { CustomerService } from "./CustomerService";
 import moment from "moment";
 import { json } from "stream/consumers";
+import { AppComponent } from "../app.component";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class AuthenticationService {
-  baseUrl:string = "http://localhost:5241/api/"
+  baseUrl:string = AppComponent.apiBaseUrl+"/api/"
 
   constructor(private _httpClient: HttpClient,
      private _pService: ProductService, private _oService: OrderService, private _cService: CustomerService) { }

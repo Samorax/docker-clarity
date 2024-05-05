@@ -2,13 +2,14 @@ import { Injectable } from "@angular/core";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, throwError } from "rxjs";
+import { AppComponent } from "../app.component";
 
 @Injectable({
     providedIn:'root'
 })
 export class appUserService{
     constructor(private _httpClient: HttpClient){}
-    baseUrl:string = "http://localhost:5241/api/Restaurant/";
+    baseUrl:string = AppComponent.apiBaseUrl+"/api/Restaurant/";
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {
