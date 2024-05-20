@@ -1,15 +1,16 @@
 import { Injectable } from "@angular/core";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { catchError, throwError } from "rxjs";
+import { catchError, shareReplay, throwError } from "rxjs";
 import { AppComponent } from "../app.component";
+import { appUser } from "../Models/AppUser";
 
 @Injectable({
     providedIn:'root'
 })
 export class appUserService{
     constructor(private _httpClient: HttpClient){}
-    baseUrl:string = AppComponent.apiBaseUrl+"/api/Restaurant/";
+    baseUrl = AppComponent.apiBaseUrl+"api/Restaurant/";
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {
@@ -22,11 +23,11 @@ export class appUserService{
       }
 
     getAppUserInfo(){
-        return this._httpClient.get(this.baseUrl)
-        .pipe(catchError(this.handleError))
+        return this._httpClient.get<appUser>(this.baseUrl)
+        .pipe(catchError(this.handleError),shareReplay(1))
     }
       
-    updateAppUserInfo(id:string,appUser: RegisterCredentials){
+    updateAppUserInfo(id:string,appUser: appUser){
         return this._httpClient.put(this.baseUrl+id, appUser)
         .pipe(catchError(this.handleError))
     }

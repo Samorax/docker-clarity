@@ -7,7 +7,7 @@ import { OrderEditComponent } from "./OrderEdit.component";
 import { OrderAddComponent } from "./OrderAdd.component";
 import { paymentService } from "../Services/PaymentService";
 import { PaymentObject } from "../Models/PaymentObject";
-import { loadStripe } from "@stripe/stripe-js";
+;
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
 import { TableService } from "../Services/TableService";

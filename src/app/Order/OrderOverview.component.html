@@ -18,9 +18,9 @@
     </div>
 </div>
 
-<div class="clr-row clr-no-gutters">
+<div class="clr-row clr-no-gutters" style="height: 400px;">
     <div class="clr-col-6" style="border: none;">
-        <div class="card">
+        <div class="card" style="height: 100%;">
             <div class="card-block">
                 <div class="card-title"> Monthly Sales</div>
                 <div  echarts [options]="saleChart | async"></div>
@@ -28,7 +28,7 @@
         </div>
         </div>
         <div class="clr-col-3">
-            <div class="card">
+            <div class="card" style="height: 100%;">
                 <div class="card-block">
                     <div class="card-title">Revenue by Channel</div>
                     <div  echarts [options]="channelChart | async"></div>
@@ -36,7 +36,7 @@
             </div>
             </div>
             <div class="clr-col-3">
-                <div class="card">
+                <div class="card" style="height: 100%;">
                     <div class="card-block">
                         <div class="card-title">Revenue by Customer Segement</div>
                         <div  echarts [options]="customerChart | async"></div>

@@ -11,7 +11,7 @@ export class apiKeyRequestService{
     constructor(private _httpClient: HttpClient){
 
     }
-    baseUrl:string = AppComponent.apiBaseUrl+"/api/apikeygenerator"
+    baseUrl:string = AppComponent.apiBaseUrl+"api/apikeygenerator"
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {

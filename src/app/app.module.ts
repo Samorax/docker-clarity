@@ -1,5 +1,5 @@
 import { NgModule, isDevMode } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -68,6 +68,7 @@ import { OrderCartService } from './Services/OrderCartService';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { BrowserModule } from '@angular/platform-browser';
 
 
 @NgModule({
@@ -118,8 +119,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
   ],
   imports: [
     HttpClientModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     FormsModule,
+    BrowserModule,
     BrowserAnimationsModule,
     ClarityModule,
     NgxMaterialTimepickerModule,

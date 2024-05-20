@@ -10,7 +10,7 @@ import { AppComponent } from "../app.component";
 export class OrderService {
   ordersCache: Order[] = [];
   constructor(private _httpClient: HttpClient) { }
-  baseUrl: string = AppComponent.apiBaseUrl+"/api/orders/"
+  baseUrl = AppComponent.apiBaseUrl+"api/orders/"
 
   httpOptions = {
     headers: new HttpHeaders({

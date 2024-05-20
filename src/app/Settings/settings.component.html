@@ -1,178 +1,313 @@
-  <clr-accordion>
-    <clr-accordion-panel>
-      <clr-accordion-title>Integrations</clr-accordion-title>
-      <clr-accordion-content *clrIfExpanded>
-        <div class="clr-row">
-          <div class="clr-col-lg-5 clr-col-md-8 clr-col-12">
-            <div class="card">
-              <div class="card-header">Payment Processor</div>
-              <form clrForm (ngSubmit)="onSubmit(paymentProviderForm)" #paymentProviderForm="ngForm">
-              <div class="card-block">
-                <clr-select-container>
-                  <label>Select Payment Provider</label>
-                  <select clrSelect name="paymentProvider.name" #select [(ngModel)]="paymentProvider.name" (change)="onChange(paymentProvider.name)">
-                      <option value="Stripe">Stripe</option>
-                      <option value="Adyen">Adyen</option>
-                      <option value="Dojo">Dojo</option>
-                  </select>
-                </clr-select-container>
-
-              <div *ngIf="showStripeForms">
-                <clr-password-container>
-                    <label>Publishable Key</label>
-                    <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
-                  </clr-password-container>
-                  <clr-password-container>
-                    <label>Secret Key</label>
-                    <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
-                  </clr-password-container>
-              </div>
-              <div *ngIf="showDojoForms">
-              <clr-password-container>
-                  <label>Api Key</label>
-                  <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey1"/>
-                </clr-password-container>
-                <clr-password-container>
-                  <label>Account Id</label>
-                  <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="accountId" [(ngModel)]="paymentProvider.accountId"/>
-                </clr-password-container>
-                <clr-password-container>
-                  <label>Software House Id</label>
-                  <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="softwareHouseId" [(ngModel)]="paymentProvider.softwareHouseId"/>
-                </clr-password-container>
-              </div>
-              <div *ngIf="showAdyenForms">
-            <clr-password-container>
-                <label>Publishable Key</label>
-                <input clrPassword autocomplete="current-password" placeholder="Publishable Key please!" name="apiKey2" [(ngModel)]="paymentProvider.apiKey1"/>
-              </clr-password-container>
-              <clr-password-container>
-                <label>Secret Key</label>
-                <input clrPassword autocomplete="current-password" placeholder="Api Key please!" name="apiKey1" [(ngModel)]="paymentProvider.apiKey2"/>
-              </clr-password-container>
-              </div>
-             
-              </div>
-              <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-            </div>
-          </div>
-            <div class="clr-col-lg-5 clr-col-md-8 clr-col-12">
-              <div class="card">
-                <div class="card-header">Connect Website or Mobile App</div>
-                <div class="card-block">
-                  <div>
-                    <button class="btn btn-primary" (click)="onApiRequest()">Get Api Key</button>
-                    <span *ngIf="apiKey" class="label">{{apiKey}}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          
-        </div>
-       
-          
-        
-        
-       
-      <div *ngIf="showSpinner">
-          <clr-spinner clrInline>Processing</clr-spinner>
-      </div>
-      <clr-alert *ngIf="showFeeback" [clrAlertType]="'success'">
-          <clr-alert-item>
-            <span class="alert-text">{{feedBack}}</span>
-          </clr-alert-item>
-        </clr-alert>
-      </clr-accordion-content>
-    </clr-accordion-panel>
+ <form clrForm clrLayout="vertical" [formGroup]="settingsForm">
+ <section class="clr-row">
+  <div>
+    <h2>Settings</h2>
+  </div>
   
-    <clr-accordion-panel>
-      <clr-accordion-title>Restaurant Settings</clr-accordion-title>
-      <clr-accordion-content *clrIfExpanded>
-        <div class="clr-row">
-          <div class="clr-col-4">
-            <div class="card">
-              <div class="card-header">Payments</div>
-              <div class="card-block">
-                <clr-input-container>
-                  <label>VAT Rate (%):</label>
-                  <input clrInput placeholder="20" name="vatCharge" [(ngModel)]="appUser.vatCharge"/>
-                </clr-input-container>
-                <clr-input-container>
-                  <label>Service Charge (%):</label>
-                  <input clrInput placeholder="20" name="serviceCharge" [(ngModel)]="appUser.serviceCharge"/>
-                </clr-input-container>
-                <clr-input-container>
-                  <label>Delivery Fee ({{0 | currency}}):</label>
-                  <input clrInput placeholder="3" name="deliveryFee" [(ngModel)]="appUser.deliveryFee"/>
-                </clr-input-container>
-              </div>
+
+ </section>
+ <clr-tabs clrLayout="vertical">
+  <clr-tab>
+    <button clrTabLink (click)="fillAccountSettings()">Account</button>
+    <clr-tab-content *clrIfActive>
+      <section class="clr-row">
+        <clr-toggle-container class="clr-toggle-right clr-col">
+          <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle  formControlName="testMode" />
+            <label>Test Mode</label>
+          </clr-toggle-wrapper>
+          <clr-control-helper>Helper text</clr-control-helper>
+        </clr-toggle-container>
+        <div class="clr-col">
+          <button class="btn btn-primary" (click)="onApiRequest($event)">Get Api Key</button>
+            <span *ngIf="showKey" class="label">{{apiKey}}</span>
+          
+          
+        </div>
+      </section>
+      
+       
+      <section>
+        <div>
+          <h4>Account Details</h4>
+        </div>
+        <div>
+          <section formGroupName = 'accountDetails'  >
+            <div (click)="toggle()">
+              <h6>Change Contact Details</h6>
             </div>
-          </div>
-          <div class="clr-col-8">
-            <div class="card">
-              <div class="card-header">Operating Hours</div>
-              <div class="card-block clr-row">
-                <form #opentimes = ngForm (ngSubmit)="onAddOpenTime(opentimes)" class="clr-col-4">
-                  <div class="clr-row">
-                    <clr-input-container class="clr-col">
-                      <label>Day</label>
-                      <input clrInput name="day" [(ngModel)]="opentime.day"/>
-                    </clr-input-container>
-                    <clr-input-container class="clr-col">
-                      <label>StartTime</label>
-                      <input clrInput [ngxTimepicker]="picker" name="startTime" [(ngModel)]="opentime.startTime">
-                      <ngx-material-timepicker #picker></ngx-material-timepicker>
-                    </clr-input-container>
-                    <clr-input-container class="clr-col">
-                      <label>EndTime</label>
-                      <input clrInput [ngxTimepicker]="picker1" name="endTime" [(ngModel)]="opentime.endTime">
-                      <ngx-material-timepicker #picker1></ngx-material-timepicker>
-                    </clr-input-container>
-                  </div>
-                  <button type="submit" class="btn btn-primary">Add</button>
-                </form>
-                <div class="clr-col-8">
-                  <table class="table compact no-border vertical">
-                    <thead>
-                      <th>Day</th>
-                      <th>Start Time</th>
-                      <th>Closing Time</th>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let o of times">
-                      <td>{{o.day}}</td>
-                      <td>{{o.startTime}}</td>
-                      <td>{{o.endTime}}</td>
-                      <td><button type="button" class="btn btn-secondary" (click)="onDeleteOpenTimes(o)">Delete</button></td>
-                    </tr>
-                    </tbody>
-                  </table>
-                  <button type="button" (click)="onSaveOpenTimes()" class="btn btn-primary">Save</button>
+           
+            <div [@openClose]="isOpen ? 'open':'close'">
+              <div class="clr-row">
+                <clr-input-container class="clr-col">
+                  <label class="clr-control-label clr-required-mark" >First Name</label>
+                  <input clrInput formControlName="firstName" required/>
+                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                </clr-input-container>
+                <clr-input-container class="clr-col">
+                  <label class="clr-control-label clr-required-mark" >Last Name</label>
+                  <input clrInput formControlName="lastName" required/>
+                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                </clr-input-container>
+                </div>  
+                <div class="clr-row">              
+                  <clr-input-container class="clr-col">
+                  <label class="clr-control-label clr-required-mark" >Email</label>
+                  <input clrInput formControlName="email"/>
+                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                  <clr-control-error *clrIfError="'email'">This is not an email</clr-control-error>
+                </clr-input-container>
+              <clr-input-container class="clr-col">
+                <label class="clr-control-label">Phone Number</label>
+                <input clrInput formControlName="phoneNumber"/>
+                <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+              </clr-input-container>
+              </div>
+              <div class="clr-row">
+                <div class="clr-col-3">
+                  <button class="btn btn-primary" [disabled]="!settingsForm.get('accountDetails')?.valid" (click)="onChangeAccountDetails()">Save</button>
                 </div>
+                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showAccountDetailsFeedback">
+                  <clr-alert-item>
+                    <span class="alert-text">Password Updated!!</span>
+                  </clr-alert-item>
+                  </clr-alert>
               </div>
             </div>
+            
+          </section>
+
+          <section formGroupName = 'passwordReset' >
+            <div (click)="toggle2()">
+              <h6>Change Password</h6>
+            </div>
+           
+            <div [@openClose]="isOpen2 ? 'open':'close'">
+              <div class="clr-row">
+                <clr-password-container class="clr-col">
+                  <label class="clr-control-label clr-required-mark">New Password</label>
+                  <input clrPassword formControlName="oldPassword" required/>
+                  <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
+                  
+                  <clr-control-error *clrIfError="'pattern'; error as err">
+                    It must match '{{ err.requiredPattern }}'
+                  </clr-control-error>
+                  
+                </clr-password-container>
+                <clr-password-container class="clr-col">
+                  <label class="clr-control-label clr-required-mark">Verify Password</label>
+                  <input clrPassword formControlName="newPassword" required/>
+                  <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
+                  <clr-control-error *clrIfError="'mustMatch'">Password Mismatch!!</clr-control-error>
+                  <clr-control-error *clrIfError="'pattern'; error as err">
+                    It must match '{{ err.requiredPattern }}'
+                  </clr-control-error>
+                </clr-password-container>
+              </div>
+              <div class="clr-row">
+                <div class="clr-col-3">
+                  <button class="btn btn-primary" [disabled]="!settingsForm.get('passwordReset')?.valid" (click)="onChangePassword()">Save</button>
+                </div>
+                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showChangePasswordFeedback">
+                <clr-alert-item>
+                  <span class="alert-text">Password Updated!!</span>
+                </clr-alert-item>
+                </clr-alert>
+              </div>
+              
+            </div>
+            
+          </section>
+          
+        </div>
+       
+      </section>
+      <section>
+        <div>
+          <h4>Account Payment</h4>
+        </div>
+        <div>
+          <label class="clr-required-mark" (click)="toggle3()">Change Payment Details</label>
+          <div class="formbody" id="payment-form" [@openClose]="isOpen3 ? 'open':'close'">
+            <div class="group" id="payment-element">
+              <!--Stripe.js injects the Payment Element-->
+            </div>
+            <div class="clr-row">
+              <div class="clr-col-3">
+                <button id="button-text" class="btn btn-primary" #button (click)="onChangePaymentDetails()">
+                  <!-- <div class="spinner hidden" id="spinner"></div> -->
+                  <span id="button-text">Save</span>
+                </button>
+              </div>
+              <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col">
+                <clr-alert-item>
+                  <span class="alert-text">Password Updated!!</span>
+                </clr-alert-item>
+                </clr-alert>
+                <div id="payment-message" class="hidden"></div>
+            </div>
+            
           </div>
+        </div>
+      </section>
+         
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink (click)="fillIntegrationSettings()">Integrations</button>
+    <clr-tab-content *clrIfActive>
+      <section formGroupName="integrationSettings">
+        <div>
+          <h4>Payment Processor</h4>
+        </div>
+          <clr-select-container>
+              <label class="clr-required-mark clr-control-label">Select Payment Provider</label>
+              <select clrSelect formControlName="processorName" #selection (change)="onChangeProcessor()">
+                  <option value="Dojo">Dojo</option>
+              </select>
+            </clr-select-container>
+          <div *ngIf="showDojoForms">
+          <clr-password-container>
+              <label>Api Key</label>
+              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" formControlName="processorApiKey"/>
+            </clr-password-container>
+            <clr-password-container>
+              <label>Account Id</label>
+              <input clrPassword autocomplete="current-password" placeholder="Insert account id" formControlName="processorAccountId" />
+            </clr-password-container>
+            <clr-password-container>
+              <label>Software House Id</label>
+              <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="processorSoftwareHouseId" />
+            </clr-password-container>
+          </div>
+          <button class="btn btn-primary" (click)="onChangePaymentProcessor()" >Save</button>
+      </section>
+
+      <section formGroupName="integrationSettings">
+        <div>SMS Notifications</div>
+        <clr-toggle-container>
+          <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle  formControlName="smsActivation" />
+            <label>SMS Activation</label>
+          </clr-toggle-wrapper>
+          <clr-control-helper>Usage costs $0.042 per SMS</clr-control-helper>
+        </clr-toggle-container>
+      </section>
+      
+      
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink (click)="fillShopSettings()">Shop Operations</button>
+    <clr-tab-content *clrIfActive>
+      <section formGroupName="shopSettings">
+        <div>
+          <h4>Operating Hours</h4>
+          </div>  
+          <div class="clr-row">
+            <div class="clr-col">
+              <clr-input-container>
+                <label>Day</label>
+                <input clrInput />
+              </clr-input-container>
+              <clr-input-container>
+                <label>StartTime</label>
+                <input clrInput [ngxTimepicker]="picker" name="startTime" >
+                <ngx-material-timepicker #picker></ngx-material-timepicker>
+              </clr-input-container>
+              <clr-input-container>
+                <label>EndTime</label>
+                <input clrInput [ngxTimepicker]="picker1" name="endTime" >
+                <ngx-material-timepicker #picker1></ngx-material-timepicker>
+              </clr-input-container>
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+           
+            
+            <div class="clr-col">
+              <table class="table compact no-border vertical">
+                <thead>
+                  <th>Day</th>
+                  <th>Start Time</th>
+                  <th>Closing Time</th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let o of times">
+                  <td>{{o.day}}</td>
+                  <td>{{o.startTime}}</td>
+                  <td>{{o.endTime}}</td>
+                  <td><button type="button" class="btn btn-secondary" (click)="onDeleteOpenTimes(o)">Delete</button></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+            
+        
+        
+      </section>
+
+      <section>
+        <div>
+          <h4>Logistics</h4>
         </div>
         <div class="clr-row">
-          <div class="clr-col-4">
-            <div class="card">
-              <div class="card-header">Delivery</div>
-              <div class="card-block">
-                <clr-input-container>
-                  <label>Delivery Distance (miles)</label>
-                  <input clrInput name="deliveryDistance"/>
-                </clr-input-container>
-                <clr-input-container>
-                  <label>Delivery Fee</label>
-                  <input clrInput name="deliveryFee"/>
-                </clr-input-container>
-              </div>
-            </div>
-          </div>
+          <clr-input-container class="clr-col">
+            <label class="clr-control-label">Delivery Distance (miles)</label>
+            <input clrInput name="deliveryDistance"/>
+          </clr-input-container>
+          <clr-input-container class="clr-col">
+            <label class="clr-control-label">Delivery Fee ({{0 | currency}}):</label>
+            <input clrInput placeholder="3" />
+          </clr-input-container>
         </div>
-       
-       
-      </clr-accordion-content>
-    </clr-accordion-panel>
-  </clr-accordion>
+        <button class="btn btn-primary" (click)="onChangeLogisticsDetails()">Save</button>
+      </section>
+     
+      <section formGroupName="shopSettings">
+        <div>
+          <h4>Receipt Settings</h4>
+        </div>
+        <div class="clr-row">
+          <clr-input-container class="clr-col">
+            <label class="clr-control-label">VAT Rate (%):</label>
+            <input clrInput  formControlName="vatCharge" />
+          </clr-input-container>
+          <clr-input-container class="clr-col">
+            <label class="clr-control-label">Service Charge (%):</label>
+            <input clrInput formControlName="serviceCharge" />
+          </clr-input-container>
+        </div>
+        <button class="btn btn-primary" (click)="onChangeReceiptDetails()">Save</button>
+      </section>
+      
+      <section formGroupName="businessDetails">
+        <div>
+          <h4>Address</h4>
+        </div>
+        <clr-input-container>
+          <label class="clr-control-label clr-required-mark">Address Line 1</label>
+          <input clrInput formControlName="businessAddressLine1" />
+        </clr-input-container>
+        <clr-input-container>
+          <label class="clr-control-label ">Address Line 2</label>
+          <input clrInput formControlName="businessAddressLine2"/>
+        </clr-input-container>
+        <clr-input-container>
+          <label class="clr-control-label clr-required-mark">City</label>
+          <input clrInput formControlName="city"/>
+        </clr-input-container>
+        <clr-input-container>
+          <label class="clr-control-label clr-required-mark">Postal Code</label>
+          <input clrInput formControlName="postalCode"/>
+        </clr-input-container>
+        <clr-input-container>
+          <label class="clr-control-label clr-required-mark">Country</label>
+          <input clrInput formControlName="country"/>
+        </clr-input-container>
+        <button class="btn btn-primary" (click)="onChangeBusinessDetails()">Save</button>
+      </section>
+    </clr-tab-content>
+  </clr-tab>
+</clr-tabs>
+ </form>

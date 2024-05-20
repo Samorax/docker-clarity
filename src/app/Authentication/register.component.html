@@ -1,43 +1,183 @@
 <div class="centralise">
-
-<form clrStepper #contactForm="ngForm" (ngSubmit)="signUp(contactForm)" >
+<form clrForm [formGroup]="registerForm" clrLayout="vertical" (ngSubmit)="signUp()">
   <section class="title">
-    <!-- These could be heading elements. -->
     <div style="font-size: 40px; margin:0px 0px 8px;">Foodloyale</div>
     <div style="font-size: 20px;margin: 8px 0px 0px;">Invent Loyal Customers</div>
   </section>
-  <clr-stepper-panel ngModelGroup="businessInformation">
+
+  <section formGroupName="businessDetails">
+    <div class="sectionHeaders">
+      <h5>Business Information</h5>
+    </div>
+    <clr-input-container>
+      <label class="clr-required-mark">Business Name</label>
+      <input clrInput formControlName="businessName" required/>
+      <clr-control-error *clrIfError="'required'">This is required for legal compliance</clr-control-error>
+    </clr-input-container>
+    <div class="clr-row">
+      <clr-input-container class="clr-col-6">
+        <label class="clr-required-mark">Business Address Line 1</label>
+        <input clrInput formControlName="businessAddressLine1"  required/>
+        <clr-control-error *clrIfError="'required'">This is required</clr-control-error>
+      </clr-input-container>
+      <clr-input-container class="clr-col-6">
+        <label>Business Address Line 2</label>
+        <input clrInput formControlName="businessAddressLine2" />
+      </clr-input-container>
+    </div>
+    <div class="clr-row">
+      <clr-input-container class="clr-col-6">
+        <label class="clr-required-mark">County/State</label>
+        <input clrInput  formControlName="city"  required/>
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+      </clr-input-container>
+      <clr-input-container class="clr-col-6">
+        <label class="clr-required-mark">Postal Code/Zip Code</label>
+        <input clrInput  formControlName="postalCode" required/>
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+      </clr-input-container>
+      <clr-combobox-container class="clr-col-6">
+        <label class="clr-required-mark">Country</label>
+        <clr-combobox  formControlName="country" required>
+        <clr-options>
+          <clr-option *clrOptionItems="let c of countries; field: 'name'" [clrValue]="c">
+            <cds-icon shape="world" role="img" aria-label="World is turning"></cds-icon>
+            {{ c.name }}
+            <cds-icon shape="sun" role="img" aria-label="Sun is shining"></cds-icon>
+          </clr-option>
+        </clr-options>
+      </clr-combobox>
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+      </clr-combobox-container>
+      </div>
+  </section>
+  <section formGroupName="contactDetails">
+    <div class="sectionHeaders">
+      <h5>Contact Information</h5>
+    </div>
+    <div class="clr-row">
+      <clr-input-container class="clr-col-6">
+        <label class="clr-required-mark">First Name</label>
+        <input clrInput  formControlName="firstName" required />
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label class="clr-required-mark">Last Name</label>
+        <input clrInput  formControlName="lastName" required />
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+      </clr-input-container>
+    </div>
+    <div class="clr-row">
+      <clr-input-container class="clr-col-6">
+        <label class="clr-required-mark">Email</label>
+        <input clrInput  formControlName="email" />
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+        <clr-control-error *clrIfError="'email'">This is not an email!</clr-control-error>
+      </clr-input-container>
+      <clr-input-container>
+        <label class="clr-required-mark">Phone Number</label>
+        <input clrInput  formControlName="phoneNumber" required />
+        <clr-control-error *clrIfError="'required'">This field is required!</clr-control-error>
+        <clr-control-error *clrIfError="'email'">This does not look like a valid email!</clr-control-error>
+        <clr-control-error *clrIfError="'minlength'">
+          This does not look like a phone number
+        </clr-control-error>
+      </clr-input-container>
+    </div>
+  </section>
+  
+  <div class="sectionHeaders">
+    <h5>Payment Details</h5>
+  </div>
+  <div>
+    <label class="clr-required-mark">Enter Payment Details</label>
+    <form class="formbody" id="payment-form" >
+      <div class="group" id="payment-element">
+        <!--Stripe.js injects the Payment Element-->
+      </div>
+      <div class="clr-row">
+        <button id="button-text" class="btn btn-outline" #button (click)="onPaymentAuthorize($event)">
+          <!-- <div class="spinner hidden" id="spinner"></div> -->
+          <span id="button-text">Authorize Payment</span>
+        </button>
+        <div id="payment-message" class="hidden"></div>
+        <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showAuthorizePaymentFeedback">
+          <clr-alert-item>
+            <span class="alert-text">Payment Authorization Successful!!</span>
+          </clr-alert-item>
+          </clr-alert>
+          <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'danger'" class="clr-col" *ngIf="showAuthorizePaymentError">
+            <clr-alert-item>
+              <span class="alert-text">Payment Authozation Failed: {{paymentErrorReason}}</span>
+            </clr-alert-item>
+            </clr-alert>
+      </div>
+    </form>
+  </div>
+  
+<section formGroupName="loginDetails">
+  <div class="sectionHeaders">
+    <h5>Login Information</h5>
+  </div>
+    <div class="clr-row">
+      <clr-password-container class="clr-col">
+        <label class="clr-required-mark">Password</label>
+        <input type="password"
+               autocomplete="current-password"
+               name="password"
+               clrPassword
+               placeholder="Enter password" formControlName="password" required />
+               <clr-control-error *clrIfError="'required'">This is required</clr-control-error>
+               <clr-control-error *clrIfError="'pattern'">
+                Password must fuifill the following:
+                <ul>
+                  <li>must include both uppercase and lowercase alphabets</li>
+                  <li>must include at least a number</li>
+                  <li>must include at least one of these symbols: &#64;$!%*?&</li>
+                  <li>must be at least 8 characters</li>
+                </ul>
+              </clr-control-error>
+      </clr-password-container>
+      <clr-password-container class="clr-col">
+        <label class="clr-required-mark">Verify Password</label>
+        <input type="password"
+               autocomplete="current-password"
+               name="verifyPassword"
+               clrPassword
+               placeholder="Enter password" formControlName="verifyPassword"  required />
+               <clr-control-error *clrIfError="'required'">This is required</clr-control-error>
+               <clr-control-error *clrIfError="'pattern'">
+                Password must fuifill the following:
+                <ul>
+                  <li>must include both uppercase and lowercase alphabets</li>
+                  <li>must include at least a number</li>
+                  <li>must include at least one of these symbols: &#64;$!%*?&</li>
+                  <li>must be at least 8 characters</li>
+                </ul>
+              </clr-control-error>
+              <clr-control-error *clrIfError="'mustMatch'">This does not match Password!</clr-control-error>
+      </clr-password-container>
+
+    </div>
+</section>
+  
+    <div>
+      <clr-checkbox-container>
+        <clr-checkbox-wrapper>
+          <input type="checkbox" clrCheckbox formControlName="terms" required/>
+          <label class="clr-required-mark">By Clicking, You accept the terms and condtions of service of Foodloyale Ltd.</label>
+        </clr-checkbox-wrapper>
+      </clr-checkbox-container>
+    </div>
+    
+  
+  
+  <!-- <button clrStepButton="submit" type="submit">submit</button> -->
+ <!--  <clr-stepper-panel ngModelGroup="businessInformation">
     <clr-step-title>Business Information</clr-step-title>
     <clr-step-description>Tell us about your business</clr-step-description>
     <clr-step-content>
-      <clr-input-container>
-        <label>Business Name</label>
-        <input clrInput [ngModel]="credentials.businessName" name="businessName" required />
-      </clr-input-container>
-      <div class="clr-row">
-        <clr-input-container class="clr-col-6">
-          <label>Business Address Line 1</label>
-          <input clrInput [ngModel]="credentials.businessAddressLine1" name="businessAddressLine1" required />
-        </clr-input-container>
-        <clr-input-container class="clr-col-6">
-          <label>Business Address Line 2</label>
-          <input clrInput [ngModel]="credentials.businessAddressLine2" name="businessAddressLine2" required />
-        </clr-input-container>
-      </div>
-      <div class="clr-row">
-        <clr-input-container class="clr-col-6">
-          <label>County/State</label>
-          <input clrInput [ngModel]="credentials.businessAddressCity" name="businessAddressCity" required />
-        </clr-input-container>
-        <clr-input-container class="clr-col-6">
-          <label>Postal Code/Zip Code</label>
-          <input clrInput [ngModel]="credentials.businessAddressPostalCode" name="businessAddressPostalCode" required />
-        </clr-input-container>
-        <clr-input-container class="clr-col-6">
-          <label>Country</label>
-          <input clrInput [ngModel]="credentials.businessAddressCountry" name="businessAddressCountry" required />
-        </clr-input-container>
-      </div>
+     
       <button clrStepButton="next">next</button>
     </clr-step-content>
   </clr-stepper-panel>
@@ -46,70 +186,46 @@
     <clr-step-title>Contact Information</clr-step-title>
     <clr-step-description>How should we contact you</clr-step-description>
     <clr-step-content>
-      <div class="clr-row">
-        <clr-input-container class="clr-col-6">
-          <label>First Name</label>
-          <input clrInput [ngModel]="credentials.firstName" name="firstName" required />
-        </clr-input-container>
-        <clr-input-container>
-          <label>Last Name</label>
-          <input clrInput [ngModel]="credentials.lastName" name="lastName" required />
-        </clr-input-container>
-      </div>
-      <div class="clr-row">
-        <clr-input-container class="clr-col-6">
-          <label>Email</label>
-          <input clrInput [ngModel]="credentials.email" name="email" required />
-        </clr-input-container>
-        <clr-input-container>
-          <label>Phone Number</label>
-          <input clrInput [ngModel]="credentials.phoneNumber" name="phoneNumber" required />
-        </clr-input-container>
-      </div>
+      
+      
       
       <button clrStepButton="next">next</button>
     </clr-step-content>
+  </clr-stepper-panel>
+
+  <clr-stepper-panel ngModelGroup="paymentDetails">
+    <clr-step-title>Payment Information</clr-step-title>
+    <clr-step-description>Enter your Card details</clr-step-description>
+    <clr-step-content *clrIfExpanded>
+     
+    </clr-step-content>
+      
+    
   </clr-stepper-panel>
 
   <clr-stepper-panel ngModelGroup="loginDetails">
     <clr-step-title>Password</clr-step-title>
     <clr-step-description>This is what you use to login. Your Email is the Username</clr-step-description>
     <clr-step-content>
-      <clr-select-container>
-        <label>Account Type</label>
-        <select clrSelect name="accountType" [ngModel]="credentials.accountType">
-          <option value="business owner">Business Owner</option>
-          <option value="developer">Developer</option>
-        </select>
-      </clr-select-container>
-      <clr-password-container>
-        <label>Password</label>
-        <input type="password"
-               autocomplete="current-password"
-               name="password"
-               clrPassword
-               placeholder="Enter password" [ngModel]="credentials.password" required />
-      </clr-password-container>
-      <clr-password-container>
-        <label>Verify Password</label>
-        <input type="password"
-               autocomplete="current-password"
-               name="verifyPassword"
-               clrPassword
-               placeholder="Enter password" [ngModel]="credentials.verifyPassword"  required />
-      </clr-password-container>
-      <button clrStepButton="submit" type="submit">submit</button>
+     
     </clr-step-content>
   </clr-stepper-panel>
-  
-  
+   -->
+   <div class="clr-row">
+    <button type="submit" class="btn btn-primary" [disabled]="!registerForm.valid">Submit</button>
+    <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showRegistrationFeedback">
+      <clr-alert-item>
+        <span class="alert-text">Registration Successful!!</span>
+      </clr-alert-item>
+      </clr-alert>
+      <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'danger'" class="clr-col" *ngIf="showRegistrationError">
+        <clr-alert-item>
+          <span class="alert-text">Registration Failed: {{registrationErrorReason}}</span>
+        </clr-alert-item>
+        </clr-alert>
+   </div>
+ 
   
 </form>
-<span *ngIf="processing" class="spinner spinner-inline">processing ...</span>
-  <div *ngIf="show">
-    <div *ngIf="feedbacks">
-      {{feedbacks}}
-    </div>
-    <div *ngIf="feedbacks.succeeded">Registration Successful!<br> Check your emai for further instructions.</div>
-  </div>
-</div>
+
+

@@ -18,7 +18,7 @@ import { AppComponent } from "../app.component";
 })
 
 export class AuthenticationService {
-  baseUrl:string = AppComponent.apiBaseUrl+"/api/"
+  baseUrl:string = AppComponent.apiBaseUrl+"api/"
 
   constructor(private _httpClient: HttpClient,
      private _pService: ProductService, private _oService: OrderService, private _cService: CustomerService) { }

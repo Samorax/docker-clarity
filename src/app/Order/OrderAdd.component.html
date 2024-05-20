@@ -32,16 +32,18 @@
                 <div class="clr-col-8">
                     <h3>Select Product(s)</h3>
                     <div style="padding: 5px; height: 450px;">
-                      <div class="card clickable" *ngFor='let product of products'  (click)="onSelect(product)" class="clr-col-lg-2" style="display: inline; float: left;"> 
-                        <div class="card-img">
-                          <img [src]="product.photosUrl" alt="..."/>
+                      <div class="card clickable" *ngFor='let product of products'  (click)="onSelect(product)" class="clr-col-lg-3" style="display: inline; float: left;"> 
+                        <div class="card-media-block wrap">
+                          <div class="card-media-image">
+                            <img [src]="product.photosUrl" alt="..."  class="card-img" />
+                          </div>
+                          <div class="card-media-description">
+                            <div class="card-media-title">{{product.name}}</div>
+                            <div class="card-media-text">{{product.price | currency: currencySymbol}}</div>
+                          </div>
+                          
                         </div>
-                        <div class="card-block">
-                          <p class="card-text">
-                            {{product.name}}<br>
-                            {{product.price | currency: currencySymbol}}
-                          </p>
-                        </div>
+                        
                       </div>
                     </div>
                         

@@ -36,12 +36,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   show: any = false;
   Orderstatus:string = '';
   paymentProvider: any;
-  static apiBaseUrl:string
+  static apiBaseUrl:string = !isDevMode ? prodEnvironment.apiBaseUrl: environment.apiBaseUrl;
 
   constructor(private signalrService: SignalrService,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private readonly swPush:SwPush,
      private _route: Router) {
-      AppComponent.apiBaseUrl = !isDevMode ? prodEnvironment.apiBaseUrl: environment.apiBaseUrl;
+    
      }
 
 

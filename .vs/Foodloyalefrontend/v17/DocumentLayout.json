@@ -3,6 +3,30 @@
   "WorkspaceRootPath": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\ngsw-config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ngsw-config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:package.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Authentication\\register.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Services\\PaymentService.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Authentication\\register.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Order\\OrderList.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
@@ -17,26 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\index\\indexComponent.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\index\\indexComponent.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\app.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Services\\PaymentService.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Settings\\settings.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\Settings\\settings.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\app\\app.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,24 +54,98 @@
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "OrderList.component.ts",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.ts",
-              "RelativeDocumentMoniker": "src\\app\\Order\\OrderList.component.ts",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.ts",
-              "RelativeToolTip": "src\\app\\Order\\OrderList.component.ts",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACoAAAAiAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-05-02T09:40:26.176Z",
+              "Title": "ngsw-config.json",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\ngsw-config.json",
+              "RelativeDocumentMoniker": "ngsw-config.json",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\ngsw-config.json",
+              "RelativeToolTip": "ngsw-config.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-05-20T13:52:14.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "package.json",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\package.json",
+              "RelativeDocumentMoniker": "package.json",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\package.json",
+              "RelativeToolTip": "package.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-05-20T13:52:09.615Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "register.component.ts",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.ts",
+              "RelativeDocumentMoniker": "src\\app\\Authentication\\register.component.ts",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.ts",
+              "RelativeToolTip": "src\\app\\Authentication\\register.component.ts",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAA0AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-05-08T20:53:41.566Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PaymentService.ts",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts",
+              "RelativeDocumentMoniker": "src\\app\\Services\\PaymentService.ts",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts",
+              "RelativeToolTip": "src\\app\\Services\\PaymentService.ts",
+              "ViewState": "AQIAABMAAAAAAAAAAAAAADMAAABBAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-05-08T20:25:04.853Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "index.html",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html",
+              "RelativeDocumentMoniker": "src\\index.html",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html",
+              "RelativeToolTip": "src\\index.html",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAC4AAAAHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-05-08T14:19:14.97Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "register.component.html",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.html",
+              "RelativeDocumentMoniker": "src\\app\\Authentication\\register.component.html",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Authentication\\register.component.html",
+              "RelativeToolTip": "src\\app\\Authentication\\register.component.html",
+              "ViewState": "AQIAAHMAAAAAAAAAAAAAAIgAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-05-08T13:45:52.664Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "OrderList.component.ts",
+              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.ts",
+              "RelativeDocumentMoniker": "src\\app\\Order\\OrderList.component.ts",
+              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.ts",
+              "RelativeToolTip": "src\\app\\Order\\OrderList.component.ts",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-05-02T09:40:26.176Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "Order.model.ts",
               "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Models\\Order.model.ts",
               "RelativeDocumentMoniker": "src\\app\\Models\\Order.model.ts",
@@ -75,12 +153,11 @@
               "RelativeToolTip": "src\\app\\Models\\Order.model.ts",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-05-02T09:38:32.053Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-02T09:38:32.053Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "OrderList.component.html",
               "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Order\\OrderList.component.html",
               "RelativeDocumentMoniker": "src\\app\\Order\\OrderList.component.html",
@@ -88,12 +165,11 @@
               "RelativeToolTip": "src\\app\\Order\\OrderList.component.html",
               "ViewState": "AQIAAEQAAAAAAAAAAAAAACUAAAA+AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2024-05-02T09:28:17.196Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-02T09:28:17.196Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 9,
               "Title": "indexComponent.html",
               "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\index\\indexComponent.html",
               "RelativeDocumentMoniker": "src\\app\\index\\indexComponent.html",
@@ -101,68 +177,7 @@
               "RelativeToolTip": "src\\app\\index\\indexComponent.html",
               "ViewState": "AQIAAHkAAAAAAAAAAAAAAIwAAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2024-04-30T10:15:13.575Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "index.html",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html",
-              "RelativeDocumentMoniker": "src\\index.html",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\index.html",
-              "RelativeToolTip": "src\\index.html",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACsAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2024-04-30T09:33:54.601Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "PaymentService.ts",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts",
-              "RelativeDocumentMoniker": "src\\app\\Services\\PaymentService.ts",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Services\\PaymentService.ts",
-              "RelativeToolTip": "src\\app\\Services\\PaymentService.ts",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAAABMAAAA0AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-04-28T22:17:32.248Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "settings.component.ts",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Settings\\settings.component.ts",
-              "RelativeDocumentMoniker": "src\\app\\Settings\\settings.component.ts",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\Settings\\settings.component.ts",
-              "RelativeToolTip": "src\\app\\Settings\\settings.component.ts",
-              "ViewState": "AQIAACYAAAAAAAAAAAAAAEwAAAA0AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-04-23T20:34:02.787Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "app.component.ts",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.ts",
-              "RelativeDocumentMoniker": "src\\app\\app.component.ts",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.ts",
-              "RelativeToolTip": "src\\app\\app.component.ts",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-04-23T20:33:56.103Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "app.component.html",
-              "DocumentMoniker": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.html",
-              "RelativeDocumentMoniker": "src\\app\\app.component.html",
-              "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\src\\app\\app.component.html",
-              "RelativeToolTip": "src\\app\\app.component.html",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2024-04-23T20:33:48.072Z"
+              "WhenOpened": "2024-04-30T10:15:13.575Z"
             }
           ]
         }

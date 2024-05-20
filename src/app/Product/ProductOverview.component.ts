@@ -79,6 +79,7 @@ export class ProductOverviewComponent implements OnInit{
                 {
                   data: this.calculateThePercentageDemandOfAllProducts(this.products),
                   type: 'bar',
+                  showBackground: true
                 },
               ],
             };

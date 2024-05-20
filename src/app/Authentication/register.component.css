@@ -3,7 +3,9 @@
     left: 20%;
     right: 20%;
     top: 20%;
-    bottom: 20%;
+
+    margin-bottom: 30px;
+
 }
 
 .registerHeader{
@@ -15,3 +17,81 @@
     font-weight: 200;
 
 }
+
+.sectionHeaders{
+    border-bottom-width: 3px;
+    border-bottom-style: solid;
+}
+
+.formbody{width: 480px;
+margin: 20px 0;}
+.group {
+    background: white;
+    box-shadow: 0 7px 14px 0 rgba(49,49,93,0.10),
+                0 3px 6px 0 rgba(0,0,0,0.08);
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .group label {
+    position: relative;
+    color: #8898AA;
+    font-weight: 300;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .group label:not(:last-child) {
+    border-bottom: 1px solid #F0F5FA;
+  }
+  
+  label > span {
+    width: 80px;
+    text-align: right;
+    margin-right: 30px;
+  }
+  
+  .field {
+    background: transparent;
+    font-weight: 300;
+    border: 0;
+    color: #31325F;
+    outline: none;
+    flex: 1;
+    padding-right: 10px;
+    padding-left: 10px;
+    cursor: text;
+  }
+  
+  .field::-webkit-input-placeholder { color: #CFD7E0; }
+  .field::-moz-placeholder { color: #CFD7E0; }
+  
+  .group button {
+    float: left;
+    display: block;
+    background: #666EE8;
+    color: white;
+    box-shadow: 0 7px 14px 0 rgba(49,49,93,0.10),
+                0 3px 6px 0 rgba(0,0,0,0.08);
+    border-radius: 4px;
+    border: 0;
+    margin-top: 20px;
+    font-size: 15px;
+    font-weight: 400;
+    width: 100%;
+    height: 40px;
+    line-height: 38px;
+    outline: none;
+  }
+  
+  .group button:focus {
+    background: #555ABF;
+  }
+  
+  .group button:active {
+    background: #43458B;
+  }
+  

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 import { Allergen } from "../Models/Allergen";
 
 @Component({
@@ -10,6 +10,19 @@ import { Allergen } from "../Models/Allergen";
 })
 
 export class AddProductDialog{
+  
+  constructor(private formBuilder: FormBuilder){}
+  
+  productForm = this.formBuilder.group({
+    photo:[File,Validators.required],
+    productName:['',Validators.required],
+    productCategory:['',Validators.required],
+    productPrice:['',Validators.required],
+    productDescription:['', Validators.required],
+    productCode:[''],
+    productLoyaltyPoints:[''],
+    productAllergens:['']
+  })
   currencySymbol:any = localStorage.getItem("currency_iso_code");
   user:any = localStorage.getItem("user_id");
   show: boolean = false;
@@ -69,7 +82,8 @@ export class AddProductDialog{
   }
 
   monitorValue() {
-    if (this.product.category == "New") {
+    if (this.productForm.get('productCategory')?.value === "New") {
+
       this.addNewCategory = true;
     }
     
@@ -84,6 +98,9 @@ export class AddProductDialog{
 
 onfileLoaded(x: any) {
   this.fileInput = x;
+  console.log(this.fileInput[0])
+  this.productForm.get('photo')?.setValue(this.fileInput[0]);
+  console.log(this.fileInput[0])
     this.handleFiles(x);
 }
 
@@ -102,26 +119,21 @@ handleFiles(files: FileList) {
     }
 }
 
-  onSubmit(f:NgForm) {
-    let prod = f.value;
-    prod.applicationUserID = this.user;
+  onSubmit() {
+    let prod:any = this.productForm.value
     
-    
-  /*  this.allergenSelection.forEach(a=>{
-      let x:Allergen = {name:a};
-      prod.allergens.push(x);
-    }); */
+  
 
     let data = new FormData();
-    data.append('applicationUserID',prod.applicationUserID);
-    data.append("category",prod.Category);
-    data.append("code",prod.Code);
-    data.append("description",prod.Description);
-    data.append("name",prod.Name);
-    data.append("price",prod.Price);
-    data.append("loyaltyPoints",prod.LoyaltyPoints);
-    data.append("photosUrl",this.fileInput[0]);
-    data.append("allergens", prod.multiSelect)
+    data.append('applicationUserID',this.user);
+    data.append("category",prod.productCategory);
+    data.append("code",prod.productCode);
+    data.append("description",prod.productDescription);
+    data.append("name",prod.productName);
+    data.append("price",prod.productPrice);
+    data.append("loyaltyPoints",prod.productLoyaltyPoints);
+    data.append("photosUrl",prod.photo);
+    data.append("allergens", prod.productAllergens)
     console.log(prod);
     this.onOk.emit(data);
   }

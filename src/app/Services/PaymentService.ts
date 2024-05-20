@@ -49,7 +49,7 @@ export class paymentService{
     };
 
     createPaymentIntent(y:any){
-      return this._httpclient.post(this.baseUrl +"/terminal/paymentIntent",y,this.httpOptions)
+      return this._httpclient.post(AppComponent.apiBaseUrl +"api/GeneralPayment/terminal/paymentintent",y,this.httpOptions)
       .pipe(catchError(this.handleError));
     };
 

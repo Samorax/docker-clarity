@@ -12,8 +12,8 @@ export class RegisterCredentials {
   public country!:string
   public email!: string
   public password!: string
-  public accountType!: string
   public phoneNumber!:any
   public paymentProcessor?: paymentProcessor
   openingTimes?:any
+  paymentToken!:string
 }
