@@ -3,13 +3,14 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http
 import { Observable, catchError, retry, throwError } from "rxjs";
 import { Product } from "../Models/Product";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   productssCache: Product[] = [];
-  baseUrl =  AppComponent.apiBaseUrl+'api/products/';
+  baseUrl =  environment.apiBaseUrl+'api/products/';
 
    httpOptions = {
     headers: new HttpHeaders({

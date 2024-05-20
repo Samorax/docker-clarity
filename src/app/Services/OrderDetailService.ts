@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { orderDetail } from "../Models/OrderDetails";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:'root'
@@ -12,7 +13,7 @@ export class OrderDetailService {
     constructor(private _httpClient: HttpClient) {
     }
 
-    baseUrl:string = AppComponent.apiBaseUrl+"/api/orderDetails/"
+    baseUrl:string = environment.apiBaseUrl+"api/orderDetails/"
 
     httpOptions = {
         headers: new HttpHeaders({

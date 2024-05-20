@@ -12,13 +12,14 @@ import { CustomerService } from "./CustomerService";
 import moment from "moment";
 import { json } from "stream/consumers";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class AuthenticationService {
-  baseUrl:string = AppComponent.apiBaseUrl+"api/"
+  baseUrl:string = environment.apiBaseUrl+"api/"
 
   constructor(private _httpClient: HttpClient,
      private _pService: ProductService, private _oService: OrderService, private _cService: CustomerService) { }

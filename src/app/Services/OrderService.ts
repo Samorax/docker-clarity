@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Subscription, catchError, retry, throwError } from "rxjs";
 import { Order } from "../Models/Order.model";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
   providedIn:"root"
@@ -10,7 +11,7 @@ import { AppComponent } from "../app.component";
 export class OrderService {
   ordersCache: Order[] = [];
   constructor(private _httpClient: HttpClient) { }
-  baseUrl = AppComponent.apiBaseUrl+"api/orders/"
+  baseUrl = environment.apiBaseUrl+"api/orders/"
 
   httpOptions = {
     headers: new HttpHeaders({

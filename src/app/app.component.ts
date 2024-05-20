@@ -12,7 +12,7 @@ import { Order } from './Models/Order.model';
 import { CustomerDto } from './Models/CustomerDto';
 import { Customer } from './Models/Customer';
 import { SwPush } from '@angular/service-worker';
-import { environment, prodEnvironment } from '../environment/environment';
+import { environment} from '../environment/environment';
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -36,7 +36,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   show: any = false;
   Orderstatus:string = '';
   paymentProvider: any;
-  static apiBaseUrl:string = !isDevMode ? prodEnvironment.apiBaseUrl: environment.apiBaseUrl;
 
   constructor(private signalrService: SignalrService,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private readonly swPush:SwPush,
@@ -86,6 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
+    console.log(isDevMode);
     if(!this.swPush.isEnabled){
         let token:any = localStorage.getItem('access_token');
         this.swPush.requestSubscription({serverPublicKey:token}).then((r)=>{

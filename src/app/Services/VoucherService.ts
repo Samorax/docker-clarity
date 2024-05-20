@@ -3,6 +3,7 @@ import { voucher } from "../Models/Voucher";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { catchError, throwError } from "rxjs";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:'root'
@@ -10,7 +11,7 @@ import { AppComponent } from "../app.component";
 
 export class voucherService{
     public getVoucherCache:voucher[] = [];
-    baseUrl:string = AppComponent.apiBaseUrl+"/api/vouchers/"
+    baseUrl:string = environment.apiBaseUrl+"/api/vouchers/"
 
     constructor(private _httpClient: HttpClient){}
 

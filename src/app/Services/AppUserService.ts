@@ -4,13 +4,14 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, shareReplay, throwError } from "rxjs";
 import { AppComponent } from "../app.component";
 import { appUser } from "../Models/AppUser";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:'root'
 })
 export class appUserService{
     constructor(private _httpClient: HttpClient){}
-    baseUrl = AppComponent.apiBaseUrl+"api/Restaurant/";
+    baseUrl = environment.apiBaseUrl+"api/Restaurant/";
 
     private handleError(error: HttpErrorResponse) {
         if (error.status === 0) {

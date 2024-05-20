@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { smsModel } from "../Models/SmsModel";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:"root"
@@ -10,7 +11,7 @@ import { AppComponent } from "../app.component";
 
 export class SmsService {
     constructor(private _httpClient:HttpClient){}
-    baseUrl = AppComponent.apiBaseUrl+"/api/sms/";
+    baseUrl = environment.apiBaseUrl+"/api/sms/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

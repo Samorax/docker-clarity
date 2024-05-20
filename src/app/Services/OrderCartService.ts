@@ -4,6 +4,7 @@ import { catchError, throwError } from "rxjs";
 import { CartItem } from "../Models/CartItem";
 import { CartOrder } from "../Models/CartOder";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:'root'
@@ -12,7 +13,7 @@ import { AppComponent } from "../app.component";
 export class OrderCartService{
     
     _httpClient = inject(HttpClient);
-    baseUrl:string = AppComponent.apiBaseUrl+"/api/cartorders/"
+    baseUrl:string = environment.apiBaseUrl+"/api/cartorders/"
 
     httpOptions = {
         headers: new HttpHeaders({

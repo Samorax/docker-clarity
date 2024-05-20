@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { throwError, retry, catchError } from "rxjs";
 import { Customer } from "../Models/Customer";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:'root'
@@ -12,7 +13,7 @@ export class CustomerService{
     
     customersCache: Customer[] = [];
     constructor(private _httpClient: HttpClient) { }
-    baseUrl: string = AppComponent.apiBaseUrl+"/api/customers/"
+    baseUrl: string = environment.apiBaseUrl+"api/customers/"
   
     httpOptions = {
       headers: new HttpHeaders({

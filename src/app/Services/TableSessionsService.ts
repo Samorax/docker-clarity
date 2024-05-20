@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { TableSession } from "../Models/Session";
 import { AppComponent } from "../app.component";
+import { environment } from "../../environment/environment";
 
 @Injectable({
     providedIn:"root"
@@ -12,7 +13,7 @@ export class TableSessionService
 {
 
     constructor(private _httpClient: HttpClient){}
-    baseUrl = AppComponent.apiBaseUrl+"/api/tablesessions/";
+    baseUrl = environment.apiBaseUrl+"/api/tablesessions/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
