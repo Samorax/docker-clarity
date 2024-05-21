@@ -62,6 +62,7 @@ export class registerComponent implements OnInit, AfterViewInit{
   registrationErrorReason:any
   showRegistrationFeedback: boolean = false;
   showRegistrationError: boolean = false;
+  registeringUserInfo: boolean = false;
   
   constructor(private authenticationService: AuthenticationService,private stripeIntentService: paymentService, private formBUilder:FormBuilder ) { }
 
@@ -139,6 +140,7 @@ export class registerComponent implements OnInit, AfterViewInit{
 
   signUp() {
     this.processing = true;
+    this.registeringUserInfo = true;
     let x = this.registerForm.value;
     
     let credentials: RegisterCredentials =
@@ -156,14 +158,17 @@ export class registerComponent implements OnInit, AfterViewInit{
       password: x.loginDetails.password,
       paymentToken:x.paymentToken
     };
-    console.log(credentials);
+  
     this.authenticationService.register(credentials).subscribe(x => 
       { 
-       this.showRegistrationFeedback = true;
+        this.showRegistrationFeedback = true;
+        this.registeringUserInfo = false;
+       
       }, (err:Error)=>{
+        this.registeringUserInfo = false;
           this.showRegistrationError = true;
           this.registrationErrorReason = err.message;
-      } )
+      },()=>{ this.showRegistrationError = false;})
       
   }
 

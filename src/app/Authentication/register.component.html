@@ -212,7 +212,12 @@
   </clr-stepper-panel>
    -->
    <div class="clr-row">
+   
     <button type="submit" class="btn btn-primary" [disabled]="!registerForm.valid">Submit</button>
+    <div *ngIf="registeringUserInfo" class="clr-col">
+      <clr-spinner clrInline>Registering</clr-spinner>
+      <span>Registering</span>
+    </div>
     <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showRegistrationFeedback">
       <clr-alert-item>
         <span class="alert-text">Registration Successful!!</span>

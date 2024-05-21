@@ -13,6 +13,7 @@ import moment from "moment";
 import { json } from "stream/consumers";
 import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
+import { unsubscribe } from "diagnostics_channel";
 
 @Injectable({
   providedIn: "root"
@@ -47,8 +48,7 @@ export class AuthenticationService {
       .pipe(tap(this.setSession), catchError(this.handleError));
   }
   setSession(tokenObject: TokenObject) {
-    console.log(tokenObject);
-    console.log(tokenObject.api_key_1);
+    
     let d = new Date(tokenObject.expiry_date);
     const expiresAt = moment().add(d.getUTCHours(), "hour");
   
@@ -71,7 +71,7 @@ export class AuthenticationService {
   //Delete Access_Token to prevent unauthorised users.
   //Empty Caches to prevent previous authenticated user's data showing for another user.
   logOut() {
-    return new Promise(()=>
+    return new Observable(()=>
     {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user_id");
@@ -80,11 +80,9 @@ export class AuthenticationService {
       localStorage.removeItem("apikey1");
       localStorage.removeItem("mSID");
 
-
-    this._pService.productssCache = [];
-    this._cService.customersCache = [];
-    this._oService.ordersCache =[];
-  })
+      location.reload()
+      
+  });
   }
 
   isLoggedOut(){

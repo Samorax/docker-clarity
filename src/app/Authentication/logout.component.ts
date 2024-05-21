@@ -12,7 +12,7 @@ export class logOutComponent implements OnInit{
   constructor(private _authService: AuthenticationService, private _router: Router) { }
 
     ngOnInit(): void {
-      this._authService.logOut().then(()=> this.isLoggedOut.emit("You have been logged out."));
+
     }
 
     

@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 
 @Component({
   selector: 'edit-product',
@@ -8,6 +8,8 @@ import { NgForm } from "@angular/forms";
 })
 
 export class EditProductDialog {
+  constructor(private _formBuilder:FormBuilder){}
+ 
   @Output() onOk: EventEmitter<any> = new EventEmitter<any>();
   product: Product = new Product();
   show: boolean = false;
@@ -17,6 +19,17 @@ export class EditProductDialog {
   @ViewChild('file')fileInput: any;
   allergens:Array<string> = ['Celery','Cereals','Crustaceans','Eggs','Fish','Lupin','Milk','Molluscs','Mustard','Nuts','Peanuts','Sesame seeds','Soya','Sulphur Dioxide'];
   allergenSelection:Array<string>=[];
+
+  editProductForm = this._formBuilder.group({
+    photo:[File,Validators.required],
+    productName:['',Validators.required],
+    productCategory:['',Validators.required],
+    productPrice:['',Validators.required],
+    productDescription:['', Validators.required],
+    productCode:[''],
+    productLoyaltyPoints:['', Validators.required],
+    productAllergens:['']
+  })
 
   
 
@@ -61,6 +74,13 @@ export class EditProductDialog {
 
   open(product: Product) {
     this.product = product;
+    this.editProductForm.get('productName')?.setValue(this.product.name);
+    this.editProductForm.get('productCategory')?.setValue(this.product.category)
+    this.editProductForm.get('productPrice')?.setValue(this.product.price)
+    this.editProductForm.get('productDescription')?.setValue(this.product.description)
+    this.editProductForm.get('productCode')?.setValue(this.product.code)
+    this.editProductForm.get('productLoyaltyPoints')?.setValue(this.product.loyaltyPoints)
+    this.editProductForm.get('productAllergens')?.setValue(this.product.allergens)
     this.show = true;
     this.getProductCategories(this.products).then(p=> this.categories = p);
   }
@@ -97,20 +117,20 @@ export class EditProductDialog {
     this.show = false;
   }
 
-  onSubmit(f:NgForm) {
-    let prod = f.value;
+  onSubmit() {
+    let prod:any = this.editProductForm.value;
     
     let data = new FormData();
     data.append('id',this.product.productID);
     data.append('applicationUserID',this.product.applicationUserID);
-    data.append("category",prod.category);
-    data.append("code",prod.code);
-    data.append("description",prod.description);
-    data.append("name",prod.name);
-    data.append("price",prod.price);
-    data.append("loyaltyPoints",prod.loyaltyPoints);
-    data.append("photosUrl", this.checkIfPhotoFilePresent(this.fileInput[0]));
-    data.append("allergens",prod.multiSelect);
+    data.append("category",prod.productCategory);
+    data.append("code",prod.productCode);
+    data.append("description",prod.productDescription);
+    data.append("name",prod.productName);
+    data.append("price",prod.productPrice);
+    data.append("loyaltyPoints",prod.productLoyaltyPoints);
+    data.append("photosUrl", this.checkIfPhotoFilePresent(prod.photo));
+    data.append("allergens",prod.productAllergens);
     
     this.onOk.emit(data);
   }

@@ -20,7 +20,7 @@ export class AddProductDialog{
     productPrice:['',Validators.required],
     productDescription:['', Validators.required],
     productCode:[''],
-    productLoyaltyPoints:[''],
+    productLoyaltyPoints:['',Validators.required],
     productAllergens:['']
   })
   currencySymbol:any = localStorage.getItem("currency_iso_code");

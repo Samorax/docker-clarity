@@ -6,6 +6,6 @@
 </div>
 
 <div *ngIf="_authService.isAuthenticated()" >
-  <a class="nav-link nav-text" [routerLink]='["logout"]'>Logout</a>
+  <a class="nav-link nav-text" href="#" (click)="logOut()">Logout</a>
 </div>
 

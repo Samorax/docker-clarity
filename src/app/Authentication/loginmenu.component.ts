@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AuthenticationService } from "../Services/AuthenticationService";
 import { Observable } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
     selector:'app-loginmenu',
@@ -8,7 +9,7 @@ import { Observable } from "rxjs";
 })
 
 export class loginMenuComponent {
-    constructor(public _authService: AuthenticationService){}
+    constructor(public _authService: AuthenticationService, public _router:Router){}
     @Input()isAuthenticated!: boolean
 
     
@@ -26,6 +27,10 @@ export class loginMenuComponent {
 
     toggle() {
         this.isExpanded = !this.isExpanded;
+    }
+
+    logOut(){
+        this._authService.logOut().subscribe();
     }
 
 }
