@@ -1,0 +1,10 @@
+<clr-modal  [(clrModalOpen)]="show" clrModalSize="md" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Delete Account?</h3>
+    <div class="modal-body" clrModalBody>
+        <p>Are you sure you want to delete account?</p>
+    </div>
+    <div class="modal-footer" clrModalActions>
+        <button class="btn btn-secondary" (clcik)="show=false">Cancel</button>
+        <button class="btn btn-primary" (click)="onConfirm()">Confirm</button>
+    </div>
+</clr-modal>

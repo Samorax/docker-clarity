@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { Customer } from "../Models/Customer";
 import { CustomerService } from "../Services/CustomerService";
 import { OrderService } from "../Services/OrderService";
 import { Order } from "../Models/Order.model";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, observable, of } from "rxjs";
 import { EChartsOption } from "echarts";
 import moment from "moment";
 
@@ -28,14 +28,18 @@ export class CustomerOverviewComponent implements OnInit{
     highSpenders: Customer[] = [];
     repeatCustomers: Customer[] = [];
 
+    
+
     ngOnInit(): void {
-        this.loadInitOrders().subscribe(o=>{
-            this.loadInit().subscribe(c=>{
+        this.getCustomers().subscribe(c=>{
+            this.getOrders().subscribe(o=>{
                 this.totalRegisteredCustomers = c.length;
                 this.totalMonthBirthdays = this.calBirthdays(c);
                 this.gPieChart = this.drawDemographPieChart(c);
                 let cr = this.calRepeatCusts(o,c);
+                
                 this.totalRepeatCustomers = cr.total;
+
                 let hSp = this.calHighSpenders(c,o);
                 this.totalHighSpenders = hSp.total;
               
@@ -43,9 +47,11 @@ export class CustomerOverviewComponent implements OnInit{
                 this.WRepeatChartOption = this.drawWRepeatChart(c,o);
                 
                 this.rPieChart = this.drawDemographPieChart(cr.repeatCustomers);
-    
-                })
-        });
+            })
+
+            
+        })
+        
        };
         
         
@@ -55,25 +61,21 @@ export class CustomerOverviewComponent implements OnInit{
                 
 
     //load customers from cache or from database. Replenish cache, if empty.
-    loadInit(){
-        let cacheC = this._customerService.customersCache;
-        if(cacheC.length == 0){
-         this._customerService.getCustomers().subscribe(c=>{
-             c.forEach(cust => {
-                 cacheC.push(cust);
+    getCustomers(){
+          return new Observable<Customer[]>((o)=>{
+            this._customerService.getCustomers().subscribe(c=>{
+                o.next(c);
              });
-         })};
-        return of(cacheC);
-    };
+             //o.unsubscribe();
+            });;
+        }
 
-     loadInitOrders(): Observable<Order[]>{
-        let cacheO = this._orderService.ordersCache;
-         if(cacheO.length == 0){
-            this._orderService.getOrders().subscribe(o=>{
-            o.forEach(k=> cacheO.push(k));
-         })};
-
-         return of(cacheO);
+     getOrders(){
+        return new Observable<Order[]>((or)=>{
+            this._orderService.getOrders().subscribe(o=> or.next(o));
+            //or.unsubscribe();
+        })
+       
      }
 
 
@@ -169,9 +171,7 @@ export class CustomerOverviewComponent implements OnInit{
                             o1.push(o);
                         }
                     }else if( dateOfMonth >=8 && dateOfMonth <= 15){
-                        console.log("this is the week");
-                        console.log(element);
-                        console.log(o.customerID);
+                        
                         if(element.id == o.customerID){
                             o2.push(o);
                         }

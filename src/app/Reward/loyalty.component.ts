@@ -10,6 +10,7 @@ import { editLoyaltyDialogComponent } from "./editLoyaltyDialog.component";
 import { deleteLoyaltyDialogComponent } from "./deleteLoyaltyDialog.component";
 import { Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
+import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
     templateUrl:'./loyalty.component.html',
@@ -29,9 +30,11 @@ export class loyaltyComponent implements OnInit, AfterViewInit
     @ViewChild(addLoyaltyDialogComponent) addLoyalty!: addLoyaltyDialogComponent;
     @ViewChild(deleteLoyaltyDialogComponent) delLoyalty!:deleteLoyaltyDialogComponent;
     currencySymbol: any;
+
+    
     
 
-    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,
+    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,private _formBuilder: FormBuilder,
          private _rewardsSvr:RewardService){}
 
     ngAfterViewInit(): void {

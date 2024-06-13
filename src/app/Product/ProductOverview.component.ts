@@ -28,6 +28,7 @@ export class ProductOverviewComponent implements OnInit{
     };
 
     initialize(){
+        
                 this.productSvr.getProducts().subscribe(p=>{
                     this.products = p;
                     this.productCount = p.length;

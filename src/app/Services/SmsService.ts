@@ -11,7 +11,7 @@ import { environment } from "../../environment/environment";
 
 export class SmsService {
     constructor(private _httpClient:HttpClient){}
-    baseUrl = environment.apiBaseUrl+"/api/sms/";
+    baseUrl = environment.apiBaseUrl+"api/sms/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

@@ -35,15 +35,28 @@
    <clr-dg-detail>
       <clr-dg-detail-header>Order No:{{element.orderID}}</clr-dg-detail-header>
       <clr-dg-detail-body>
-        <div>Date: {{element.orderDate | date:'medium'}}</div>
-        <div>Payment Type:{{element.payment}}</div>
-        <div>Channel:{{element.channel}}</div>
-        <div>Status:{{element.orderStatus}}</div>
-        <div>Notes:{{element.notes}}</div>
-        <div *ngIf="element.type === 'Dine-In'">
-          <div>Waiter:{{element.tableSession.waiter.name}}</div>
-          <div>Table:{{element.tableSession.table.name}}</div>
+       <div class="clr-row">
+        <div class="clr-col-9">
+          <div>Date: {{element.orderDate | date:'medium'}}</div>
+          <div>Payment Type:{{element.payment}}</div>
+          <div>Channel:{{element.channel}}</div>
+          <div>Status:{{element.orderStatus}}</div>
+          <div>Notes:{{element.notes}}</div>
+          <div *ngIf="element.type === 'Dine-In'">
+            <div>Waiter:{{element.tableSession.waiter.name}}</div>
+            <div>Table:{{element.tableSession.table.name}}</div>
+          </div>
         </div>
+        <div class="clr-col">
+          <button class="btn btn-secondary" (click)="sendMessage(element.customer)">Send Message</button>
+          <h6>Delivery Address</h6>
+          <p>
+            {{element.deliveryAddress}}
+          </p>
+        </div>
+       </div>
+        
+        
         <table class="table">
           <thead>
             <tr>
@@ -69,7 +82,7 @@
         </tfoot>
         </table>
 
-        <div *ngIf="element.channel !== 'On-Site'">
+        <div *ngIf="element.channel !== 'On-Site' && element.orderStatus !== 'Completed'">
           <div>
           <clr-select-container *ngIf="element.payment !== 'succeeded'">
             <label>Select Status</label>
@@ -85,17 +98,17 @@
        
         
         
-        <div *ngIf="paymentFeedback == 'succeeded'">
+        <div *ngIf="paymentFeedback">
           <clr-alert  [clrAlertType]="'success'" [clrAlertAppLevel]="true">
             <clr-alert-item>
-              <span class="alert-text">Payment Succeeded!!!</span>
+              <span class="alert-text">{{paymentFeedback}}</span>
             </clr-alert-item>
           </clr-alert>
           </div>
-          <div *ngIf="paymentFeedback && paymentFeedback != 'succeeded'">
+          <div *ngIf="paymentFeedbackError">
             <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
               <clr-alert-item>
-                <span class="alert-text">{{paymentFeedback}}</span>
+                <span class="alert-text">{{paymentFeedbackError}}</span>
               </clr-alert-item>
             </clr-alert>
             </div>
@@ -117,3 +130,4 @@
   <edit-order></edit-order>
   <add-order [waiters]="waiters" [tables]="tables" ></add-order>
   <app-orderInSession [waiters]="waiters" [tables]="tables"></app-orderInSession>
+  <order-sms></order-sms>

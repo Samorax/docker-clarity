@@ -13,7 +13,7 @@ import { environment } from "../../environment/environment";
 export class OrderCartService{
     
     _httpClient = inject(HttpClient);
-    baseUrl:string = environment.apiBaseUrl+"/api/cartorders/"
+    baseUrl:string = environment.apiBaseUrl+"api/cartorders/"
 
     httpOptions = {
         headers: new HttpHeaders({

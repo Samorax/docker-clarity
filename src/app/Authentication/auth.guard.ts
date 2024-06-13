@@ -9,5 +9,6 @@ export const authGuard = () =>{
     if(authService.isAuthenticated()){
         return true;
     }
+    
     return _router.parseUrl("/login");
 }

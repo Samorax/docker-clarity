@@ -1,0 +1,28 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="sm" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Broadcast Voucher</h3>
+    <div class="modal-body" clrModalContent>
+        <form (ngSubmit)="send()" [formGroup]="voucherForm">
+            <clr-combobox-container>
+                <label class="clr-required-mark">Select Recepients</label>
+                <clr-combobox formControlName="recepients">
+                    <clr-options>
+                        <clr-option *clrOptionItems="let c of customers; field: 'name'" [clrValue]="c">
+                         
+                          {{ c.firstName+''+c.lastName }}
+                          
+                        </clr-option>
+                      </clr-options>
+                </clr-combobox>
+            </clr-combobox-container>
+            <clr-textarea-container>
+                <label class="clr-required-mark">Message:</label>
+                <input clrTextarea formControlName="message" placeholder="Your order has been received and will be with you shortly!!"/>
+                <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+            </clr-textarea-container>
+        </form>
+        </div>
+        <div class="modal-footer" clrModalActions>
+            <button class="btn btn-outline" type="submit">Send</button>
+            <button class="btn btn-outline" (click)="show=false">Close</button>
+          </div>
+    </clr-modal>

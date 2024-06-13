@@ -11,7 +11,7 @@ import { environment } from "../../environment/environment";
 
 export class WaiterService{
     constructor(private _httpClient:HttpClient){}
-    baseUrl = environment.apiBaseUrl+"/api/waiters/";
+    baseUrl = environment.apiBaseUrl+"api/waiters/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

@@ -1,11 +1,21 @@
 <div class="main-container">
-  <div *ngIf="!networkStatus">
+<div *ngIf="isAuthenticated">
+<div *ngIf="!networkStatus">
     <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
       <clr-alert-item>
         <span class="alert-text">You are not Connected to the Internet</span>
       </clr-alert-item>
     </clr-alert>
   </div>
+  <div *ngIf="testMode">
+    <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
+      <clr-alert-item>
+        <span class="alert-text">You are in Test Mode !!!</span>
+      </clr-alert-item>
+    </clr-alert>
+  </div>
+</div>
+  
   
 
 
@@ -14,5 +24,5 @@
 
   <router-outlet></router-outlet>
 
- 
+
 </div>

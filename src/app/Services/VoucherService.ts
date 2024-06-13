@@ -11,7 +11,7 @@ import { environment } from "../../environment/environment";
 
 export class voucherService{
     public getVoucherCache:voucher[] = [];
-    baseUrl:string = environment.apiBaseUrl+"/api/vouchers/"
+    baseUrl:string = environment.apiBaseUrl+"api/vouchers/"
 
     constructor(private _httpClient: HttpClient){}
 

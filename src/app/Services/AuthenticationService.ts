@@ -1,19 +1,15 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, catchError, of, retry, throwError } from "rxjs";
-import { tap, window } from "rxjs/operators";
+import { Observable, catchError, throwError } from "rxjs";
+import { tap } from "rxjs/operators";
 import { loginCredentials } from "../Models/LoginCredentials";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { TokenObject } from "../Models/TokenObject";
-import { Token } from "@angular/compiler";
 import { ProductService } from "./ProductService";
 import { OrderService } from "./OrderService";
 import { CustomerService } from "./CustomerService";
 import moment from "moment";
-import { json } from "stream/consumers";
-import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
-import { unsubscribe } from "diagnostics_channel";
 
 @Injectable({
   providedIn: "root"
@@ -47,6 +43,7 @@ export class AuthenticationService {
     return this._httpClient.post<TokenObject>(this.baseUrl + "login", credentials)
       .pipe(tap(this.setSession), catchError(this.handleError));
   }
+
   setSession(tokenObject: TokenObject) {
     
     let d = new Date(tokenObject.expiry_date);

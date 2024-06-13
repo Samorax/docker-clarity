@@ -1,0 +1,9 @@
+.section-header:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.section-body{
+    display: none;
+    
+}

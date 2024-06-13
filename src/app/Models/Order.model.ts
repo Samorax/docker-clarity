@@ -20,6 +20,7 @@ export class Order {
   public totalTax:any
   public paidAmount:any
   public type:any
+  isDeleted!: boolean
 
 
 }

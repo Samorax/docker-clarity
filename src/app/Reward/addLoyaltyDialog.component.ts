@@ -3,7 +3,7 @@ import { Rewards } from "../Models/Rewards";
 import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
 import { paymentService } from "../Services/PaymentService";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 
 
 @Component({
@@ -13,7 +13,7 @@ import { NgForm } from "@angular/forms";
 
 export class addLoyaltyDialogComponent implements OnInit{
     appUserId = localStorage.getItem('user_id');
-    constructor(private _voucherSvr: voucherService, private _paySvr:paymentService){}
+    constructor(private _voucherSvr: voucherService, private _paySvr:paymentService, private _formBuilder:FormBuilder){}
 
     ngOnInit(): void {
         this.currencySymbol = this._paySvr.currencySymbol;
@@ -25,6 +25,16 @@ export class addLoyaltyDialogComponent implements OnInit{
     @Input()vouchers!: voucher[];
     show:boolean = false;
     @ViewChild('file')fileInput: any;
+
+    loyaltyForm = this._formBuilder.group({
+        title:['',Validators.required],
+        description:['',Validators.required],
+        rewardImage:[File,Validators.required],
+        units:['',Validators.required],
+        expiryDate:['',Validators.required],
+        redeemPoint:['',Validators.required]
+    })
+
 
 
     open(){
@@ -62,21 +72,21 @@ export class addLoyaltyDialogComponent implements OnInit{
         }
     }
 
-    onSubmit(x:NgForm)
+    onSubmit()
     {
-        let y = <Rewards>x.value;
-        y.createdDate = new Date().toUTCString();
-        y.expiryDate = new Date(y.expiryDate).toUTCString();
-        y.applicationUserID = this.appUserId;
+        let y:any = this.loyaltyForm.value;
+        let createdDate = new Date().toUTCString();
+        let expiryDate = new Date(y.expiryDate).toUTCString();
+        let applicationUserID:any = this.appUserId;
         let form = new FormData();
         form.append('title',y.title);
         form.append('description',y.description);
         form.append('units',y.units.toString());
         form.append('rewardImage',this.fileInput[0]);
         form.append('redeemPoint',y.redeemPoint.toString());
-        form.append('createdDate',y.createdDate);
-        form.append('expiryDate',y.expiryDate);
-        form.append('applicationUserID',y.applicationUserID);
+        form.append('createdDate',createdDate);
+        form.append('expiryDate',expiryDate);
+        form.append('applicationUserID',applicationUserID);
         
         
         this.isOk.emit(form);

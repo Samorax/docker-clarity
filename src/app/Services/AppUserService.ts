@@ -32,4 +32,16 @@ export class appUserService{
         return this._httpClient.put(this.baseUrl+id, appUser)
         .pipe(catchError(this.handleError))
     }
+
+    changePassword(x:string){
+      return this._httpClient.post(this.baseUrl+'resetpassword',x)
+      .pipe(catchError(this.handleError))
+    }
+
+    deleteAppUserInfo(x:any){
+    return this._httpClient.put(this.baseUrl+'deleteaccount',x)
+    .pipe(catchError(this.handleError))
+    }
+
+   
 }

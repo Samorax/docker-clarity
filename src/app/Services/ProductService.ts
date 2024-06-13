@@ -43,8 +43,8 @@ export class ProductService {
 
   }
 
-  updateProduct(Id: any, prod:FormData) {
-    return this._httpclient.put(this.baseUrl + Id, prod).
+  updateProduct(Id: any, prod:FormData){
+    return this._httpclient.put<Product>(this.baseUrl + Id, prod).
       pipe(catchError(this.handleError));
   }
 

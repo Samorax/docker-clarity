@@ -129,7 +129,7 @@ export class EditProductDialog {
     data.append("name",prod.productName);
     data.append("price",prod.productPrice);
     data.append("loyaltyPoints",prod.productLoyaltyPoints);
-    data.append("photosUrl", this.checkIfPhotoFilePresent(prod.photo));
+    data.append("photosUrl", this.checkIfPhotoFilePresent(this.fileInput[0]));
     data.append("allergens",prod.productAllergens);
     
     this.onOk.emit(data);

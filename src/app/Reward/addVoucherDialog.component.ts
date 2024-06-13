@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 import { voucher, voucherValueType } from "../Models/Voucher";
+import { error } from "console";
 
 @Component({
     templateUrl:'./addVoucherDialog.component.html',
@@ -8,13 +9,23 @@ import { voucher, voucherValueType } from "../Models/Voucher";
 })
 
 export class addVoucherDialogComponent{
+    constructor(private _formBuilder:FormBuilder){}
     @Input()vouchers:any
-    @Output()isOk:EventEmitter<voucher> = new EventEmitter<voucher>();
+    @Output()isOk:EventEmitter<any> = new EventEmitter<any>();
     show:boolean = false;
     voucher:voucher = new voucher();
     currencySymbol:any  = localStorage.getItem('currency_iso_code');
     appUserId:any = localStorage.getItem("user_id");
-    
+
+    voucherForm = this._formBuilder.group({
+        voucherName:['',Validators.required],
+        valueType:['',Validators.required],
+        keyword:[''],
+        units:['',Validators.required],
+        voucherExpirationDate:['',Validators.required],
+        voucherActivation:['',Validators.required],
+        voucherCreditAmount:['',Validators.required]
+    })
     
 
 
@@ -26,12 +37,17 @@ export class addVoucherDialogComponent{
         this.show = false;
     }
 
-    onSubmit(v:NgForm){
-        let vc = <voucher>v.value;
+    onSubmit(){
+        let vc:any = this.voucherForm.value;
         vc.voucherCreationDate = new Date();
-        vc.voucherStatus = true;
         vc.voucherExpirationDate = new Date(vc.voucherExpirationDate);
         vc.applicationUserID = this.appUserId;
-        this.isOk.emit(vc);
+        console.log(vc);
+        try {
+            this.isOk.emit(vc);
+        } catch (error) {
+            console.log(error)
+        }
+       
     }
 }

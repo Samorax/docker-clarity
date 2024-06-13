@@ -7,6 +7,9 @@ import { deleteVoucherDialogComponent } from "./deleteVoucherDialog.component";
 import { editVoucherDialogComponent } from "./editVoucherDialog.component";
 import { broadcastDialogComponent } from "./broadcastDialog.component";
 import { SmsService } from "../Services/SmsService";
+import { VoucherSmsComponent } from "./voucherSms.component";
+import { CustomerService } from "../Services/CustomerService";
+import { Customer } from "../Models/Customer";
 
 @Component({
     templateUrl:'./voucher.component.html',
@@ -23,18 +26,22 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(addVoucherDialogComponent)addVDC!: addVoucherDialogComponent;
     @ViewChild(editVoucherDialogComponent)editVDC!: editVoucherDialogComponent;
     @ViewChild(deleteVoucherDialogComponent)delVDC!: deleteVoucherDialogComponent;
-    @ViewChild(broadcastDialogComponent)bDC!:broadcastDialogComponent;
+    @ViewChild(VoucherSmsComponent)bDC!:VoucherSmsComponent;
+    customers!: Customer[];
 
-    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService){}
+    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService){}
 
     ngAfterViewInit(): void {
-        this.bDC.isOk.subscribe(m=>{
+       /*  this.bDC.voucherSms.subscribe(m=>{
             this.smsSVR.sendMessage(m).subscribe(r=>{
                 console.log(r);
-            })
-        });
 
-        this.addVDC.isOk.subscribe(v=>{
+                this.bDC.close();
+            })
+        }); */
+
+        this.addVDC.isOk.subscribe((v:any)=>{
+            console.log(v);
             this._voucherSvr.addVoucher(v).subscribe((v:any)=>{
                 this._voucherSvr.getVoucherCache.push(v);
             },(err)=>console.log(err),()=> this.addVDC.close());
@@ -60,6 +67,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
 
     ngOnInit(): void {
         this.getVouchers();
+        this.getCustomers();
     }
 
     getVouchers(){
@@ -77,6 +85,10 @@ export class voucherComponent implements OnInit, AfterViewInit{
         }
     }
 
+    getCustomers(){
+this.custSVR.getCustomers().subscribe(cs=> this.customers = cs)
+    }
+
     onAdd(){
         this.addVDC.open();
     }
@@ -91,7 +103,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
     }
 
     onBroadcast(){
-        this.bDC.open(this.selected[0]);
+        this.bDC.open(this.selected[0], this.customers);
     }
 
 }

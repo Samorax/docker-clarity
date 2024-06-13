@@ -28,7 +28,8 @@
             ],
             "styles": [
               "node_modules/@clr/ui/clr-ui.min.css",
-              "src/style.css"
+              "src/style.css",
+              "node_modules/ngx-toastr/toastr.css"
               
 
             ],

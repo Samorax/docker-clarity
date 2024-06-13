@@ -13,7 +13,7 @@ export class TableSessionService
 {
 
     constructor(private _httpClient: HttpClient){}
-    baseUrl = environment.apiBaseUrl+"/api/tablesessions/";
+    baseUrl = environment.apiBaseUrl+"api/tablesessions/";
     httpOptions = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

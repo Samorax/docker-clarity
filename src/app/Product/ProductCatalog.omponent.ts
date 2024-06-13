@@ -10,7 +10,8 @@ import { paymentService } from "../Services/PaymentService";
 
 @Component({
     selector:'app-productcatalog',
-    templateUrl:'./ProductCatalog.component.html'
+    templateUrl:'./ProductCatalog.component.html',
+    
 })
 
 export class ProductCatalogComponent implements OnInit, AfterViewInit{
@@ -38,8 +39,8 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
         this.productService.addProduct(prod)
           .subscribe(p => {
             this.convertImgByte(p).subscribe(p=>{
-              this.productService.productssCache.push(p);
-              this.elements = this.productService.productssCache;
+              this.elements.push(p);
+              
             });
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
@@ -58,8 +59,10 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
         
         this.productService.updateProduct(prod.get("id"), prod)
           .subscribe(
-            (r)=>
+            (r:Product)=>
           { 
+            let i = this.elements.findIndex(p=>p.productID === r.productID);
+            this.elements[i] = r;
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
             this.feedBackMessage = `${prod.get('name')} was successfully updated.`;
@@ -78,8 +81,8 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
       this.delModal.onOk.subscribe(prods => {
         prods.forEach(p => {
           this.productService.removeProduct(p.productID).subscribe(()=>{
-            let indexOfDeletedProduct = this.productService.productssCache.indexOf(p);
-            this.productService.productssCache.splice(indexOfDeletedProduct,1);
+            let indexOfDeletedProduct = this.elements.indexOf(p);
+            this.elements.splice(indexOfDeletedProduct,1);
 
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
@@ -123,13 +126,14 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
 
   loadInit(){
       this.productService.getProducts().subscribe(p=>{
-        p.forEach(pr=>{
-          this.convertImgByte(pr).subscribe(p=>{
+        let d = p.filter(pr=>pr.isDeleted === false);
+        d.forEach(dr=>{
+          this.convertImgByte(dr).subscribe(p=>{
             this.elements.push(p);
           });
-        });
-      });
-    };
+        })
+    });
+  }
 
  
 }

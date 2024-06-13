@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from "@angular/core";
 import { paymentProcessor } from "../Models/PaymentProcessor";
 import { AbstractControl, FormBuilder, NgForm, Validators } from "@angular/forms";
 import { appUserService } from "../Services/AppUserService";
@@ -10,26 +10,37 @@ import { Subject } from "rxjs";
 import { loadStripe } from "@stripe/stripe-js";
 import { appUser } from "../Models/AppUser";
 import { animate, state, style, transition, trigger } from "@angular/animations";
+import { testModeService } from "../Services/TestModeService";
+import { disseminateModeService } from "../Services/DisseminateMode";
+import { openTimesService } from "../Services/OpenTimesService";
+import { operatingDaysComponent } from "./operatingDaysDialog.component";
+import { editOperatingDaysComponent } from "./editOperatingDaysDialog.component";
+import { delOperatingDaysComponent } from "./delOperatingDays.component";
+import { AuthenticationService } from "../Services/AuthenticationService";
+import { deleteAccountComponent } from "./delAccountDialog.component";
 
 @Component({
     templateUrl:'./settings.component.html',
     selector:'app-settings',
+    styleUrl:'./settings.component.css',
     animations:[
         trigger('openClose',[
-            state('open', style({
-                height:'100%',
-                display:'block'
-            })),
             state('close', style({
                 height:'0px',
                 display:'none'
             })),
-            transition('open => close',animate('0.5s ease-in')),
-            transition('close => open',animate('0.5s ease-out'))
+            state('open', style({
+                height:'100%',
+                display:'block'
+            })),
+            
+            transition('close => open',animate('0.8s 100ms ease-out')),
+            transition('open => close',animate('0.8s 100ms ease-in')),
+           
         ])
     ]
 })
-export class SettingsComponent implements OnInit{
+export class SettingsComponent implements OnInit, AfterViewInit{
     paymentProvider:paymentProcessor = new paymentProcessor();
     appUserId: any = localStorage.getItem("user_id");
     currency: any = localStorage.getItem('currency_iso_code');
@@ -48,11 +59,65 @@ export class SettingsComponent implements OnInit{
     isOpen = true;
     isOpen2 = true;
     isOpen3 = true;
+
+    selected:OpenTimes[] = [];
     showAccountDetailsFeedback: boolean = false;
     showChangePasswordFeedback: boolean = false;
+    showPaymentUpdateFeedback: boolean = false;
+    
+    openingTimes:OpenTimes[] = [];
+    isOpen7: boolean = true;
+    isOpen6: boolean = true;
+    isOpen5: boolean = true;
+    isOpen8 = true;
+    isOpen4 = true;
+    Mode = inject(disseminateModeService)
+    @ViewChild(operatingDaysComponent)oDC!:operatingDaysComponent
+    @ViewChild(editOperatingDaysComponent)editODC!:editOperatingDaysComponent
+    @ViewChild(delOperatingDaysComponent)delODC!:delOperatingDaysComponent
+    @ViewChild(deleteAccountComponent)delAcc!:deleteAccountComponent
+    
+    onStart:boolean = true;
 
-constructor(private _appUserSrv: appUserService, 
+constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
     private _paymentSvr:paymentService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
+    ngAfterViewInit(): void {
+
+        this.delAcc.isOk.subscribe(o=>{
+            this.deleteAccount(o).subscribe(()=>{
+                this._authSVR.logOut();
+                this.delAcc.close();
+            });
+            
+        })
+
+        this.oDC.isOk.subscribe(o=>{
+            this._openTimeSVR.addOpenTime(o).subscribe((op:any)=>{
+                this.openingTimes.push(op);
+                this.oDC.close();
+            })
+        });
+
+        this.editODC.isOk.subscribe(o=>{
+            this._openTimeSVR.updateOpenTime(o).subscribe(op=>{
+                let index = this.openingTimes.findIndex(ot=>ot.id === o.id);
+                this.openingTimes[index] = o;
+                this.editODC.close();
+            })
+        })
+
+        this.delODC.isOk.subscribe(o=>{
+            o.forEach(op=>{
+                this._openTimeSVR.deleteOpenTime(op).subscribe(()=>{
+                    let index = this.openingTimes.findIndex(ot=>ot.id === op.id);
+                    this.openingTimes.splice(index,1);
+                })
+            });
+
+            this.delODC.close();
+            
+        })
+    }
     settingsForm = this.formBUilder.group({
         accountDetails: this.formBUilder.group({
             firstName:['', Validators.required],
@@ -76,11 +141,17 @@ constructor(private _appUserSrv: appUserService,
         }),
         shopSettings:this.formBUilder.group({
             vatCharge:[''],
-            serviceCharge:[''],
-            operatinghours:['',Validators.required]
+            serviceCharge:['']
+        }),
+        operatingHours:this.formBUilder.group({
+            day:['',Validators.required],
+            startTime:['',Validators.required],
+            endTime:['',Validators.required]
         }),
         integrationSettings:this.formBUilder.group({
                 smsActivation:[false,Validators.required],
+                birthdayNotifications:['',Validators.required],
+                voucherNotifications:['',Validators.required],
                 processorName:['',Validators.required],
                 processorApiKey:['',Validators.required],
                 processorAccountId:['',Validators.required],
@@ -91,7 +162,9 @@ constructor(private _appUserSrv: appUserService,
             deliveryDistance:['',Validators.required],
             deliveryFee:['',Validators.required]
         }),
-        testMode:[true,Validators.required]},{
+        testMode:['',Validators.required],
+        },
+        {
             validator: this.MustMatch('passwordReset.oldPassword','passwordReset.newPassword')
             
         }
@@ -99,10 +172,9 @@ constructor(private _appUserSrv: appUserService,
     )
 
 
-    async ngOnInit(): Promise<void> {
+    async ngOnInit(){
         //complete the inital tab form.
-        this.fillAccountSettings();
-
+        this.fillAccountSettings()
         this.stripe = await loadStripe("pk_test_51OZtsPLMinwGqDJe4WXbskkZ1G2voTezl8OneMarPyB4tweJbNANCrKtyWVdZ0hBxA9pAAid9hs9JVxc6i9kd11g00xRANg6LK");
     }
 
@@ -157,6 +229,17 @@ constructor(private _appUserSrv: appUserService,
     }
     
     
+onAdd(){
+this.oDC.open();
+}
+
+onDelete(){
+    this.delODC.open(this.selected);
+}
+
+onEdit(){
+this.editODC.open(this.selected[0]);
+}
 
     toggle() {
       this.isOpen = !this.isOpen;
@@ -168,6 +251,23 @@ constructor(private _appUserSrv: appUserService,
 
     toggle3(){
         this.isOpen3 = !this.isOpen3;
+    }
+    toggle4(){
+        this.isOpen4 = !this.isOpen4;
+    }
+    toggle5(){
+        this.isOpen5 = !this.isOpen5;
+    }
+
+    toggle6(){
+        this.isOpen6 = !this.isOpen6;
+    }
+
+    toggle7(){
+        this.isOpen7 = !this.isOpen7;
+    }
+    toggle8(){
+        this.isOpen8 = !this.isOpen8;
     }
 
     fillAccountSettings(){
@@ -181,6 +281,9 @@ constructor(private _appUserSrv: appUserService,
         this.settingsForm.get('accountDetails.lastName')?.setValue(x.lastName);
         this.settingsForm.get('accountDetails.email')?.setValue(x.email);
         this.settingsForm.get('accountDetails.phoneNumber')?.setValue(x.phoneNumber);
+        this.settingsForm.get('testMode')?.setValue(x.testMode);
+
+        this.openingTimes = this.appUser.openingTimes;
 
         //complete the form to be sent.
         this.settingsUpdateForm = {
@@ -201,6 +304,7 @@ constructor(private _appUserSrv: appUserService,
             serviceCharge:x.serviceCharge,
             openingTimes:x.openingTimes,
             paymentToken:x.paymentToken,
+            testMode:x.testMode,
             id:x.id
         }
 
@@ -211,18 +315,31 @@ constructor(private _appUserSrv: appUserService,
     
     }
 
+    onAccountDelete(x:any){
+        x.preventDefault();
+        this.delAcc.open();
+
+    }
+
+    deleteAccount(x:boolean){
+        this.appUser.isDeleted = true;
+        return this._appUserSrv.deleteAppUserInfo(this.appUser)
+        
+    }
+
     fillShopSettings(){
         
         this._appUserSrv.getAppUserInfo().subscribe(a=>{
-            this.appUser = a;
-            this.settingsForm.get('shopSettings.vatCharge')?.setValue(this.appUser.vatCharge);
+        this.appUser = a;
+        this.settingsForm.get('shopSettings.vatCharge')?.setValue(this.appUser.vatCharge);
         this.settingsForm.get('shopSettings.serviceCharge')?.setValue(this.appUser.serviceCharge);
-        this.settingsForm.get('shopSettings.operatinghours')?.setValue(this.appUser.openingTimes);
+        
 
         this.settingsForm.get('businessDetails.businessName')?.setValue(this.appUser.businessName);
         this.settingsForm.get('businessDetails.businessAddressLine1')?.setValue(this.appUser.businessAddress1);
         this.settingsForm.get('businessDetails.businessAddressLine2')?.setValue(this.appUser.businessAddress2);
         this.settingsForm.get('businessDetails.city')?.setValue(this.appUser.state);
+
         this.settingsForm.get('businessDetails.postalCode')?.setValue(this.appUser.postalCode);
         this.settingsForm.get('businessDetails.country')?.setValue(this.appUser.country);
 
@@ -241,7 +358,9 @@ constructor(private _appUserSrv: appUserService,
                 this.settingsForm.get('integrationSettings.processorApiKey')?.setValue(processor.apiKey1);
                 this.settingsForm.get('integrationSettings.processorAccountId')?.setValue(processor.accountId);
                 this.settingsForm.get('integrationSettings.processorSoftwareHouseId')?.setValue(processor.softwareHouseId); 
+
             }
+            this.settingsForm.get('integrationSettings.smsActivation')?.disable();
         })
     }
 
@@ -278,41 +397,64 @@ constructor(private _appUserSrv: appUserService,
     showDojoForms:boolean = false;
 
     onChangeBusinessDetails(){
-        console.log(this.settingsUpdateForm)
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe(x=>{
+        let a = this.settingsForm.get('businessDetails.businessAddressLine1')?.value;
+        let b = this.settingsForm.get('businessDetails.businessAddressLine2')?.value;
+        let c = this.settingsForm.get('businessDetails.city')?.value;
+        let d = this.settingsForm.get('businessDetails.postalCode')?.value;
+        let e = this.settingsForm.get('businessDetails.country')?.value;
+
+        this.appUser.businessAddress1 = a;
+        this.appUser.businessAddress2 = b;
+        this.appUser.state = c;
+        this.appUser.postalCode = d;
+        this.appUser.country = e;
+
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(x=>{
             console.log(x);
-        });
+        },(er:Error)=>console.log(er.message));
     }
 
     onChangeLogisticsDetails(){
-        let x = this.settingsForm.get('logistics.deliverDistance')?.value;
+        let x = this.settingsForm.get('logistics.deliveryDistance')?.value;
         let y = this.settingsForm.get('logistics.deliveryFee')?.value;
-        this.settingsUpdateForm.deliveryDistance = x;
-        this.settingsUpdateForm.deliveryFee = y;
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe();
+
+        this.appUser.deliveryDistance = x;
+        this.appUser.deliveryFee = y;
+        
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
+            console.log(r);
+        },(er:Error)=> console.log(er.message));
     }
 
+    //update the vat charge fee and the service charge. 
     onChangeReceiptDetails(){
         let x = this.settingsForm.get('shopSettings.vatCharge')?.value;
         let y = this.settingsForm.get('shopSettings.serviceCharge')?.value;
-        this.settingsUpdateForm.vatCharge =x;
-        this.settingsUpdateForm.serviceCharge = y;
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe();
+
+        this.appUser.vatCharge = x;
+        this.appUser.serviceCharge = y;
+
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
+            console.log(r);
+        },(er:Error)=>console.log(er.message));
     }
     
-    onChangePaymentDetails(){
+    onChangePaymentDetails(x:any){
+        x.preventDefault();
         this.stripe.createToken(this.paymentElement)
         .then((c:any)=> {
             this.settingsUpdateForm.paymentToken = c;
-            this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe();
+            this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe(()=>{
+                this.showPaymentUpdateFeedback = true;
+            });
         })
         .catch((er:Error)=> console.log(er.message)); 
     }
     
-    onChangePaymentProcessor(){
+    onChangePaymentProcessor(x:any){
+        x.preventDefault();
         let pp = this.settingsForm.get('integrationSettings')?.value;
-        
-        console.log(pp);
+    
         this.settingsUpdateForm.paymentProcessor = pp;
 
         this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe();
@@ -337,7 +479,7 @@ constructor(private _appUserSrv: appUserService,
     onChangePassword(){
         let x = this.settingsForm.get('passwordReset.password')?.value;
         this.settingsUpdateForm.password = x;
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe(x=>{
+        this._appUserSrv.changePassword(this.settingsUpdateForm.password).subscribe(x=>{
             this.showChangePasswordFeedback = true;
             this.isOpen2 = false;
         });
@@ -349,10 +491,7 @@ constructor(private _appUserSrv: appUserService,
       this.times.push(o);
     }
     
-    onSaveOpenTimes(){
-      this.appUser.openingTimes = this.times;
-      this._appUserSrv.updateAppUserInfo(this.appUserId,this.appUser).subscribe();
-    }
+   
 
     onDeleteOpenTimes(x:OpenTimes){
         let i = this.times.indexOf(x);
@@ -390,6 +529,31 @@ constructor(private _appUserSrv: appUserService,
                 }); */
     }
 
+    onAddHour(x:any){
+        x.preventDefault();
+        let h:OpenTimes = 
+        {
+            day:this.settingsForm.get('operatingHours.day')?.value,
+            startTime:this.settingsForm.get('operatingHours.startTime')?.value,
+            endTime:this.settingsForm.get('operatingHours.endTime')?.value,
+            applicationUserID:this.appUserId
+        };
+
+        this.openingTimes.push(h);
+    }
+
+    onSaveHour(x:any){
+        x.preventDefault();
+        this.openingTimes.forEach(o=>{
+            console.log(o);
+            this._openTimeSVR.addOpenTime(o).subscribe(x=>{
+                console.log(x);
+            },(er:Error)=>console.log(er));
+        })
+
+       
+    }
+
     onChangeProcessor(){
        let y = this.settingsForm.get('integrationSettings.processorName')?.value;
        if(y === 'Dojo'){
@@ -404,5 +568,18 @@ constructor(private _appUserSrv: appUserService,
             this.apiKey = k;
             this.showKey = true;
         },(er)=>console.log(er))
+    }
+
+    onSwitchMode(){
+     let y = this.settingsForm.get('testMode')?.value;
+     this._testModeSVR.setMode(y).subscribe(s=>{
+        this.Mode.getMode.next(y);
+        localStorage.setItem('access_token',s)
+        let sms = this.settingsForm.get('integrationSettings.smsActivation');
+        if(y == true)
+            sms?.disable
+        sms?.enable
+        
+     },(er)=>console.log(er))
     }
 }

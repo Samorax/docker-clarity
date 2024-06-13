@@ -1,0 +1,17 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="sm" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Sessions</h3>
+    <div class="modal-body" clrModalContent>
+        <form (ngSubmit)="send()" [formGroup]="messageForm">
+            <!-- <label>Send To: {{customer.firstName+''+customer.lastName}}</label> -->
+            <clr-textarea-container>
+                <label class="clr-required-mark">Message:</label>
+                <input clrTextarea formControlName="message" placeholder="Your order has been received and will be with you shortly!!"/>
+                <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+            </clr-textarea-container>
+        </form>
+        </div>
+        <div class="modal-footer" clrModalActions>
+            <button class="btn btn-outline" type="submit">Send</button>
+            <button class="btn btn-outline" (click)="show=false">Close</button>
+          </div>
+    </clr-modal>

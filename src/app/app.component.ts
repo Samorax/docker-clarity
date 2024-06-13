@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild, isDevMode } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, Signal, ViewChild, inject } from '@angular/core';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
@@ -11,8 +11,14 @@ import { Notifications, notificationType } from './Models/Notification';
 import { Order } from './Models/Order.model';
 import { CustomerDto } from './Models/CustomerDto';
 import { Customer } from './Models/Customer';
-import { SwPush } from '@angular/service-worker';
-import { environment} from '../environment/environment';
+import { AuthenticationService } from './Services/AuthenticationService';
+import { ToastrService } from 'ngx-toastr';
+import * as _ from 'lodash';
+import { testModeService } from './Services/TestModeService';
+import { SettingsComponent } from './Settings/settings.component';
+import { disseminateModeService } from './Services/DisseminateMode';
+
+
 
 
 ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon,cogIcon);
@@ -24,6 +30,7 @@ ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(NavMenuComponent)navcomponent!: NavMenuComponent;
+  @ViewChild(SettingsComponent)settingscomponent!:SettingsComponent;
 
   networkStatus: boolean = false;
   networkStatus$: Subscription = Subscription.EMPTY;
@@ -32,17 +39,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   notifications:Notifications[] = [];
   isAuthenticated?: Observable<boolean>
   allFeedSubscription: any;
-  order!: Order;
+  order!: any;
   show: any = false;
   Orderstatus:string = '';
   paymentProvider: any;
+  testMode!:boolean
+  mode = inject(disseminateModeService)
 
-  constructor(private signalrService: SignalrService,
-    private ordersrv: OrderService,private _appUserSvr:appUserService, private readonly swPush:SwPush,
+  constructor(private signalrService: SignalrService,private _testModeSVR:testModeService,
+    private ordersrv: OrderService,private _appUserSvr:appUserService, private _toaster:ToastrService,
+    private _authSvr:AuthenticationService,
      private _route: Router) {
     
      }
-
+     
 
 
   ngOnDestroy(): void {
@@ -52,12 +62,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
+
+   this.mode.getMode.subscribe(m=> {this.testMode = m;console.log(m)});
+  
     this.signalrService.AllOrderFeedObservable.subscribe((ord:any) => {
-        this.order = ord;
-        this.ordersrv.ordersCache.unshift(this.order);
-        let n:Notifications = {type: notificationType.order, texts: `You have a new order ref:${this.order.orderID} from ${this.order.channel}` }
-        this.notifications.unshift(n);
-        this.navcomponent.show = true;
+        this.order = JSON.parse(ord);
+        this._toaster.info(`You have a new order ${this.order.orderID}`,"Order Notification",{
+          closeButton:true,
+          tapToDismiss:true,
+          disableTimeOut:true
+    
+        });
+        
         
     });
 
@@ -79,18 +95,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 
+    
+
 
   }
 
 
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
-    console.log(isDevMode);
-    if(!this.swPush.isEnabled){
-        let token:any = localStorage.getItem('access_token');
-        this.swPush.requestSubscription({serverPublicKey:token}).then((r)=>{
-        });
-    }
 
     this.checkPaymentTerminalStatus();
     

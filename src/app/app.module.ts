@@ -69,6 +69,14 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserModule } from '@angular/platform-browser';
+import { OrderSmsComponent } from './Order/OrderSms.component';
+import { VoucherSmsComponent } from './Reward/voucherSms.component';
+import { ToastrModule, provideToastr } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { operatingDaysComponent } from './Settings/operatingDaysDialog.component';
+import { editOperatingDaysComponent } from './Settings/editOperatingDaysDialog.component';
+import { delOperatingDaysComponent } from './Settings/delOperatingDays.component';
+import { deleteAccountComponent } from './Settings/delAccountDialog.component';
 
 
 @NgModule({
@@ -116,6 +124,12 @@ import { BrowserModule } from '@angular/platform-browser';
     delWaiterComponent,
     editWaiterComponent,
     broadcastDialogComponent,
+    OrderSmsComponent,
+    operatingDaysComponent,
+    editOperatingDaysComponent,
+    delOperatingDaysComponent,
+    deleteAccountComponent,
+    VoucherSmsComponent
   ],
   imports: [
     HttpClientModule,
@@ -123,10 +137,12 @@ import { BrowserModule } from '@angular/platform-browser';
     AppRoutingModule,
     FormsModule,
     BrowserModule,
+    CommonModule,
     BrowserAnimationsModule,
     ClarityModule,
     NgxMaterialTimepickerModule,
     NgxEchartsModule.forRoot({echarts: ()=>import('echarts')}),
+    ToastrModule.forRoot(),
     RouterModule.forRoot([
       { path:'', component: indexComponent, pathMatch:'full'},
       { path: 'login', component: loginComponent, pathMatch:'full' },
@@ -155,7 +171,7 @@ import { BrowserModule } from '@angular/platform-browser';
     }),
   ],
   providers: [
-    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,
+    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,provideToastr(),
      AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })

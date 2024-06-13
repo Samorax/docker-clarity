@@ -7,7 +7,6 @@ import { OrderEditComponent } from "./OrderEdit.component";
 import { OrderAddComponent } from "./OrderAdd.component";
 import { paymentService } from "../Services/PaymentService";
 import { PaymentObject } from "../Models/PaymentObject";
-;
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
 import { TableService } from "../Services/TableService";
@@ -19,6 +18,9 @@ import { Customer } from "../Models/Customer";
 import { ProductService } from "../Services/ProductService";
 import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
+import { OrderSmsComponent } from "./OrderSms.component";
+import { SmsService } from "../Services/SmsService";
+import { orderDetail } from "../Models/OrderDetails";
 
 
 
@@ -47,11 +49,14 @@ export class OrderListComponent implements OnInit, AfterViewInit{
   //@ViewChild(OrderCartComponent) OrderCartModal!: OrderCartComponent;
   @ViewChild(OrderAddComponent)OrderAddModal!:OrderAddComponent;
   @ViewChild(OrderInSessionEditComponent)orderInSession!:OrderInSessionEditComponent;
+
+  @ViewChild(OrderSmsComponent)orderSms!:OrderSmsComponent
+  paymentFeedbackError: any;
   
 
   constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,
     private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService,
-    private paymentService: paymentService, private productSVR: ProductService) {
+    private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService) {
 
   }
     ngAfterViewInit(): void {
@@ -75,12 +80,24 @@ export class OrderListComponent implements OnInit, AfterViewInit{
           this.orderInSession.close();
         },(er:Error)=>console.log(er));
 
+      this.signalrSVR.AllOrderFeedObservable.subscribe((o:any)=>{
+        let ord = JSON.parse(o);
+        this.orders.unshift(ord);
+      })
+
       this.signalrSVR.AllOrderUpdateFeedObservable.subscribe((o: any) => {
         let ord = JSON.parse(o);
         let x = this.orders.findIndex((x:any) => x.OrderID === ord.orderID);
         this.orders[x].orderStatus = ord.OrderStatus;
         
       });
+
+      this.orderSms.smsForm.subscribe(s=>{
+        this._smsSvr.sendMessage(s).subscribe(x=>{
+          console.log(x);
+          this.orderSms.close();
+        })
+      })
   }
 
 
@@ -88,7 +105,8 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     ngOnInit(): void {
       
         this.orderService.getOrders().subscribe(ord => {
-            this.orders = ord;
+          this.orders = ord.filter(o=>o.isDeleted === false);
+
             //index is 0 because the list is in ascending order.
             //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
             this.lastId = this.orders[0].orderID;
@@ -141,13 +159,16 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     //open the edit dialog accordingly
     onEdit(){
       let od = <Order>this.selected[0];
-      console.log(od);
       if(od.channel !== 'On-Site'){
         this.OrderEditModal.open(od);
       }else{
         this.OrderInSessionEditModal.open(od)
       }
       
+    }
+
+    sendMessage(x:Customer){
+      this.orderSms.open(x);
     }
 
     //if order is approved; get the payment intent id from the server
@@ -189,7 +210,7 @@ export class OrderListComponent implements OnInit, AfterViewInit{
           x.payment = 'Paid';
           };
           
-        },(er)=>console.log(er),()=> this.updateCustomer(x))}
+        },(er:Error)=>{this.paymentFeedbackError = `Payment Error: ${er.message}`},()=> this.updateCustomer(x))}
       
       private updateCustomer(order:Order)
       {

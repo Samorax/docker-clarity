@@ -5,7 +5,7 @@
             <cds-icon shape="plus"></cds-icon> 
             Add 
           </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()" *ngIf="selected.length == 1">
             <cds-icon shape="close"></cds-icon>
             Delete
           </button>
@@ -13,7 +13,7 @@
             <cds-icon shape="pencil"></cds-icon>
             Edit
      </button>
-     <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()">
+     <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()" *ngIf="selected.length == 1">
       <cds-icon shape="pencil"></cds-icon>
       Broadcast
     </button>
@@ -30,7 +30,7 @@
     <clr-dg-column>Status</clr-dg-column>
     <clr-dg-column>Activation</clr-dg-column>
 
-    <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
+    <clr-dg-placeholder>We couldn't find any Vouchers. Add new Voucher</clr-dg-placeholder>
     <clr-dg-row *clrDgItems="let element of vouchers" [clrDgItem]="element">
       <clr-dg-cell>{{element.voucherName}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherNumber}}</clr-dg-cell>
@@ -63,5 +63,5 @@
  <add-voucher [vouchers]="vouchers"></add-voucher>
 <edit-voucher [voucher]="voucher"></edit-voucher>
 <del-voucher [vouchers]="selected"></del-voucher>
-<app-broadcast></app-broadcast>
+
   

@@ -16,6 +16,7 @@ export class appUser{
     paymentProcessor:any
     vatCharge:any
     serviceCharge:any
+    testMode:any
     openingTimes:any
     id?:any
 

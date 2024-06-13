@@ -11,4 +11,5 @@ export class Product {
   public photosUrl:any
   public loyaltyPoints:any
   public allergens!:string
+  isDeleted!: boolean
 }
