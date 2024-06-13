@@ -1,5 +1,5 @@
 <div class="main-container">
-<div *ngIf="isAuthenticated">
+<div *ngIf="isAuthenticated |async">
 <div *ngIf="!networkStatus">
     <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
       <clr-alert-item>

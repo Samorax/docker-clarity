@@ -63,6 +63,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
 
+    this.isAuthenticated = of(this._authSvr.isAuthenticated())
+    console.log(localStorage.getItem('appMode'))
+
    this.mode.getMode.subscribe(m=> {this.testMode = m;console.log(m)});
   
     this.signalrService.AllOrderFeedObservable.subscribe((ord:any) => {

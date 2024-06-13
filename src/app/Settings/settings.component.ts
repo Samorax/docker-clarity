@@ -41,6 +41,7 @@ import { deleteAccountComponent } from "./delAccountDialog.component";
     ]
 })
 export class SettingsComponent implements OnInit, AfterViewInit{
+    accountActive = true;
     paymentProvider:paymentProcessor = new paymentProcessor();
     appUserId: any = localStorage.getItem("user_id");
     currency: any = localStorage.getItem('currency_iso_code');
@@ -77,12 +78,13 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     @ViewChild(delOperatingDaysComponent)delODC!:delOperatingDaysComponent
     @ViewChild(deleteAccountComponent)delAcc!:deleteAccountComponent
     
-    onStart:boolean = true;
+    
 
 constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
     private _paymentSvr:paymentService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
     ngAfterViewInit(): void {
-
+        
+    
         this.delAcc.isOk.subscribe(o=>{
             this.deleteAccount(o).subscribe(()=>{
                 this._authSVR.logOut();
@@ -174,7 +176,10 @@ constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeSe
 
     async ngOnInit(){
         //complete the inital tab form.
-        this.fillAccountSettings()
+        this._appUserSrv.getAppUserInfo()
+          .subscribe((x:appUser) => {
+            x = this.appUser;
+          });
         this.stripe = await loadStripe("pk_test_51OZtsPLMinwGqDJe4WXbskkZ1G2voTezl8OneMarPyB4tweJbNANCrKtyWVdZ0hBxA9pAAid9hs9JVxc6i9kd11g00xRANg6LK");
     }
 
@@ -271,46 +276,45 @@ this.editODC.open(this.selected[0]);
     }
 
     fillAccountSettings(){
-        this.CreatePaymentForm();
-        this._appUserSrv.getAppUserInfo()
-          .subscribe((x:appUser) => {
+        this._appUserSrv.getAppUserInfo().subscribe(r=>{
 
-            x = this.appUser;
-            
-        this.settingsForm.get('accountDetails.firstName')?.setValue(x.firstName);
-        this.settingsForm.get('accountDetails.lastName')?.setValue(x.lastName);
-        this.settingsForm.get('accountDetails.email')?.setValue(x.email);
-        this.settingsForm.get('accountDetails.phoneNumber')?.setValue(x.phoneNumber);
-        this.settingsForm.get('testMode')?.setValue(x.testMode);
+        this.appUser = r;
+        this.CreatePaymentForm();
+        this.settingsForm.get('accountDetails.firstName')?.setValue(this.appUser.firstName);
+        this.settingsForm.get('accountDetails.lastName')?.setValue(this.appUser.lastName);
+        this.settingsForm.get('accountDetails.email')?.setValue(this.appUser.email);
+        this.settingsForm.get('accountDetails.phoneNumber')?.setValue(this.appUser.phoneNumber);
+        this.settingsForm.get('testMode')?.setValue(this.appUser.testMode);
+        
 
         this.openingTimes = this.appUser.openingTimes;
 
         //complete the form to be sent.
         this.settingsUpdateForm = {
-            businessName: x.businessName,
-            businessAddress1:x.businessAddress1,
-            businessAddress2:x.businessAddress2,
-            state:x.state,
-            postalCode:x.postalCode,
-            country:x.country,
-            firstName:x.firstName,
-            lastName:x.lastName,
-            email:x.email,
-            phoneNumber:x.phoneNumber,
-            deliveryDistance:x.deliveryDistance,
-            deliveryFee:x.deliveryFee,
-            paymentProcessor:x.paymentProcessor,
-            vatCharge: x.vatCharge,
-            serviceCharge:x.serviceCharge,
-            openingTimes:x.openingTimes,
-            paymentToken:x.paymentToken,
-            testMode:x.testMode,
-            id:x.id
+            businessName: this.appUser.businessName,
+            businessAddress1:this.appUser.businessAddress1,
+            businessAddress2:this.appUser.businessAddress2,
+            state:this.appUser.state,
+            postalCode:this.appUser.postalCode,
+            country:this.appUser.country,
+            firstName:this.appUser.firstName,
+            lastName:this.appUser.lastName,
+            email:this.appUser.email,
+            phoneNumber:this.appUser.phoneNumber,
+            deliveryDistance:this.appUser.deliveryDistance,
+            deliveryFee:this.appUser.deliveryFee,
+            paymentProcessor:this.appUser.paymentProcessor,
+            vatCharge: this.appUser.vatCharge,
+            serviceCharge:this.appUser.serviceCharge,
+            openingTimes:this.appUser.openingTimes,
+            paymentToken:this.appUser.paymentToken,
+            testMode:this.appUser.testMode,
+            id:this.appUser.id
         }
 
-        localStorage.setItem('password',x.password);
+        localStorage.setItem('password',this.appUser.password);});
     
-    })
+    
 
     
     }
@@ -360,7 +364,12 @@ this.editODC.open(this.selected[0]);
                 this.settingsForm.get('integrationSettings.processorSoftwareHouseId')?.setValue(processor.softwareHouseId); 
 
             }
-            this.settingsForm.get('integrationSettings.smsActivation')?.disable();
+            if(this.appUser.testMode){
+                this.settingsForm.get('integrationSettings.smsActivation')?.disable();
+            }else{
+                this.settingsForm.get('integrationSettings.smsActivation')?.enable();
+            }
+            
         })
     }
 
@@ -390,6 +399,7 @@ this.editODC.open(this.selected[0]);
           });
           
           this.paymentElement?.mount("#payment-element");
+          
         });
       }
     
@@ -577,8 +587,8 @@ this.editODC.open(this.selected[0]);
         localStorage.setItem('access_token',s)
         let sms = this.settingsForm.get('integrationSettings.smsActivation');
         if(y == true)
-            sms?.disable
-        sms?.enable
+            sms?.disable()
+        sms?.enable()
         
      },(er)=>console.log(er))
     }

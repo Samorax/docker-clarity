@@ -10,6 +10,7 @@ import { OrderService } from "./OrderService";
 import { CustomerService } from "./CustomerService";
 import moment from "moment";
 import { environment } from "../../environment/environment";
+import { disseminateModeService } from "./DisseminateMode";
 
 @Injectable({
   providedIn: "root"
@@ -19,7 +20,7 @@ export class AuthenticationService {
   baseUrl:string = environment.apiBaseUrl+"api/"
 
   constructor(private _httpClient: HttpClient,
-     private _pService: ProductService, private _oService: OrderService, private _cService: CustomerService) { }
+     private _appMode:disseminateModeService) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -48,7 +49,7 @@ export class AuthenticationService {
     
     let d = new Date(tokenObject.expiry_date);
     const expiresAt = moment().add(d.getUTCHours(), "hour");
-  
+    
     localStorage.setItem("access_token", tokenObject.access_token);
     localStorage.setItem("user_id", tokenObject.user_id);
     localStorage.setItem("expiry_date", JSON.stringify(expiresAt.valueOf()));
@@ -57,6 +58,7 @@ export class AuthenticationService {
     localStorage.setItem("mSID",tokenObject.MessagingSID);
     localStorage.setItem("vatCharge",tokenObject.vatCharge);
     localStorage.setItem("serviceCharge",tokenObject.serviceCharge);
+    
       
     }
 

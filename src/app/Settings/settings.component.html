@@ -8,163 +8,170 @@
  </section>
  <clr-tabs clrLayout="vertical">
   <clr-tab>
-    <button clrTabLink #accountTab (click)="fillAccountSettings()">Account</button>
-    <ng-template [(clrIfActive)]="onStart">
-    <clr-tab-content>
-      <section class="clr-row">
-        <clr-toggle-container class="clr-toggle-right clr-col">
-          <clr-toggle-wrapper>
-            <input type="checkbox" clrToggle #switch  formControlName="testMode" (change)="onSwitchMode()" />
-            <label>Test Mode</label>
-          </clr-toggle-wrapper>
-          <clr-control-helper>Switch it off when you want to start selling</clr-control-helper>
-        </clr-toggle-container>
-        <div class="clr-col">
-          <button class="btn btn-primary" (click)="onApiRequest($event)">Get Api Key</button>
-            <span *ngIf="showKey" class="label">{{apiKey}}</span>
-        </div>
-      </section>
-       
-      <section>
-        <div>
-          <h4>Account Details</h4>
-        </div>
-        <div>
-          <section formGroupName = 'accountDetails'  >
-            <div (click)="toggle()" class="section-header">
-              <h6>Change Contact Details</h6>
-            </div>
-           
-            <div [@openClose]="isOpen ? 'close':'open'">
-              <div class="clr-row">
-                <clr-input-container class="clr-col">
-                  <label class="clr-control-label clr-required-mark" >First Name</label>
-                  <input clrInput formControlName="firstName" required/>
-                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-                </clr-input-container>
-                <clr-input-container class="clr-col">
-                  <label class="clr-control-label clr-required-mark" >Last Name</label>
-                  <input clrInput formControlName="lastName" required/>
-                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-                </clr-input-container>
-                </div>  
-                <div class="clr-row">              
-                  <clr-input-container class="clr-col">
-                  <label class="clr-control-label clr-required-mark" >Email</label>
-                  <input clrInput formControlName="email"/>
-                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-                  <clr-control-error *clrIfError="'email'">This is not an email</clr-control-error>
-                </clr-input-container>
-              <clr-input-container class="clr-col">
-                <label class="clr-control-label">Phone Number</label>
-                <input clrInput formControlName="phoneNumber"/>
-                <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-              </clr-input-container>
+    <button clrTabLink>Guides</button>
+    <clr-tab-content *clrIfActive>
+      <p>My default mode is TEST mode!! Only switch off, when you are ready to start selling, as you will be billed.</p>
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink id="accountButton" (click)="fillAccountSettings()">Account</button>
+
+      <clr-tab-content *clrIfActive>
+        <section class="clr-row">
+          <clr-toggle-container class="clr-toggle-right clr-col">
+            <clr-toggle-wrapper>
+              <input type="checkbox" clrToggle #switch  formControlName="testMode" (change)="onSwitchMode()" />
+              <label>Test Mode</label>
+            </clr-toggle-wrapper>
+            <clr-control-helper>Switch it off when you want to start selling</clr-control-helper>
+          </clr-toggle-container>
+          <div class="clr-col">
+            <button class="btn btn-primary" (click)="onApiRequest($event)">Get Api Key</button>
+              <span *ngIf="showKey" class="label">{{apiKey}}</span>
+          </div>
+        </section>
+         
+        <section>
+          <div>
+            <h4>Account Details</h4>
+          </div>
+          <div>
+            <section formGroupName = 'accountDetails'  >
+              <div (click)="toggle()" class="section-header">
+                <h6>Change Contact Details</h6>
               </div>
-              <div class="clr-row">
-                <div class="clr-col-3">
-                  <button class="btn btn-primary" [disabled]="!settingsForm.get('accountDetails')?.valid" (click)="onChangeAccountDetails()">Save</button>
+             
+              <div [@openClose]="isOpen ? 'close':'open'">
+                <div class="clr-row">
+                  <clr-input-container class="clr-col">
+                    <label class="clr-control-label clr-required-mark" >First Name</label>
+                    <input clrInput formControlName="firstName" required/>
+                    <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                  </clr-input-container>
+                  <clr-input-container class="clr-col">
+                    <label class="clr-control-label clr-required-mark" >Last Name</label>
+                    <input clrInput formControlName="lastName" required/>
+                    <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                  </clr-input-container>
+                  </div>  
+                  <div class="clr-row">              
+                    <clr-input-container class="clr-col">
+                    <label class="clr-control-label clr-required-mark" >Email</label>
+                    <input clrInput formControlName="email"/>
+                    <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    <clr-control-error *clrIfError="'email'">This is not an email</clr-control-error>
+                  </clr-input-container>
+                <clr-input-container class="clr-col">
+                  <label class="clr-control-label">Phone Number</label>
+                  <input clrInput formControlName="phoneNumber"/>
+                  <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                </clr-input-container>
                 </div>
-                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showAccountDetailsFeedback">
+                <div class="clr-row">
+                  <div class="clr-col-3">
+                    <button class="btn btn-primary" [disabled]="!settingsForm.get('accountDetails')?.valid" (click)="onChangeAccountDetails()">Save</button>
+                  </div>
+                  <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showAccountDetailsFeedback">
+                    <clr-alert-item>
+                      <span class="alert-text">Account details Updated!!</span>
+                    </clr-alert-item>
+                    </clr-alert>
+                </div>
+              </div>
+              
+            </section>
+  
+            <!-- <section formGroupName = 'passwordReset' >
+              <div (click)="toggle2()" class="section-header">
+                <h6>Change Password</h6>
+              </div>
+             
+              <div [@openClose]="isOpen2 ? 'close':'open'">
+                <div class="clr-row">
+                  <clr-password-container class="clr-col">
+                    <label class="clr-control-label clr-required-mark">New Password</label>
+                    <input clrPassword formControlName="oldPassword" required/>
+                    <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
+                    
+                    <clr-control-error *clrIfError="'pattern'">
+                      Password must fuifill the following:
+                      <ul>
+                        <li>must include both uppercase and lowercase alphabets</li>
+                        <li>must include at least a number</li>
+                        <li>must include at least one of these symbols: &#64;$!%*?&</li>
+                        <li>must be at least 8 characters</li>
+                      </ul>
+                    </clr-control-error>
+                    
+                  </clr-password-container>
+                  <clr-password-container class="clr-col">
+                    <label class="clr-control-label clr-required-mark">Verify Password</label>
+                    <input clrPassword formControlName="newPassword" required/>
+                    <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
+                    <clr-control-error *clrIfError="'mustMatch'">Password Mismatch!!</clr-control-error>
+                    <clr-control-error *clrIfError="'pattern'">
+                      Password must fuifill the following:
+                      <ul>
+                        <li>must include both uppercase and lowercase alphabets</li>
+                        <li>must include at least a number</li>
+                        <li>must include at least one of these symbols: &#64;$!%*?&</li>
+                        <li>must be at least 8 characters</li>
+                      </ul>
+                    </clr-control-error>
+                  </clr-password-container>
+                </div>
+                <div class="clr-row">
+                  <div class="clr-col-3">
+                    <button class="btn btn-primary" [disabled]="!settingsForm.get('passwordReset')?.valid" (click)="onChangePassword()">Save</button>
+                  </div>
+                  <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showChangePasswordFeedback">
                   <clr-alert-item>
-                    <span class="alert-text">Account details Updated!!</span>
+                    <span class="alert-text">Password Updated!!</span>
                   </clr-alert-item>
                   </clr-alert>
+                </div>
+                
               </div>
-            </div>
+              
+            </section> -->
             
-          </section>
-
-          <!-- <section formGroupName = 'passwordReset' >
-            <div (click)="toggle2()" class="section-header">
-              <h6>Change Password</h6>
-            </div>
-           
-            <div [@openClose]="isOpen2 ? 'close':'open'">
-              <div class="clr-row">
-                <clr-password-container class="clr-col">
-                  <label class="clr-control-label clr-required-mark">New Password</label>
-                  <input clrPassword formControlName="oldPassword" required/>
-                  <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
-                  
-                  <clr-control-error *clrIfError="'pattern'">
-                    Password must fuifill the following:
-                    <ul>
-                      <li>must include both uppercase and lowercase alphabets</li>
-                      <li>must include at least a number</li>
-                      <li>must include at least one of these symbols: &#64;$!%*?&</li>
-                      <li>must be at least 8 characters</li>
-                    </ul>
-                  </clr-control-error>
-                  
-                </clr-password-container>
-                <clr-password-container class="clr-col">
-                  <label class="clr-control-label clr-required-mark">Verify Password</label>
-                  <input clrPassword formControlName="newPassword" required/>
-                  <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
-                  <clr-control-error *clrIfError="'mustMatch'">Password Mismatch!!</clr-control-error>
-                  <clr-control-error *clrIfError="'pattern'">
-                    Password must fuifill the following:
-                    <ul>
-                      <li>must include both uppercase and lowercase alphabets</li>
-                      <li>must include at least a number</li>
-                      <li>must include at least one of these symbols: &#64;$!%*?&</li>
-                      <li>must be at least 8 characters</li>
-                    </ul>
-                  </clr-control-error>
-                </clr-password-container>
+          </div>
+         
+        </section>
+        <section>
+          <div>
+            <h4>Account Payment</h4>
+          </div>
+          <div>
+            <h6 (click)="toggle3()" class="section-header">Change Payment Details</h6>
+            <div class="formbody" id="payment-form" [@openClose]="isOpen3 ? 'close':'open'">
+              <div class="group" id="payment-element">
+                <!--Stripe.js injects the Payment Element-->
               </div>
               <div class="clr-row">
                 <div class="clr-col-3">
-                  <button class="btn btn-primary" [disabled]="!settingsForm.get('passwordReset')?.valid" (click)="onChangePassword()">Save</button>
+                  <button id="button-text" class="btn btn-primary" #button (click)="onChangePaymentDetails($event)">
+                    <!-- <div class="spinner hidden" id="spinner"></div> -->
+                    <span id="button-text">Save</span>
+                  </button>
                 </div>
-                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showChangePasswordFeedback">
-                <clr-alert-item>
-                  <span class="alert-text">Password Updated!!</span>
-                </clr-alert-item>
-                </clr-alert>
+                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showPaymentUpdateFeedback">
+                  <clr-alert-item>
+                    <span class="alert-text">Payment details Updated!!</span>
+                  </clr-alert-item>
+                  </clr-alert>
+                  <div id="payment-message" class="hidden"></div>
               </div>
               
             </div>
-            
-          </section> -->
-          
-        </div>
-       
-      </section>
-      <section>
-        <div>
-          <h4>Account Payment</h4>
-        </div>
-        <div>
-          <h6 (click)="toggle3()" class="section-header">Change Payment Details</h6>
-          <div class="formbody" id="payment-form" [@openClose]="isOpen3 ? 'close':'open'">
-            <div class="group" id="payment-element">
-              <!--Stripe.js injects the Payment Element-->
-            </div>
-            <div class="clr-row">
-              <div class="clr-col-3">
-                <button id="button-text" class="btn btn-primary" #button (click)="onChangePaymentDetails($event)">
-                  <!-- <div class="spinner hidden" id="spinner"></div> -->
-                  <span id="button-text">Save</span>
-                </button>
-              </div>
-              <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showPaymentUpdateFeedback">
-                <clr-alert-item>
-                  <span class="alert-text">Payment details Updated!!</span>
-                </clr-alert-item>
-                </clr-alert>
-                <div id="payment-message" class="hidden"></div>
-            </div>
-            
           </div>
-        </div>
-      </section>
-      <section>
-        <button class="btn btn-secondary" (click)="onAccountDelete($event)">Delete Account</button>
-      </section>   
-    </clr-tab-content>
-    </ng-template>
+        </section>
+        <section>
+          <button class="btn btn-secondary" (click)="onAccountDelete($event)">Delete Account</button>
+        </section>   
+      </clr-tab-content>
+    
+    
   </clr-tab>
   <clr-tab>
     <button clrTabLink (click)="fillIntegrationSettings()">Integrations</button>

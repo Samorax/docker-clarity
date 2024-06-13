@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 @Injectable({
     providedIn:'root'
@@ -13,5 +13,5 @@ export class disseminateModeService{
         });
     }
 
-    getMode = new BehaviorSubject<boolean>(true);
+    getMode = new Subject<boolean>();
 }
