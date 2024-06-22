@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { addLoyaltyDialogComponent } from "./addLoyaltyDialog.component";
 import { Product } from "../Models/Product";
 import { Rewards } from "../Models/Rewards";
@@ -14,7 +14,8 @@ import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
     templateUrl:'./loyalty.component.html',
-    selector:'app-loyalty'
+    selector:'app-loyalty',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class loyaltyComponent implements OnInit, AfterViewInit
@@ -34,7 +35,7 @@ export class loyaltyComponent implements OnInit, AfterViewInit
     
     
 
-    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,private _formBuilder: FormBuilder,
+    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,private _formBuilder: FormBuilder,private cd:ChangeDetectorRef,
          private _rewardsSvr:RewardService){}
 
     ngAfterViewInit(): void {
@@ -44,11 +45,12 @@ export class loyaltyComponent implements OnInit, AfterViewInit
                     this._rewardsSvr.rewardsCache.push(r);
                 })
             },(err)=>{},()=> this.addLoyalty.close());
+            this.cd.detectChanges()
         });
 
         this.editLoyalty.isOk.subscribe((r:FormData)=>{
             let id = r.get('rewardsId');
-            console.log(id);
+        
             this._rewardsSvr.updateRewards(id,r).subscribe(()=>{
 
             },(er)=>console.log(er),()=>this.editLoyalty.close())
@@ -59,8 +61,10 @@ export class loyaltyComponent implements OnInit, AfterViewInit
                 this._rewardsSvr.deleteRewards(r.rewardsId).subscribe(()=>{
                     let index = this.rewards.indexOf(r);
                     this._rewardsSvr.rewardsCache.splice(index,1);
+
                 },(er)=> console.log(er),()=>this.delLoyalty.close())
             })
+            this.cd.detectChanges()
         });
     }
 
@@ -83,10 +87,7 @@ export class loyaltyComponent implements OnInit, AfterViewInit
     }
 
     getRewards(){
-        let cache = this._rewardsSvr.rewardsCache;
-        if(cache.length != 0){
-            this.rewards = cache;
-        }else{
+       
             this._rewardsSvr.getRewards().subscribe(r=>{
                 r.forEach(rt=>{
                     this.convertImgByte(rt).subscribe(rx=>{
@@ -95,23 +96,19 @@ export class loyaltyComponent implements OnInit, AfterViewInit
                         this._rewardsSvr.rewardsCache.push(rx);
                     })
                 })
+                this.cd.detectChanges();
             })
-        }
+        
     }
 
     getVouchers(){
-        let cache = this._voucherSvr.getVoucherCache;
-        if(cache.length != 0){
-            this.vouchers = cache;
-            this.currencySymbol = localStorage.getItem('currency_iso_code');
-        }else{
             this._voucherSvr.getVouchers().subscribe((v:any) => 
             {
                 this.vouchers = v;
                 this._voucherSvr.getVoucherCache = v;
                 this.currencySymbol = localStorage.getItem('currency_iso_code');
             });
-        }
+        
     }
 
     onAdd(){

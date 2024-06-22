@@ -9,6 +9,7 @@ import { paymentService } from "../Services/PaymentService";
 import '@cds/core/icon/register.js';
 import { ClarityIcons, infoCircleIconName,infoCircleIcon } from '@cds/core/icon';
 import { country } from "../Models/Country";
+import { environment } from "../../environment/environment";
 
 ClarityIcons.addIcons(infoCircleIcon);
 
@@ -63,6 +64,7 @@ export class registerComponent implements OnInit, AfterViewInit{
   showRegistrationFeedback: boolean = false;
   showRegistrationError: boolean = false;
   registeringUserInfo: boolean = false;
+  stripeKey=environment.stripeTestKey
   
   constructor(private authenticationService: AuthenticationService,private stripeIntentService: paymentService, private formBUilder:FormBuilder ) { }
 
@@ -74,7 +76,7 @@ export class registerComponent implements OnInit, AfterViewInit{
   
 
   async ngOnInit():Promise<void> {
-    this.stripe = await loadStripe("pk_test_51OZtsPLMinwGqDJe4WXbskkZ1G2voTezl8OneMarPyB4tweJbNANCrKtyWVdZ0hBxA9pAAid9hs9JVxc6i9kd11g00xRANg6LK");
+    this.stripe = await loadStripe(this.stripeKey);
     //this.CreatePaymentForm();
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ProductService } from "../Services/ProductService";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
@@ -11,11 +11,12 @@ import { orderDetail } from "../Models/OrderDetails";
 
 @Component({
     selector:'app-productoverview',
-    templateUrl:'./ProductOverview.component.html'
+    templateUrl:'./ProductOverview.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class ProductOverviewComponent implements OnInit{
-    constructor(private productSvr:ProductService, private orderSvr: OrderService){}
+    constructor(private productSvr:ProductService, private orderSvr: OrderService,private cd: ChangeDetectorRef){}
     products: Product[] = [];
     productCount: number = 0;
     categoriesCount: number = 0;
@@ -37,6 +38,7 @@ export class ProductOverviewComponent implements OnInit{
                     });
                     this.getOrders();
                 });
+            
     }
 
     getOrders(){
@@ -45,6 +47,7 @@ export class ProductOverviewComponent implements OnInit{
                         this.orderSvr.ordersCache = or;
                         this.orders = or;
                         this.productDemandChart = this.getProductDemandChart();
+                        this.cd.detectChanges()
                     });
     }
 

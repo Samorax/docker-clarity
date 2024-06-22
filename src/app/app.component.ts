@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, Signal, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Signal, ViewChild, inject } from '@angular/core';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
@@ -26,7 +26,8 @@ ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl:'./app.component.css'
+  styleUrl:'./app.component.css',
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(NavMenuComponent)navcomponent!: NavMenuComponent;
@@ -48,7 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private signalrService: SignalrService,private _testModeSVR:testModeService,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private _toaster:ToastrService,
-    private _authSvr:AuthenticationService,
+    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef,
      private _route: Router) {
     
      }
@@ -62,22 +63,40 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
-
-    this.isAuthenticated = of(this._authSvr.isAuthenticated())
-    console.log(localStorage.getItem('appMode'))
-
-   this.mode.getMode.subscribe(m=> {this.testMode = m;console.log(m)});
+    this.isAuthenticated = of(this._authSvr.isAuthenticated());
   
+   this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();});
+
     this.signalrService.AllOrderFeedObservable.subscribe((ord:any) => {
         this.order = JSON.parse(ord);
-        this._toaster.info(`You have a new order ${this.order.orderID}`,"Order Notification",{
+        this._toaster.info(`You have a new order. Id: ${this.order.orderID}`,"Order Notification",{
           closeButton:true,
           tapToDismiss:true,
           disableTimeOut:true
     
         });
+
+        if (!("Notification" in window)) {
+          // Check if the browser supports notifications
+          alert("This browser does not support desktop notification");
+        } else if (Notification.permission === "granted") {
+          // Check whether notification permissions have already been granted;
+          // if so, create a notification
+          const notification = new Notification(`You have a new order. Id: ${this.order.orderID}`);
+          // …
+        } else if (Notification.permission !== "denied") {
+          // We need to ask the user for permission
+          Notification.requestPermission().then((permission) => {
+            // If the user accepts, let's create a notification
+            if (permission === "granted") {
+              const notification = new Notification(`You have a new order. Id: ${this.order.orderID}`);
+              // …
+            }
+          });
+        }
         
         
+        this.cd.detectChanges();
     });
 
     this.signalrService.AllBirthdayFeedObservable.subscribe((c:CustomerDto)=>{
@@ -106,7 +125,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
-
     this.checkPaymentTerminalStatus();
     
     this.checkNetworkStatus();
@@ -118,12 +136,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.signalrService.listenToBirthdayFeeds();
     this.signalrService.listenToOrderUpdateFeeds();
 
+    let x:any = localStorage.getItem('appMode');
+    console.log(x);
+    this.testMode = x;
+
     // 3 - subscribe to messages received
    /* this.signalrService.AllFeedObservable
       .subscribe((res: any) => {
         console.log(res);
       });*/
   } 
+
+  
 
    playSoundNotification(){
       let au = new Audio();

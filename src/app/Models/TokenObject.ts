@@ -1,5 +1,5 @@
 export class TokenObject{
-    mode:any
+    mode!:boolean
     expiry_date: any
     access_token: any
     user_id:any

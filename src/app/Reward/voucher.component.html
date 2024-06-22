@@ -13,7 +13,7 @@
             <cds-icon shape="pencil"></cds-icon>
             Edit
      </button>
-     <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()" *ngIf="selected.length == 1">
+     <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()" [disabled]="activateBroadcast" *ngIf="selected.length == 1">
       <cds-icon shape="pencil"></cds-icon>
       Broadcast
     </button>
@@ -43,10 +43,11 @@
     </clr-dg-row>
   
    <clr-dg-detail *clrIfDetail="let element">
-      <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
+      <clr-dg-detail-header>{{element.voucherName}}</clr-dg-detail-header>
       <clr-dg-detail-body>
-        
-    </clr-dg-detail-body>
+        <p>Type: {{element.valueType}}</p>
+        <p>Remaining Units: {{element.units}}</p>
+      </clr-dg-detail-body>
     </clr-dg-detail> 
   
     <clr-dg-footer>

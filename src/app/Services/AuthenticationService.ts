@@ -46,7 +46,7 @@ export class AuthenticationService {
   }
 
   setSession(tokenObject: TokenObject) {
-    
+    console.log(tokenObject)
     let d = new Date(tokenObject.expiry_date);
     const expiresAt = moment().add(d.getUTCHours(), "hour");
     
@@ -59,8 +59,9 @@ export class AuthenticationService {
     localStorage.setItem("vatCharge",tokenObject.vatCharge);
     localStorage.setItem("serviceCharge",tokenObject.serviceCharge);
     
-      
     }
+
+ 
 
   register(credentials:RegisterCredentials) {
     return this._httpClient.post(this.baseUrl + "register", credentials)

@@ -13,5 +13,6 @@ export class disseminateModeService{
         });
     }
 
-    getMode = new Subject<boolean>();
+    mode = new Subject<boolean>();
+    getMode = this.mode.asObservable();
 }

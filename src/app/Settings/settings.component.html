@@ -18,6 +18,7 @@
 
       <clr-tab-content *clrIfActive>
         <section class="clr-row">
+          <clr-spinner *ngIf="SwitchMode">Processing</clr-spinner>
           <clr-toggle-container class="clr-toggle-right clr-col">
             <clr-toggle-wrapper>
               <input type="checkbox" clrToggle #switch  formControlName="testMode" (change)="onSwitchMode()" />
@@ -26,7 +27,7 @@
             <clr-control-helper>Switch it off when you want to start selling</clr-control-helper>
           </clr-toggle-container>
           <div class="clr-col">
-            <button class="btn btn-primary" (click)="onApiRequest($event)">Get Api Key</button>
+            <button class="btn btn-link" (click)="onApiRequest($event)">Get Api Key</button>
               <span *ngIf="showKey" class="label">{{apiKey}}</span>
           </div>
         </section>
@@ -37,7 +38,7 @@
           </div>
           <div>
             <section formGroupName = 'accountDetails'  >
-              <div (click)="toggle()" class="section-header">
+              <div (click)="showAccountSettings()" class="section-header">
                 <h6>Change Contact Details</h6>
               </div>
              
@@ -143,7 +144,7 @@
             <h4>Account Payment</h4>
           </div>
           <div>
-            <h6 (click)="toggle3()" class="section-header">Change Payment Details</h6>
+            <h6 (click)="showPaymentDetailsSettings()" class="section-header">Change Payment Details</h6>
             <div class="formbody" id="payment-form" [@openClose]="isOpen3 ? 'close':'open'">
               <div class="group" id="payment-element">
                 <!--Stripe.js injects the Payment Element-->
@@ -167,7 +168,7 @@
           </div>
         </section>
         <section>
-          <button class="btn btn-secondary" (click)="onAccountDelete($event)">Delete Account</button>
+          <button class="btn btn-danger" (click)="onAccountDelete($event)">Delete Account</button>
         </section>   
       </clr-tab-content>
     
@@ -179,7 +180,7 @@
       <section formGroupName="integrationSettings">
         
           <h4>Payment Processor</h4>
-        <div (click)="toggle4()" class="section-header">
+        <div (click)="showPaymentProcessorSettings()" class="section-header">
           <h6>Change Payment Processor</h6>
         </div>
         <div [@openClose]="isOpen4 ?'close':'open'">
@@ -194,31 +195,51 @@
             <clr-password-container>
               <label class="clr-required-mark">Api Key</label>
               <input clrPassword autocomplete="current-password" placeholder="Api Key please!" formControlName="processorApiKey"/>
+              <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
             </clr-password-container>
             <clr-password-container>
               <label class="clr-required-mark">Account Id</label>
               <input clrPassword autocomplete="current-password" placeholder="Insert account id" formControlName="processorAccountId" />
+              <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
             </clr-password-container>
           </div>
         <div class="clr-col">
           <clr-password-container>
             <label class="clr-required-mark">Software House Id</label>
-            <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" name="processorSoftwareHouseId" />
+            <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" formControlName="processorSoftwareHouseId" />
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
           </clr-password-container>
         </div>
           
         </div>
-        <button class="btn btn-primary" (click)="onChangePaymentProcessor($event)" [disabled]="!settingsForm.get('integrationSettings')?.valid">Save</button>
+        <div class="clr-row">
+          <div class="clr-col-3">
+            <button class="btn btn-primary" (click)="onChangePaymentProcessor($event)" [disabled]="!settingsForm.get('integrationSettings')?.valid">Save</button>
+          </div>
+          <div class="clr-col">
+            <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showPaymentProcessorUpdateFeedback">
+              <clr-alert-item>
+                <span class="alert-text">Address Updated!!</span>
+              </clr-alert-item>
+              </clr-alert>
+          </div>
+        </div>
         </div>
           
       </section>
 
-      <section formGroupName="integrationSettings">
+    </clr-tab-content>
+  </clr-tab>
+
+  <clr-tab>
+    <button clrTabLink (click)="fillNotificationSettings()">Notifications</button>
+    <clr-tab-content>
+      <section formGroupName="notifications">
         <div>
           <h4>SMS Notifications</h4>
           <clr-toggle-container>
             <clr-checkbox-wrapper>
-              <input type="checkbox" clrToggle  formControlName="smsActivation"/>
+              <input type="checkbox" clrToggle  formControlName="smsActivation" (change)="onSmsActivation()"/>
               <label>SMS Activation</label>
             </clr-checkbox-wrapper>
             <clr-control-helper>Usage costs {{0.042| currency}} per SMS</clr-control-helper>
@@ -228,7 +249,7 @@
           <h4>Birthday Notifications</h4>
           <clr-toggle-container>
             <clr-toggle-wrapper>
-              <input type="checkbox" clrToggle  formControlName="birthdayNotifications" />
+              <input type="checkbox" clrToggle  formControlName="birthdayNotifications" (change)="onBirthdayNotifications()"/>
               <label>Notifications Activation</label>
             </clr-toggle-wrapper>
             <clr-control-helper>You will be reminded a week before customer's Birthday. It is free.</clr-control-helper>
@@ -238,7 +259,7 @@
           <h4>Voucher Notifications</h4>
           <clr-toggle-container>
             <clr-toggle-wrapper>
-              <input type="checkbox" clrToggle  formControlName="voucherNotifications" />
+              <input type="checkbox" clrToggle  formControlName="voucherNotifications" (change)="onVoucherNotifications()"/>
               <label>Notifications Activation</label>
             </clr-toggle-wrapper>
             <clr-control-helper>You will be reminded of voucher usage limits. It is free</clr-control-helper>
@@ -246,10 +267,9 @@
         </div>
        
       </section>
-      
-      
     </clr-tab-content>
   </clr-tab>
+
   <clr-tab>
     <button clrTabLink (click)="fillShopSettings()">Shop Operations</button>
     <clr-tab-content *clrIfActive>
@@ -308,7 +328,7 @@
       <section formGroupName="logistics">
         
           <h4>Logistics Settings</h4>
-        <div (click)="toggle6()" class="section-header">
+        <div (click)="showLogisticsSettings()" class="section-header">
           <h6>Change logistics</h6>
         </div>
        
@@ -323,7 +343,19 @@
             <input clrInput placeholder="3" formControlName="deliveryFee" />
             <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
           </clr-input-container>
-          <button class="btn btn-primary" (click)="onChangeLogisticsDetails()" [disabled]="!settingsForm.get('logistics')?.valid">Save</button>
+          <div class="clr-row">
+            <div class="clr-col-3">
+              <button class="btn btn-primary" (click)="onChangeLogisticsDetails()" [disabled]="!settingsForm.get('logistics')?.valid">Save</button>
+            </div>
+            <div class="clr-col">
+              <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showLogisticsUpdateFeedback">
+                <clr-alert-item>
+                  <span class="alert-text">Logistics Updated!!</span>
+                </clr-alert-item>
+                </clr-alert>
+            </div>
+          </div>
+          
         </div>
         
       </section>
@@ -331,7 +363,7 @@
       <section formGroupName="shopSettings">
     
           <h4>Receipt Settings</h4>
-        <div (click)="toggle7()" class="section-header">
+        <div (click)="showReceiptSettings()" class="section-header">
           <h6>Change receipts</h6>
         </div>
         
@@ -346,7 +378,18 @@
             <input clrInput formControlName="serviceCharge" />
             <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
           </clr-input-container>
-          <button class="btn btn-primary" (click)="onChangeReceiptDetails()" [disabled]="!settingsForm.get('shopSettings')?.valid">Save</button>
+          <div class="clr-row">
+            <div class="clr-col-3">
+              <button class="btn btn-primary" (click)="onChangeReceiptDetails()" [disabled]="!settingsForm.get('shopSettings')?.valid">Save</button>
+            </div>
+            <div class="clr-col">
+              <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showReceiptUpdateFeedback">
+                <clr-alert-item>
+                  <span class="alert-text">Receipts Updated!!</span>
+                </clr-alert-item>
+                </clr-alert>
+            </div>
+          </div>
         </div>
         
       </section>
@@ -354,7 +397,7 @@
       <section formGroupName="businessDetails">
         
           <h4>Address Settings</h4>
-        <div (click)="toggle8()" class="section-header">
+        <div (click)="showAddressSettings()" class="section-header">
           <h6>Change Address</h6>
         </div>
         <div [@openClose]="isOpen8 ? 'close':'open'">
@@ -388,7 +431,19 @@
             <clr-control-error *clrIfError="'required'">This field is required!!</clr-control-error>
           </clr-input-container>
           </div>
-        <button class="btn btn-primary" (click)="onChangeBusinessDetails()" [disabled]="!settingsForm.get('businessDetails')?.valid">Save</button>
+          <div class="clr-row">
+            <div class="clr-col-3">
+              <button class="btn btn-primary" (click)="onChangeBusinessDetails()" [disabled]="!settingsForm.get('businessDetails')?.valid">Save</button>
+            </div>
+            <div class="clr-col">
+              <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showBusinessDetailsUpdateFeedback">
+                <clr-alert-item>
+                  <span class="alert-text">Address Updated!!</span>
+                </clr-alert-item>
+                </clr-alert>
+            </div>
+          </div>
+        
         </div>
        
       </section>

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { Customer } from "../Models/Customer";
 import { CustomerService } from "../Services/CustomerService";
 import { DeleteCustomerDialogComponent } from "./DeleteCustomerDialog.component";
@@ -6,7 +6,8 @@ import { SignalrService } from "../Services/Signalr.Service";
 
 @Component({
     selector:'app-customers',
-    templateUrl:'./customerlist.component.html'
+    templateUrl:'./customerlist.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 //Customer recruitments is made through clients (Mobile app or websites) 
@@ -16,7 +17,7 @@ export class CustomerListComponent implements OnInit, AfterViewInit{
     elements: Customer[] = [];
     currency: any = localStorage.getItem('currency_iso_code');
     @ViewChild(DeleteCustomerDialogComponent) deleteCustomerDialog!: DeleteCustomerDialogComponent;
-constructor(private customerService: CustomerService, private signalrSVR:SignalrService ){}
+constructor(private customerService: CustomerService, private signalrSVR:SignalrService, private cd:ChangeDetectorRef ){}
 
 
 
@@ -26,11 +27,13 @@ constructor(private customerService: CustomerService, private signalrSVR:Signalr
             this.customerService.customersCache = [];
             custs.forEach(c=>{
                 this.customerService.removeCustomers(c.id);
+                this.cd.detectChanges()
             });
             this.customerService.getCustomers().subscribe(c=>{
                 c.forEach(cust=>{
                     this.elements.push(cust);
                     this.customerService.customersCache.push(cust);
+                    this.cd.detectChanges()
                 });
             })
             this.deleteCustomerDialog.close();
@@ -40,16 +43,19 @@ constructor(private customerService: CustomerService, private signalrSVR:Signalr
         this.signalrSVR.AllCustomerUpdateFeedObservable.subscribe(c=>{
             let index = this.customerService.customersCache.findIndex(cust=>cust.id === c.id);
             this.customerService.customersCache[index] = c;
+            this.cd.detectChanges()
         });
 
         //add new customer to the cache
         this.signalrSVR.AllNewCustomerFeedObservable.subscribe(c=>{
             this.customerService.customersCache.push(c);
+            this.cd.detectChanges();
         });
     }
 
     ngOnInit(): void {
       this.loadInit();
+     
     }
 
 
@@ -63,8 +69,8 @@ constructor(private customerService: CustomerService, private signalrSVR:Signalr
          this.customerService.getCustomers().subscribe(c=>{
              c.forEach(cust => {
                  this.elements.push(cust);
-                
              });
+             this.cd.detectChanges();
          })
         }
 

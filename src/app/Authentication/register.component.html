@@ -41,9 +41,9 @@
         <clr-combobox  formControlName="country" required>
         <clr-options>
           <clr-option *clrOptionItems="let c of countries; field: 'name'" [clrValue]="c">
-            <cds-icon shape="world" role="img" aria-label="World is turning"></cds-icon>
+          
             {{ c.name }}
-            <cds-icon shape="sun" role="img" aria-label="Sun is shining"></cds-icon>
+            
           </clr-option>
         </clr-options>
       </clr-combobox>

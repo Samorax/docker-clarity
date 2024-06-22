@@ -17,6 +17,9 @@ export class appUser{
     vatCharge:any
     serviceCharge:any
     testMode:any
+    smsMode:any
+    birthdayNotify:any
+    voucherNotify:any
     openingTimes:any
     id?:any
 

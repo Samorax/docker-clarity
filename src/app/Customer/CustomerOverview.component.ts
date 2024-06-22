@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { Customer } from "../Models/Customer";
 import { CustomerService } from "../Services/CustomerService";
 import { OrderService } from "../Services/OrderService";
@@ -9,7 +9,8 @@ import moment from "moment";
 
 @Component({
     selector:'app-customeroverview',
-    templateUrl:'./customeroverview.component.html'
+    templateUrl:'./customeroverview.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class CustomerOverviewComponent implements OnInit{
@@ -18,7 +19,7 @@ export class CustomerOverviewComponent implements OnInit{
     WRepeatChartOption!: EChartsOption;
     gPieChart!: EChartsOption;
     rPieChart!: EChartsOption;
-    constructor(private _customerService: CustomerService, private _orderService: OrderService){}
+    constructor(private _customerService: CustomerService, private _orderService: OrderService, private cd:ChangeDetectorRef){}
     
     customers: Customer[] = []
     totalRegisteredCustomers!: number;
@@ -47,6 +48,8 @@ export class CustomerOverviewComponent implements OnInit{
                 this.WRepeatChartOption = this.drawWRepeatChart(c,o);
                 
                 this.rPieChart = this.drawDemographPieChart(cr.repeatCustomers);
+
+                this.cd.detectChanges()
             })
 
             

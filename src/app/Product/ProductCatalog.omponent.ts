@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, Sanitizer, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Sanitizer, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
 import { AddProductDialog } from "./AddProductDialog.component";
 import { EditProductDialog } from "./EditProductDialog.component";
@@ -11,6 +11,7 @@ import { paymentService } from "../Services/PaymentService";
 @Component({
     selector:'app-productcatalog',
     templateUrl:'./ProductCatalog.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
     
 })
 
@@ -21,7 +22,7 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
   feedBackMessage:string = '';
 
   currencySymbol:any = this._paymentSvr.currencySymbol;
-  constructor(private productService: ProductService, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
+  constructor(private productService: ProductService, private cd: ChangeDetectorRef, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
    }
   
   
@@ -40,6 +41,7 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
           .subscribe(p => {
             this.convertImgByte(p).subscribe(p=>{
               this.elements.push(p);
+              this.cd.detectChanges();
               
             });
             this.ifSuccess = true;
@@ -130,6 +132,7 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
         d.forEach(dr=>{
           this.convertImgByte(dr).subscribe(p=>{
             this.elements.push(p);
+            this.cd.detectChanges();
           });
         })
     });

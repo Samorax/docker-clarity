@@ -10,6 +10,7 @@ import { SmsService } from "../Services/SmsService";
 import { VoucherSmsComponent } from "./voucherSms.component";
 import { CustomerService } from "../Services/CustomerService";
 import { Customer } from "../Models/Customer";
+import { SmSActivatorService } from "../Services/SmsActivatorService";
 
 @Component({
     templateUrl:'./voucher.component.html',
@@ -22,6 +23,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
     selected:any = [];
     currencySymbol:any;
     status!:string;
+    activateBroadcast:boolean = true;
 
     @ViewChild(addVoucherDialogComponent)addVDC!: addVoucherDialogComponent;
     @ViewChild(editVoucherDialogComponent)editVDC!: editVoucherDialogComponent;
@@ -29,9 +31,11 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(VoucherSmsComponent)bDC!:VoucherSmsComponent;
     customers!: Customer[];
 
-    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService){}
+    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService,private _smsActivator:SmSActivatorService){}
 
     ngAfterViewInit(): void {
+        this._smsActivator.getState.subscribe(a=>{this.activateBroadcast = a;});
+
        /*  this.bDC.voucherSms.subscribe(m=>{
             this.smsSVR.sendMessage(m).subscribe(r=>{
                 console.log(r);

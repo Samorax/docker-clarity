@@ -36,7 +36,7 @@
       <clr-dg-detail-header>Order No:{{element.orderID}}</clr-dg-detail-header>
       <clr-dg-detail-body>
        <div class="clr-row">
-        <div class="clr-col-9">
+        <div class="clr-col-6">
           <div>Date: {{element.orderDate | date:'medium'}}</div>
           <div>Payment Type:{{element.payment}}</div>
           <div>Channel:{{element.channel}}</div>
@@ -46,9 +46,9 @@
             <div>Waiter:{{element.tableSession.waiter.name}}</div>
             <div>Table:{{element.tableSession.table.name}}</div>
           </div>
+          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms">Send Message</button>
         </div>
         <div class="clr-col">
-          <button class="btn btn-secondary" (click)="sendMessage(element.customer)">Send Message</button>
           <h6>Delivery Address</h6>
           <p>
             {{element.deliveryAddress}}

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from "@angular/core";
 import { paymentProcessor } from "../Models/PaymentProcessor";
 import { AbstractControl, FormBuilder, NgForm, Validators } from "@angular/forms";
 import { appUserService } from "../Services/AppUserService";
@@ -18,11 +18,14 @@ import { editOperatingDaysComponent } from "./editOperatingDaysDialog.component"
 import { delOperatingDaysComponent } from "./delOperatingDays.component";
 import { AuthenticationService } from "../Services/AuthenticationService";
 import { deleteAccountComponent } from "./delAccountDialog.component";
+import { ChangeDetectionStrategy } from "@angular/core";
+import { SmSActivatorService } from "../Services/SmsActivatorService";
 
 @Component({
     templateUrl:'./settings.component.html',
     selector:'app-settings',
     styleUrl:'./settings.component.css',
+    changeDetection:ChangeDetectionStrategy.OnPush,
     animations:[
         trigger('openClose',[
             state('close', style({
@@ -41,6 +44,7 @@ import { deleteAccountComponent } from "./delAccountDialog.component";
     ]
 })
 export class SettingsComponent implements OnInit, AfterViewInit{
+
     accountActive = true;
     paymentProvider:paymentProcessor = new paymentProcessor();
     appUserId: any = localStorage.getItem("user_id");
@@ -77,20 +81,24 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     @ViewChild(editOperatingDaysComponent)editODC!:editOperatingDaysComponent
     @ViewChild(delOperatingDaysComponent)delODC!:delOperatingDaysComponent
     @ViewChild(deleteAccountComponent)delAcc!:deleteAccountComponent
+
+    showBusinessDetailsUpdateFeedback: boolean = false;
+    showLogisticsUpdateFeedback: boolean = false;
+    showReceiptUpdateFeedback: boolean = false;
+    showPaymentProcessorUpdateFeedback: boolean = false;
+    SwitchMode: boolean = false;
     
     
 
-constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
-    private _paymentSvr:paymentService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
+constructor(private _appUserSrv: appUserService,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
+    private _smsActivator:SmSActivatorService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
+
     ngAfterViewInit(): void {
-        
-    
         this.delAcc.isOk.subscribe(o=>{
             this.deleteAccount(o).subscribe(()=>{
                 this._authSVR.logOut();
                 this.delAcc.close();
             });
-            
         })
 
         this.oDC.isOk.subscribe(o=>{
@@ -120,6 +128,7 @@ constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeSe
             
         })
     }
+
     settingsForm = this.formBUilder.group({
         accountDetails: this.formBUilder.group({
             firstName:['', Validators.required],
@@ -150,10 +159,12 @@ constructor(private _appUserSrv: appUserService, private _testModeSVR:testModeSe
             startTime:['',Validators.required],
             endTime:['',Validators.required]
         }),
+        notifications:this.formBUilder.group({
+            smsActivation:[false,Validators.required],
+            birthdayNotifications:['',Validators.required],
+            voucherNotifications:['',Validators.required]
+        }),
         integrationSettings:this.formBUilder.group({
-                smsActivation:[false,Validators.required],
-                birthdayNotifications:['',Validators.required],
-                voucherNotifications:['',Validators.required],
                 processorName:['',Validators.required],
                 processorApiKey:['',Validators.required],
                 processorAccountId:['',Validators.required],
@@ -246,7 +257,8 @@ onEdit(){
 this.editODC.open(this.selected[0]);
 }
 
-    toggle() {
+    showAccountSettings() {
+     this.showAccountDetailsFeedback = false;
       this.isOpen = !this.isOpen;
     }
 
@@ -254,24 +266,30 @@ this.editODC.open(this.selected[0]);
         this.isOpen2 = !this.isOpen2;
     }
 
-    toggle3(){
+    showPaymentDetailsSettings(){
+        this.showPaymentUpdateFeedback = false;
         this.isOpen3 = !this.isOpen3;
     }
-    toggle4(){
+
+    showPaymentProcessorSettings(){
+        this.showPaymentProcessorUpdateFeedback = false;
         this.isOpen4 = !this.isOpen4;
     }
     toggle5(){
         this.isOpen5 = !this.isOpen5;
     }
 
-    toggle6(){
+    showLogisticsSettings(){
+        this.showLogisticsUpdateFeedback = false;
         this.isOpen6 = !this.isOpen6;
     }
 
-    toggle7(){
+    showReceiptSettings(){
+        this.showReceiptUpdateFeedback = false;
         this.isOpen7 = !this.isOpen7;
     }
-    toggle8(){
+    showAddressSettings(){
+        this.showBusinessDetailsUpdateFeedback =false;
         this.isOpen8 = !this.isOpen8;
     }
 
@@ -280,15 +298,16 @@ this.editODC.open(this.selected[0]);
 
         this.appUser = r;
         this.CreatePaymentForm();
-        this.settingsForm.get('accountDetails.firstName')?.setValue(this.appUser.firstName);
-        this.settingsForm.get('accountDetails.lastName')?.setValue(this.appUser.lastName);
-        this.settingsForm.get('accountDetails.email')?.setValue(this.appUser.email);
-        this.settingsForm.get('accountDetails.phoneNumber')?.setValue(this.appUser.phoneNumber);
-        this.settingsForm.get('testMode')?.setValue(this.appUser.testMode);
+        this.settingsForm.get('accountDetails.firstName')?.setValue(r.firstName);
+        this.settingsForm.get('accountDetails.lastName')?.setValue(r.lastName);
+        this.settingsForm.get('accountDetails.email')?.setValue(r.email);
+        this.settingsForm.get('accountDetails.phoneNumber')?.setValue(r.phoneNumber);
+        this.settingsForm.get('testMode')?.setValue(r.testMode);
+        this.Mode.mode.next(r.testMode);
         
-
-        this.openingTimes = this.appUser.openingTimes;
-
+        
+        this.openingTimes = r.openingTimes;
+            this.cd.detectChanges();
         //complete the form to be sent.
         this.settingsUpdateForm = {
             businessName: this.appUser.businessName,
@@ -309,14 +328,13 @@ this.editODC.open(this.selected[0]);
             openingTimes:this.appUser.openingTimes,
             paymentToken:this.appUser.paymentToken,
             testMode:this.appUser.testMode,
+            smsMode:this.appUser.smsMode,
+            voucherNotify:this.appUser.voucherNotifications,
+            birthdayNotify:this.appUser.birthdayNotifications,
             id:this.appUser.id
         }
 
         localStorage.setItem('password',this.appUser.password);});
-    
-    
-
-    
     }
 
     onAccountDelete(x:any){
@@ -364,13 +382,29 @@ this.editODC.open(this.selected[0]);
                 this.settingsForm.get('integrationSettings.processorSoftwareHouseId')?.setValue(processor.softwareHouseId); 
 
             }
-            if(this.appUser.testMode){
-                this.settingsForm.get('integrationSettings.smsActivation')?.disable();
-            }else{
-                this.settingsForm.get('integrationSettings.smsActivation')?.enable();
-            }
+           
             
         })
+    }
+
+    fillNotificationSettings(){
+        this._appUserSrv.getAppUserInfo().subscribe((a:appUser)=>{
+            console.log(a)
+            if(a.testMode){
+                this.settingsForm.get('notifications.smsActivation')?.disable();
+        
+            }else{
+                this.settingsForm.get('notifications.smsActivation')?.enable();
+            }
+
+            this.settingsForm.get('notifications.smsActivation')?.setValue(a.smsMode)
+            this.settingsForm.get('notifications.birthdayNotifications')?.setValue(a.birthdayNotify);
+            this.settingsForm.get('notifications.voucherNotifications')?.setValue(a.voucherNotify);
+            this.cd.detectChanges();
+        });
+        
+
+
     }
 
     
@@ -420,7 +454,7 @@ this.editODC.open(this.selected[0]);
         this.appUser.country = e;
 
         this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(x=>{
-            console.log(x);
+            this.showBusinessDetailsUpdateFeedback = true;
         },(er:Error)=>console.log(er.message));
     }
 
@@ -432,7 +466,7 @@ this.editODC.open(this.selected[0]);
         this.appUser.deliveryFee = y;
         
         this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
-            console.log(r);
+            this.showLogisticsUpdateFeedback = true;
         },(er:Error)=> console.log(er.message));
     }
 
@@ -445,7 +479,7 @@ this.editODC.open(this.selected[0]);
         this.appUser.serviceCharge = y;
 
         this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
-            console.log(r);
+            this.showReceiptUpdateFeedback = true;
         },(er:Error)=>console.log(er.message));
     }
     
@@ -467,7 +501,9 @@ this.editODC.open(this.selected[0]);
     
         this.settingsUpdateForm.paymentProcessor = pp;
 
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe();
+        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe(r=>{
+            this.showPaymentProcessorUpdateFeedback = true;
+        },(er:Error)=>console.log(er.message));
     }
 
 
@@ -574,22 +610,52 @@ this.editODC.open(this.selected[0]);
     onApiRequest(x:any){
         x.preventDefault();
         this._apiKeySvr.getApiKey().subscribe(k=>{
-            console.log(k);
             this.apiKey = k;
             this.showKey = true;
         },(er)=>console.log(er))
     }
 
     onSwitchMode(){
+     this.SwitchMode = true;
      let y = this.settingsForm.get('testMode')?.value;
+    
      this._testModeSVR.setMode(y).subscribe(s=>{
-        this.Mode.getMode.next(y);
         localStorage.setItem('access_token',s)
-        let sms = this.settingsForm.get('integrationSettings.smsActivation');
+        localStorage.setItem('appMode',y);
+        let sms = this.settingsForm.get('notifications.smsActivation');
+        this.Mode.mode.next(y);
         if(y == true)
-            sms?.disable()
-        sms?.enable()
-        
+        {
+            sms?.disable();
+            this._smsActivator.activaionState.next(true);
+        }else{
+            sms?.enable();
+        } 
+        this.SwitchMode = false;
+       
+        this.cd.detectChanges()
      },(er)=>console.log(er))
     }
+
+    onVoucherNotifications() {
+        let s = this.settingsForm.get('notifications.voucherNotifications')?.value;
+        this.appUser.voucherNotify = s;
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe();
+    }
+
+        onSmsActivation() {
+         let s = this.settingsForm.get('notifications.smsActivation')?.value;
+         this.appUser.smsMode = s;
+         this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(()=>{
+            let d = s == true?false:true;
+            this._smsActivator.activaionState.next(d);
+         });
+            
+        }
+
+        onBirthdayNotifications() {
+        let s = this.settingsForm.get('notifications.birthdayNotifications')?.value;
+        this.appUser.birthdayNotify = s;
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe();
+        }
 }

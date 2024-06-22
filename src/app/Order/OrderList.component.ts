@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
 import { SignalrService } from "../Services/Signalr.Service";
@@ -21,13 +21,15 @@ import { voucher } from "../Models/Voucher";
 import { OrderSmsComponent } from "./OrderSms.component";
 import { SmsService } from "../Services/SmsService";
 import { orderDetail } from "../Models/OrderDetails";
+import { SmSActivatorService } from "../Services/SmsActivatorService";
 
 
 
 @Component({
     selector:'app-orders',
     templateUrl:'./OrderList.component.html',
-    styleUrl:'./OrderList.component.css'
+    styleUrl:'./OrderList.component.css',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class OrderListComponent implements OnInit, AfterViewInit{
@@ -52,14 +54,17 @@ export class OrderListComponent implements OnInit, AfterViewInit{
 
   @ViewChild(OrderSmsComponent)orderSms!:OrderSmsComponent
   paymentFeedbackError: any;
+  enableSms:boolean = true;
   
 
-  constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,
-    private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService,
+  constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,private cd:ChangeDetectorRef,
+    private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService, private _smsActivator:SmSActivatorService,
     private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService) {
 
   }
     ngAfterViewInit(): void {
+      this._smsActivator.getState.subscribe(a=>{this.enableSms = a;this.cd.detectChanges();});
+
       this.OrderEditModal.editdialog.subscribe(o=>{
         this.orderService.updateOrder(o.orderID,o).subscribe();
         this.orderService.getOrders().subscribe(ord => {
@@ -68,29 +73,33 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         });
       });
 
+      //add order from session to list from POS
       this.OrderAddModal.orda.subscribe(o => {
           this.orders.unshift(o);
           this.OrderAddModal.close();
         });
 
+
         this.orderInSession.OrderSessionCartModal.cart.subscribe((o:any)=>{
-          
           let index = this.orders.findIndex(x=> x.orderID === o.orderID);
           this.orders[index] = o;
           this.orderInSession.close();
         },(er:Error)=>console.log(er));
 
+
       this.signalrSVR.AllOrderFeedObservable.subscribe((o:any)=>{
         let ord = JSON.parse(o);
         this.orders.unshift(ord);
+        this.cd.detectChanges();
       })
 
       this.signalrSVR.AllOrderUpdateFeedObservable.subscribe((o: any) => {
         let ord = JSON.parse(o);
         let x = this.orders.findIndex((x:any) => x.OrderID === ord.orderID);
         this.orders[x].orderStatus = ord.OrderStatus;
-        
+        this.cd.detectChanges();
       });
+
 
       this.orderSms.smsForm.subscribe(s=>{
         this._smsSvr.sendMessage(s).subscribe(x=>{
@@ -110,6 +119,7 @@ export class OrderListComponent implements OnInit, AfterViewInit{
             //index is 0 because the list is in ascending order.
             //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
             this.lastId = this.orders[0].orderID;
+            this.cd.detectChanges();
           ;
         });
       
@@ -180,6 +190,7 @@ export class OrderListComponent implements OnInit, AfterViewInit{
           localStorage.setItem(x.orderID,r);
           this.showChargeButton = false;
           x.orderStatus = "Approved";
+          this.cd.detectChanges()
         },(er)=>
         {this.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
         console.log(er)
@@ -190,8 +201,10 @@ export class OrderListComponent implements OnInit, AfterViewInit{
         });
       }else if(x.orderStatus === 'Approved'){
           this.showChargeButton = false;
+          this.cd.detectChanges()
       }else{
         x.orderStatus = "Unapproved";
+        this.cd.detectChanges()
       }
     }
 
@@ -204,13 +217,15 @@ export class OrderListComponent implements OnInit, AfterViewInit{
        this.paymentService.chargeDojoPayment(paymentToken).subscribe((r:any)=>{
         if(r.status === "Successful"){
           localStorage.removeItem(x.orderID);
+          this.updateCustomer(x)
           this.paymentFeedback = `Payment is ${r.status}`;
           this.showChargeButton = true;
           x.orderStatus = 'Completed';
           x.payment = 'Paid';
+          this.cd.detectChanges()
           };
           
-        },(er:Error)=>{this.paymentFeedbackError = `Payment Error: ${er.message}`},()=> this.updateCustomer(x))}
+        },(er:Error)=>{this.paymentFeedbackError = `Payment Error: ${er.message}`})}
       
       private updateCustomer(order:Order)
       {
@@ -221,14 +236,13 @@ export class OrderListComponent implements OnInit, AfterViewInit{
             let voucher:any = this.vouchers.find(v=>v.voucherNumber === o.name);
             if(voucher != undefined){
               voucher.units--;
-              this.voucherSVR.updateVoucher(voucher.voucherId,voucher);
+              this.voucherSVR.updateVoucher(voucher.voucherId,voucher).subscribe();
             }
-            pts += product?.loyaltyPoints;
+            pts += product !== undefined?product?.loyaltyPoints:0;
           });
+          console.log(pts,'loyaltypts')
           c.loyaltyPoints += pts;
           c.totalAmountSpent += order.totalAmount
-          console.log(c.totalAmountSpent,'Amount Spent');
-          console.log(order.totalAmount,'order amount');
           this.custSVR.updateCustomer(order.customerID,c).subscribe(); 
           });
         let o = this.orderService.ordersCache.findIndex(o=>o.orderID === order.orderID);

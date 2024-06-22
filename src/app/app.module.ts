@@ -17,7 +17,7 @@ import { OrderOverviewComponent } from './Order/OrderOverview.component';
 import { CustomerListComponent } from './Customer/CustomerList.component';
 import { CustomerOverviewComponent } from './Customer/CustomerOverview.component';
 import { AddProductDialog } from './Product/AddProductDialog.component';
-import { ClarityModule } from '@clr/angular';
+import { ClarityModule, ClrSpinnerModule } from '@clr/angular';
 import { HomeComponent } from './home/home.component';
 import { EditProductDialog } from './Product/EditProductDialog.component';
 import { DeleteProductDialog } from './Product/DeleteProductDialog.Component';
@@ -134,6 +134,7 @@ import { deleteAccountComponent } from './Settings/delAccountDialog.component';
   imports: [
     HttpClientModule,
     ReactiveFormsModule,
+    ClrSpinnerModule,
     AppRoutingModule,
     FormsModule,
     BrowserModule,

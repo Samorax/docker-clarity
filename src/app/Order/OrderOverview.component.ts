@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { EChartsOption} from "echarts";
 import { Order } from "../Models/Order.model";
 import { Observable, of, scheduled } from "rxjs";
@@ -8,7 +8,8 @@ import { paymentService } from "../Services/PaymentService";
 
 @Component({
     selector:'app-orderoverview',
-    templateUrl:'./orderoverview.component.html'
+    templateUrl:'./orderoverview.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class OrderOverviewComponent implements OnInit{
@@ -20,6 +21,7 @@ export class OrderOverviewComponent implements OnInit{
         this.saleChart = this.getMonthlySales(o);
         this.customerChart = this.getCustomerSegmentChart(o);
         this.channelChart = this.getRevenueChannelChart(o);
+        this.cd.detectChanges();
     })
     }
     currency:string = this._paymentSvr.currencySymbol;
@@ -30,7 +32,7 @@ export class OrderOverviewComponent implements OnInit{
     channelChart!: Observable<EChartsOption>; // what percentage of in-person vs online channel sales pie chart
     customerChart!: Observable<EChartsOption>; //what percentage of registered customers vs unregistered customers sales pie chart.
 
-    constructor(private _orderService: OrderService, private _paymentSvr: paymentService){}
+    constructor(private _orderService: OrderService, private _paymentSvr: paymentService, private cd:ChangeDetectorRef){}
 
     loadOrders(): Promise<Order[]>{
         return new Promise((resolve)=>{
@@ -42,6 +44,7 @@ export class OrderOverviewComponent implements OnInit{
                 .subscribe(o=>{
                     cache = o;
                     resolve(cache);
+                    this.cd.detectChanges()
                 });
             }
         }) 
@@ -208,7 +211,7 @@ export class OrderOverviewComponent implements OnInit{
         let percentageOnlineMobileAppRevenue = (onlineMobileAppRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100;
         let percentageOnlineWebsiteRevenue= (onlineWebsiteRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100
 
-        let cChart: EChartsOption ={
+        let cChart: EChartsOption = {
             series: [
                 {
                   data: [{value: percentageInPersonRevenue , name: "in-person"},
