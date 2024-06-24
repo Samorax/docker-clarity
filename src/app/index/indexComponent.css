@@ -20,3 +20,9 @@ li{
     display: inline;
     margin: 15px;
 }
+
+.list-align-left{
+    font-weight: 100;
+    text-align: center;
+    color: black;
+}
