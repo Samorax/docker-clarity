@@ -1,39 +1,40 @@
-<form clrForm [formGroup]="salesForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
-    <clr-input-container>
-        <label class="clr-required-mark">First Name</label>
-        <input clrInput formControlName="firstName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Last Name</label>
-        <input clrInput formControlName="lastName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
+<form clrForm [formGroup]="partnerForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
     <clr-input-container>
         <label class="clr-required-mark">Company Name</label>
         <input clrInput formControlName="companyName"/>
         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
     </clr-input-container>
     <clr-input-container>
-        <label class="clr-required-mark">Company Email</label>
-        <input clrInput formControlName="companyEmail"/>
+        <label class="clr-required-mark">Email</label>
+        <input clrInput formControlName="email"/>
         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
     </clr-input-container>
     <clr-input-container>
-        <label class="clr-required-mark">Company Telephone</label>
-        <input clrInput formControlName="companyPhoneNumber"/>
+        <label class="clr-required-mark">Telephone</label>
+        <input clrInput formControlName="phoneNumber"/>
         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
     </clr-input-container>
     <clr-input-container>
-        <label class="clr-required-mark">Company Size</label>
-        <input clrInput formControlName="CompanySize"/>
+        <label class="clr-required-mark">Website</label>
+        <input clrInput formControlName="Website"/>
         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
     </clr-input-container>
-    <clr-textarea-container>
-        <label class="clr-required-mark">Message</label>
-        <input clrTextarea formControlName="message"/>
+    <clr-input-container>
+        <label class="clr-required-mark">Street Address</label>
+        <input clrInput formControlName="streetAddress"/>
         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-textarea-container>
+    </clr-input-container>
+    <clr-input-container>
+        <label class="clr-required-mark">City</label>
+        <input clrInput formControlName="city"/>
+        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+    </clr-input-container>
+    <clr-input-container>
+        <label class="clr-required-mark">Country</label>
+        <input clrInput formControlName="country"/>
+        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+    </clr-input-container>
+    
 
     <button class="btn btn-primary">Submit</button>
 

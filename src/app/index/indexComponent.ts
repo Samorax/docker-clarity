@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
     selector:'app-index',
@@ -7,5 +8,8 @@ import { Component } from "@angular/core";
 })
 
 export class indexComponent{
-    
+    constructor(private _router:Router){}
+    onContactSales(){
+        this._router.navigateByUrl("/contact-sales");
+    }
 }

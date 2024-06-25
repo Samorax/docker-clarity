@@ -82,7 +82,7 @@
 	<section class="clr-row" style="border-top: 2px solid burlywood; border-bottom: 2px solid burlywood;">
 		<div style="position: relative; left: 32%;margin-bottom: 25px;">
 			<h3>Ready to Get Loyal Customers?</h3>
-			<button class="btn btn-secondary" type="button" style="position: relative;left: 30%;">Contact Sales</button>
+			<button class="btn btn-secondary" type="button" style="position: relative;left: 30%;" (click)="onContactSales()">Contact Sales</button>
 		</div>
 		
 	</section>
@@ -100,8 +100,8 @@
 			<h3 style="text-align: center;">Partnership</h3>
 			<ul>
 				<li><a href="https://api.foodloyale.com/swagger/index.html" class="nav-text nav-link list-align-left">Web/Mobile Builder API</a></li>
-				<li><a href="" class="nav-text nav-link list-align-left">Become a Partner</a></li>
-				<li><a href="" class="nav-text nav-link list-align-left">Partners</a></li>
+				<li><a  [routerLink]="['become-a-partner']" class="nav-text nav-link list-align-left">Become a Partner</a></li>
+				<li><a  [routerLink]="['partners']" class="nav-text nav-link list-align-left">Partners</a></li>
 			</ul>
 		</div>
 		<div class="clr-col-lg-4">
@@ -112,7 +112,7 @@
 				<li><a href="https://acrobat.adobe.com/id/urn:aaid:sc:EU:e595b4f1-38eb-4eb9-b4b7-579fe5ff1eb5" target="_blank" class="nav-link nav-text list-align-left">Terms and Conditions</a></li>
 				<div style="text-align: center;">
 					<li class="list-inline-item"><a href="https://facebook.com/foodloyale"><i class="fa-solid fa-brands fa-xl fa-duotone fa-facebook"></i></a></li>
-					<li class="list-inline-item"><a href="https://linkedin.com/in/company/18865082"><i class="fa-solid fa-brands fa-xl fa-duotone fa-linkedin"></i></a></li>
+					<li class="list-inline-item"><a href="https://linkedin.com/company/foodloyale"><i class="fa-solid fa-brands fa-xl fa-duotone fa-linkedin"></i></a></li>
 					<li class="list-inline-item"><a href="https://intsagram.com/food_loyale"><i class="fa-solid fa-brands fa-xl fa-duotone fa-instagram"></i></a></li>
 				</div>
 				

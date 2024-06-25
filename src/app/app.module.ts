@@ -77,6 +77,9 @@ import { operatingDaysComponent } from './Settings/operatingDaysDialog.component
 import { editOperatingDaysComponent } from './Settings/editOperatingDaysDialog.component';
 import { delOperatingDaysComponent } from './Settings/delOperatingDays.component';
 import { deleteAccountComponent } from './Settings/delAccountDialog.component';
+import { contactSalesComponent } from './index/contactSalesComponent';
+import { becomeAPartnerComponent } from './index/becomeAPartnerComponent';
+import { partnersComponent } from './index/partnersComponent';
 
 
 @NgModule({
@@ -129,7 +132,11 @@ import { deleteAccountComponent } from './Settings/delAccountDialog.component';
     editOperatingDaysComponent,
     delOperatingDaysComponent,
     deleteAccountComponent,
-    VoucherSmsComponent
+    VoucherSmsComponent,
+    indexComponent,
+    contactSalesComponent,
+    becomeAPartnerComponent,
+    partnersComponent,
   ],
   imports: [
     HttpClientModule,
@@ -146,6 +153,9 @@ import { deleteAccountComponent } from './Settings/delAccountDialog.component';
     ToastrModule.forRoot(),
     RouterModule.forRoot([
       { path:'', component: indexComponent, pathMatch:'full'},
+      { path:'contact-sales',component:contactSalesComponent,pathMatch:'full'},
+      { path:'become-a-partner',component:becomeAPartnerComponent,pathMatch:'full'},
+      { path:'partners',component:partnersComponent,pathMatch:'full'},
       { path: 'login', component: loginComponent, pathMatch:'full' },
       { path: 'register', component: registerComponent, pathMatch:'full' },
       { path: 'logout', component: logOutComponent, pathMatch:'full' },
