@@ -1,40 +1,69 @@
-<form clrForm [formGroup]="salesForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
-    <clr-input-container>
-        <label class="clr-required-mark">First Name</label>
-        <input clrInput formControlName="firstName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Last Name</label>
-        <input clrInput formControlName="lastName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Company Name</label>
-        <input clrInput formControlName="companyName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Company Email</label>
-        <input clrInput formControlName="companyEmail"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Company Telephone</label>
-        <input clrInput formControlName="companyPhoneNumber"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Company Size</label>
-        <input clrInput formControlName="CompanySize"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-textarea-container>
-        <label class="clr-required-mark">Message</label>
-        <input clrTextarea formControlName="message"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-textarea-container>
-
-    <button class="btn btn-primary">Submit</button>
-
-</form>
+<div class="container">
+    <h3>Contact Sales for Inquiry:</h3>
+    <ul>
+        <li>About Pricing</li>
+        <li>Custom Solutions</li>
+    </ul>
+    <div class="clr-row">
+        <div class="clr-col-6">
+            <form clrForm [formGroup]="salesForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">First Name</label>
+                        <input clrInput formControlName="firstName"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Last Name</label>
+                        <input clrInput formControlName="lastName"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Company Name</label>
+                        <input clrInput formControlName="companyName"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Company Email</label>
+                        <input clrInput formControlName="companyEmail"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Company Telephone</label>
+                        <input clrInput formControlName="companyPhoneNumber"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Company Size</label>
+                        <input clrInput formControlName="CompanySize"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-textarea-container class="clr-col">
+                        <label class="clr-required-mark">Message</label>
+                        <input clrTextarea formControlName="message"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-textarea-container>
+                </div>
+                <div class="clr-row">
+                    <div class="clr-col">
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                    
+                </div>
+                
+            </form>
+        </div>
+        <div class="clr-col-6">
+            <p>Are you a developer or ISV and seeking Partnership?
+             Visit the <a href="/become-a-partner">partnership page</a>
+            </p>
+        </div>
+    </div>
+   
+</div>

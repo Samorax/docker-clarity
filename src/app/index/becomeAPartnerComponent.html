@@ -1,41 +1,71 @@
-<form clrForm [formGroup]="partnerForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
-    <clr-input-container>
-        <label class="clr-required-mark">Company Name</label>
-        <input clrInput formControlName="companyName"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Email</label>
-        <input clrInput formControlName="email"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Telephone</label>
-        <input clrInput formControlName="phoneNumber"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Website</label>
-        <input clrInput formControlName="Website"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Street Address</label>
-        <input clrInput formControlName="streetAddress"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">City</label>
-        <input clrInput formControlName="city"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    <clr-input-container>
-        <label class="clr-required-mark">Country</label>
-        <input clrInput formControlName="country"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-    </clr-input-container>
-    
+<div class="container">
+    <h3>Let us work together.</h3>
+    <h5>Complete the form to be a Partner</h5>
+    <div class="clr-row">
+        <div class="clr-col-7">
+            <form clrForm [formGroup]="partnerForm" clrLayout="vertical" (ngSubmit)="onSubmit()">
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Company Name</label>
+                        <input clrInput formControlName="companyName"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Email</label>
+                        <input clrInput formControlName="email"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Telephone</label>
+                        <input clrInput formControlName="phoneNumber"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Website</label>
+                        <input clrInput formControlName="Website"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Street Address</label>
+                        <input clrInput formControlName="streetAddress"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">City</label>
+                        <input clrInput formControlName="city"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <clr-input-container class="clr-col">
+                        <label class="clr-required-mark">Country</label>
+                        <input clrInput formControlName="country"/>
+                        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-input-container>
+                </div>
+                <div class="clr-row">
+                    <div class="clr-col">
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+                
+            
+            </form>
+        </div>
+        <div class="clr-col-5">
+            <h5>Become a Partner to get the benefits:</h5>
+            <ul>
+                <li>Get a free Website template with Machine learning Capability for your Ecommerce Food Website</li>
+                <li>Eligibilty to use our APIs to build your Mobile app or Website</li>
+                <li>Be the first to get updates of new features of the Product</li>
+                <li>Get discounted prices for the Product</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-    <button class="btn btn-primary">Submit</button>
 
-</form>
