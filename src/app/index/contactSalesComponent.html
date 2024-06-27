@@ -46,18 +46,33 @@
                 <div class="clr-row">
                     <clr-textarea-container class="clr-col">
                         <label class="clr-required-mark">Message</label>
-                        <input clrTextarea formControlName="message"/>
+                        <textarea clrTextarea formControlName="message" cols="55" rows="10"></textarea>
                         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
                     </clr-textarea-container>
                 </div>
                 <div class="clr-row">
                     <div class="clr-col">
-                        <button [clrLoading]="contactSalesBtn" class="btn btn-primary">Submit</button>
+                        <button [clrLoading]="contactSalesBtn" class="btn btn-primary" [disabled]="!salesForm.valid">Submit</button>
                     </div>
                     
                 </div>
                 
             </form>
+            <div *ngIf="feedbackMessageSuccess !== undefined">
+                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" >
+                    <clr-alert-item>
+                      <span class="alert-text">{{feedbackMessageSuccess}}</span>
+                    </clr-alert-item>
+                    </clr-alert>
+            </div>
+            <div *ngIf="feedbackMessageError !== undefined">
+                <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'danger'">
+                    <clr-alert-item>
+                      <span class="alert-text">{{feedbackMessageError}}</span>
+                    </clr-alert-item>
+                    </clr-alert>
+            </div>
+
         </div>
         <div class="clr-col-6">
             <p>Are you a developer or ISV and seeking Partnership?

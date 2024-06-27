@@ -49,13 +49,25 @@
                 </div>
                 <div class="clr-row">
                     <div class="clr-col">
-                        <button [clrLoading]="submitBtnState" type="submit" class="btn btn-primary">Submit</button>
+                        <button [clrLoading]="submitBtnState" type="submit" [disabled]="!partnerForm.valid" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
-            <div *ngIf="feedBackMessage !== undefined">
-                <p>{{feedBackMessage}}</p>
-            </div>
+            
+                <div *ngIf="feedBackMessageSuccess !== undefined">
+                    <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" >
+                        <clr-alert-item>
+                          <span class="alert-text">{{feedBackMessageSuccess}}</span>
+                        </clr-alert-item>
+                        </clr-alert>
+                </div>
+                <div *ngIf="feedBackMessageError !== undefined">
+                    <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'danger'">
+                        <clr-alert-item>
+                          <span class="alert-text">{{feedBackMessageError}}</span>
+                        </clr-alert-item>
+                        </clr-alert>
+                </div>
         </div>
         <div class="clr-col-5">
             <h5>Become a Partner to get the benefits:</h5>
