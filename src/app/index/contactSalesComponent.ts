@@ -1,6 +1,8 @@
 import { Component } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
-import { ContactSalesService } from "../Services/ContactSalesService";
+import { ContactService } from "../Services/ContactService";
+import { ClrLoadingState } from "@clr/angular";
+
 
 @Component({
     selector:'app-contactSales',
@@ -8,7 +10,8 @@ import { ContactSalesService } from "../Services/ContactSalesService";
 })
 
 export class contactSalesComponent{
-    constructor(private _formBuilder:FormBuilder,private _contactSalesSVR: ContactSalesService){}
+    contactSalesBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
+    constructor(private _formBuilder:FormBuilder,private _contactSalesSVR: ContactService){}
     feedbackMessage!:string;
     salesForm = this._formBuilder.group({
         firstName:['',Validators.required],
@@ -21,8 +24,11 @@ export class contactSalesComponent{
     });
 
     onSubmit(){
+        this.contactSalesBtn = ClrLoadingState.LOADING;
         let m = this.salesForm.value;
-        this._contactSalesSVR.contactSales(m).subscribe((r:any)=>{
+        this._contactSalesSVR.sendSalesContactForm(m).subscribe((r:any)=>{
+        console.log(r)
+            this.contactSalesBtn = ClrLoadingState.SUCCESS;
             this.feedbackMessage = r;
         },(er:Error)=> this.feedbackMessage = er.message);
     }
