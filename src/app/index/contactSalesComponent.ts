@@ -30,7 +30,7 @@ export class contactSalesComponent{
         this.contactSalesBtn = ClrLoadingState.LOADING;
         let m = this.salesForm.value;
         this._contactSalesSVR.sendSalesContactForm(m).subscribe({
-            next:()=>{this.feedbackMessageSuccess ="Success!!! We will get back to you within 24 hours";this.salesForm.disable() ;this.cd.detectChanges()},
+            next:()=>{this.feedbackMessageSuccess ="Success!!! We will get back to you within 24 hours";this.salesForm.disable();this.cd.detectChanges()},
             error:(er:Error)=> {this.feedbackMessageError = er.message; this.cd.detectChanges()},
             complete:()=>{this.contactSalesBtn = ClrLoadingState.SUCCESS; this.cd.detectChanges()}
         });

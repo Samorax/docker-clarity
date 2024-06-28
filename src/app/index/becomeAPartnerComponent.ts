@@ -34,7 +34,7 @@ export class becomeAPartnerComponent{
         p.companyName = m.companyName; p.email = m.email; p.website = m.website;p.telephone = m.phone;
        
         this._contactSVR.sendPartnershipForm(p).subscribe({
-            next:(r:any)=>{this.feedBackMessageSuccess = "Success!! We will get back to you within 24 hours"; this.partnerForm.disable();this.cd.detectChanges()},
+            next:(r:any)=>{this.feedBackMessageSuccess = "Success!! We will get back to you within 24 hours"; this.partnerForm.disable(); this.cd.detectChanges()},
             error:(er:Error)=>{this.feedBackMessageError = er.message,this.cd.detectChanges()},
             complete:()=>{this.submitBtnState = ClrLoadingState.SUCCESS,this.cd.detectChanges()}
     })
