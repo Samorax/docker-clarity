@@ -3,11 +3,12 @@ import { ProductService } from "../Services/ProductService";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
 import { CartOrder } from "../Models/CartOder";
-import { EChartsOption } from "echarts";
+import { ECharts, EChartsOption } from "echarts";
 import { Observable } from "rxjs";
 import { promises } from "dns";
 import { OrderService } from "../Services/OrderService";
 import { orderDetail } from "../Models/OrderDetails";
+import moment from "moment";
 
 @Component({
     selector:'app-productoverview',
@@ -16,12 +17,17 @@ import { orderDetail } from "../Models/OrderDetails";
 })
 
 export class ProductOverviewComponent implements OnInit{
+
+
     constructor(private productSvr:ProductService, private orderSvr: OrderService,private cd: ChangeDetectorRef){}
     products: Product[] = [];
     productCount: number = 0;
     categoriesCount: number = 0;
     orders!: Order[];
+    date!:Date
+    today = new Date().toString()
     productDemandChart!: EChartsOption
+    productDemandChartInstance!: ECharts;
 
     ngOnInit(): void {
         this.initialize();
@@ -40,6 +46,10 @@ export class ProductOverviewComponent implements OnInit{
                 });
             
     }
+
+    onProductDemandChart(x:any) {
+        this.productDemandChartInstance = x;
+        }
 
     getOrders(){
                 this.orderSvr.getOrders().subscribe(or=> 
@@ -68,6 +78,14 @@ export class ProductOverviewComponent implements OnInit{
 
     getProductDemandChart(){
         let wc: EChartsOption = {
+            title:{
+                text:'Product Demand (%)',
+                right:'middle',
+                textStyle:{ fontSize:'18px'}
+            },
+            tooltip:{
+                trigger:'axis'
+            },
             xAxis:{
                 type:"category",
                 axisTick:{ alignWithLabel:true},
@@ -87,8 +105,87 @@ export class ProductOverviewComponent implements OnInit{
                 },
               ],
             };
-
+            
             return wc;
+    }
+
+    onSelectedDate(){
+        let ns:number[] = [];
+        this.products.forEach(pr => {
+            let x = this.getProductDemandByDate(pr,this.orders);
+            let n = this.calculatePercentageDemand(this.orders.length, x);
+            ns.push(n);
+        });
+        this.productDemandChartInstance.setOption({
+            xAxis:{
+                data:this.getTheNamesOfProducts(this.products) 
+              },
+              series:{
+                  data:ns,
+                  universalTransition:{
+                      enabled:true,
+                      divideShape:'clone'
+                    }
+              },
+              graphic: [
+                  {
+                    type: 'text',
+                    left: 50,
+                    top: 20,
+                    style: {
+                      text: 'Back',
+                      fontSize: 18
+                    },
+                    onclick: ()=>{
+                      if(this.productDemandChartInstance){
+                          this.productDemandChartInstance.setOption(
+                            {
+                            title:{
+                                text:'Product Demand (%)',
+                                right:'middle',
+                                textStyle:{ fontSize:'18px'}
+                            },
+                            tooltip:{
+                                trigger:'axis'
+                            },
+                            xAxis:{
+                                type:"category",
+                                axisTick:{ alignWithLabel:true},
+                                axisLabel:{rotate:30},
+                                data:this.getTheNamesOfProducts(this.products)
+                    
+                            },
+                            yAxis:{
+                                axisLabel:{ formatter: '{value}%', align:'center'},
+                                type:"value",
+                            },
+                            series: [
+                                {
+                                  data: this.calculateThePercentageDemandOfAllProducts(this.products),
+                                  type: 'bar',
+                                  showBackground: true
+                                },
+                              ],
+                          }
+
+                          );
+                      }
+                    }
+                  }
+                ]
+        })
+        return ns;
+    }
+
+    getProductDemandByDate(p:Product, o:Order[]){
+        let uniqueProductArray: orderDetail[] = [];
+        o.filter(o=>o.orderStatus === "Completed" && moment(o.orderDate).toDate().toDateString() === this.date.toDateString()).forEach(or=>{
+            console.log(or)
+            let x = or.orderDetails.filter(pr=> p.name === pr.name);
+            x.forEach(a=> uniqueProductArray.push(a));
+            x = [];
+        });
+        return uniqueProductArray.length;
     }
 
     calculatePercentageDemand(x:number,y: number): number{

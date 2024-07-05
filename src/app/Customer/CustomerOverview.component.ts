@@ -144,6 +144,20 @@ export class CustomerOverviewComponent implements OnInit{
     drawDemographPieChart(c:Customer[]){
         let ageSegment = this.calDRepeatCustomers(c);
         let chart: EChartsOption = {
+            title:{
+                text:'Ages of Repeat Customers',
+                top:'top',
+                textStyle:{ fontSize:'18px'}
+            },
+            tooltip:{
+                trigger:'item'
+            },
+            legend:{
+                orient:'vertical',
+                left:'left',
+                top:'24px',
+                data:['18-24','25-31','32-38']
+            },
             series: [
                 {
                   data: [{value: ageSegment['18-24'] , name: "18-24"}, {value: ageSegment["25-31"] , name: "25-31"}, {value: ageSegment["32-38"] , name: "32-38"}],
@@ -213,6 +227,14 @@ export class CustomerOverviewComponent implements OnInit{
     drawWRepeatChart(x: Customer[],o: Order[]):EChartsOption{
         let w = this.calWRepeatCustomers(x,o);
         let wc: EChartsOption = {
+            title:{
+                text:'Rate of Repeat Customers',
+                top:'top',
+                textStyle:{ fontSize:'18px'}
+            },
+            tooltip:{
+                trigger:'axis'
+            },
             xAxis:{
                 type:"category",
                 data:['week 1', 'week 2', 'week 3', 'week 4']

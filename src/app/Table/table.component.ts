@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { Table } from "../Models/Table";
 import { TableService } from "../Services/TableService";
 import { addTableDialogComponent } from "./addTableDialog.component";
@@ -7,7 +7,8 @@ import { delTableDialogComponent } from "./delTableDialog.component";
 
 @Component({
     selector:"app-table",
-    templateUrl:"./table.component.html"
+    templateUrl:"./table.component.html",
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class tableComponent implements OnInit, AfterViewInit{
     feedBackMessage!:string;
@@ -17,7 +18,7 @@ export class tableComponent implements OnInit, AfterViewInit{
     feedBackStatus!: string;
     ifError!: boolean;
 
-    constructor(private _tableSvr:TableService){}
+    constructor(private _tableSvr:TableService, private cd:ChangeDetectorRef){}
     ngOnInit(): void {
         this.getTables();
     }
@@ -30,12 +31,14 @@ export class tableComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully added to tables`;
+                this.cd.detectChanges()
                 
             },(er:Error)=>
             {
                 this.ifError = true;
                 this.feedBackStatus = 'warning';
                 this.feedBackMessage = `${t.name} cannot be added: ${er.message}`;
+                this.cd.detectChanges()
             },()=>this.addTD.close());
         });
 
@@ -44,12 +47,14 @@ export class tableComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully updated`;
+                this.cd.detectChanges()
             },(er:Error)=>
             {
                 
                 this.ifError = true;
                 this.feedBackStatus = 'warning';
                 this.feedBackMessage = `${t.name} cannot be updated: ${er.message}`;
+                this.cd.detectChanges()
             },()=> this.editTD.close())
         });
 
@@ -59,10 +64,12 @@ export class tableComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully deleted`;
+                this.cd.detectChanges()
             },(er:Error)=>{
                 this.ifError = true;
                 this.feedBackStatus = 'warning';
                 this.feedBackMessage = `${t.name} cannot be deleted: ${er.message}`;
+                this.cd.detectChanges()
             },()=>this.delTD.close())
         })
     }
@@ -85,6 +92,6 @@ export class tableComponent implements OnInit, AfterViewInit{
     }
 
     getTables(){
-        this._tableSvr.getTables().subscribe((t:any)=> this.tables = t);
+        this._tableSvr.getTables().subscribe((t:any)=> {this.tables = t; this.cd.detectChanges()});
     }
 }

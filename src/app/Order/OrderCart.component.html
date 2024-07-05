@@ -1,18 +1,21 @@
 <h3> Cart</h3>
 <div *ngIf="Products" style="height: 450px; border-radius: 2px;border-color: black;border-style: inset;position: relative;padding-bottom: 0;">
-    <table class="table table-vertical table-compact" style="margin-top: 0;">
-        <tbody>
-            <tr *ngFor="let item of CartItems" style="height:2%;">
-                <td>
-                    <cds-icon shape="close" (click)="onCancel(item)"></cds-icon>
-                </td>
-                <td class="left">{{item.name}}</td>
-                <td class="left">{{item.unitPrice}}</td>
-                <td>{{item.count}}</td>
-            </tr>
-        </tbody>
-    </table>
-    <div style="position: relative;top: 65%;overflow: hidden;">
+    <div style="height: 65%;">
+        <table class="table table-vertical table-compact" style="margin-top: 0;">
+            <tbody >
+                <tr *ngFor="let item of CartItems">
+                    <td>
+                        <cds-icon shape="close" (click)="onCancel(item)"></cds-icon>
+                    </td>
+                    <td class="left">{{item.name}}</td>
+                    <td class="left">{{item.unitPrice}}</td>
+                    <td>{{item.count}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="overflow: hidden;">
         <div class="clr-row" style="border-color: black;border-style: inset;">
             <div class="clr-col-4" style="font-size: large; font-weight: 300;">SubTotal:</div>
             <div class="clr-col-8" style="font-size: large; font-weight: 300;">{{SubTotal |async | currency:currencySymbol}}</div>
@@ -39,13 +42,13 @@
             <div class="clr-col">
                 <clr-select-container>
                     <label>Apply Voucher ?</label>
-                    <select clrSelect name="voucher" #selectedVoucher (change)="onSelected(selectedVoucher.value)">
-                        <option *ngFor="let voucher of vouchers" value={{voucher.voucherNumber}}>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | currency:currencySymbol}}</option>
+                    <select clrSelect name="options" [(ngModel)]="selectedOption">
+                        <option  *ngFor="let voucher of vouchers" [ngValue]='voucher.voucherNumber'>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | currency:currencySymbol}}</option>
                     </select>
                 </clr-select-container>
             </div>
             <div class="clr-col">
-                <button class="btn btn-primary" (click)="onApply()">Apply</button>
+                <button class="btn btn-primary" (click)="onApply()" >Apply</button>
             </div>
         </div>
         

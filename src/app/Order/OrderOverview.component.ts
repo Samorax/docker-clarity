@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { EChartsOption} from "echarts";
+import { ECharts, EChartsOption} from "echarts";
 import { Order } from "../Models/Order.model";
-import { Observable, of, scheduled } from "rxjs";
+import { Observable, Subscription, of, scheduled } from "rxjs";
 import { OrderService } from "../Services/OrderService";
 import moment from "moment";
 import { paymentService } from "../Services/PaymentService";
+import { dayMonthlySale } from "../Models/dayMonthlySale";
+
 
 @Component({
     selector:'app-orderoverview',
@@ -13,8 +15,11 @@ import { paymentService } from "../Services/PaymentService";
 })
 
 export class OrderOverviewComponent implements OnInit{
+    wc!: EChartsOption;
+    orders!: Order[];
     ngOnInit(): void {
     this.loadOrders().then(o=>{
+        this.orders = o;
         this.salesRevenue = this.getRevenue(o);
         this.numberApprovedOrders = this.getApproved(o);
         this.numberUnApprovedOrders = this.getUnapproved(o);
@@ -23,12 +28,15 @@ export class OrderOverviewComponent implements OnInit{
         this.channelChart = this.getRevenueChannelChart(o);
         this.cd.detectChanges();
     })
+
+    
     }
     currency:string = this._paymentSvr.currencySymbol;
     salesRevenue!: Observable<number>;
     numberApprovedOrders!: Observable<number>;
     numberUnApprovedOrders!: Observable<number>;
-    saleChart!: Observable<EChartsOption>; // bar chart showing the sales made per month.
+    saleChartInstance!:ECharts
+    saleChart!: EChartsOption; // bar chart showing the sales made per month.
     channelChart!: Observable<EChartsOption>; // what percentage of in-person vs online channel sales pie chart
     customerChart!: Observable<EChartsOption>; //what percentage of registered customers vs unregistered customers sales pie chart.
 
@@ -68,6 +76,7 @@ export class OrderOverviewComponent implements OnInit{
         return of(unApproved);
     }
 
+    
     getMonthlySales(o: Order[]){
         type stringDictionay = Record<string,number>;
         let monthlySales: stringDictionay = {"Jan":0, "Feb":0, 'Mar':0, 'Apr':0,"May":0, "Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0};
@@ -136,27 +145,96 @@ export class OrderOverviewComponent implements OnInit{
         monthlySales["Dec"] = (dec/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
 
 
-        let wc: EChartsOption = {
+         this.wc = {
+            tooltip:{
+                trigger:'axis'
+            },
+            animationDurationUpdate: 500,
+            title:{
+                text:'Monthly Sales',
+                top:'left',
+                textStyle:{ fontSize:'18px'}
+            },
             xAxis:{
                 type:"category",
                 data:["Jan", 'Feb', 'Mar', 'Apr',"May", "Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    
             },
             yAxis:{
                 type:"value",
             },
             series: [
                 {
-                  data: [  monthlySales["Jan"], monthlySales["Feb"], monthlySales["Mar"],  monthlySales["Apr"],
-                  monthlySales["May"], monthlySales["Jun"], monthlySales["Jul"], monthlySales["Aug"], monthlySales["Sep"], 
-                  monthlySales["Oct"],  monthlySales["Nov"], monthlySales["Dec"]
+                  data: [monthlySales["Jan"]  ,monthlySales["Feb"],monthlySales["Mar"],monthlySales["Apr"],
+                  monthlySales["May"] , monthlySales["Jun"],monthlySales["Jul"], monthlySales["Aug"],
+                  monthlySales["Sep"],  monthlySales["Oct"],monthlySales["Nov"],monthlySales["Dec"]
                 ],
-                  type: 'bar',
+                  type: 'bar'
                 },
               ],
+              
             };
-            return of(wc);
+            return this.wc;
 
+    }
+
+    getSaleChartInstance(x:ECharts){
+        this.saleChartInstance = x;
+        this.cd.detectChanges()
+    }
+
+
+    displayDaysOfMothsChart(x:any){
+        let newData:dayMonthlySale[] = this.getDataforMonth(x.dataIndex, this.orders);
+        this.saleChartInstance.setOption({
+            xAxis:{
+              data: newData.map((item)=> item.day)
+            },
+            series:{
+                data:newData.map((item)=> item.value),
+                universalTransition:{
+                    enabled:true,
+                    divideShape:'clone'
+                  }
+            },
+            graphic: [
+                {
+                  type: 'text',
+                  left: 50,
+                  top: 20,
+                  style: {
+                    text: 'Back',
+                    fontSize: 18
+                  },
+                  onclick: ()=>{
+                    if(this.saleChartInstance){
+                        console.log(this.saleChart)
+                            this.saleChartInstance.setOption(this.saleChart);
+                            this.cd.detectChanges()
+                        
+                    }
+                  }
+                }
+              ]
+        });
+    } 
+
+
+    getDataforMonth(n:any,o:Order[]){
+        let completedMonthOrder = o.filter(or=>or.orderStatus == 'Completed' && n+1 == moment(or.orderDate).toDate().getMonth()+1);
+        let totaldaysofMonth = new Date(new Date().getUTCFullYear(),n+1,0).getDate();
+        let i = 1; let newData= []; 
+        while (i < totaldaysofMonth) {
+            let daySales:dayMonthlySale = <dayMonthlySale>{};
+            daySales.day = i++;
+            daySales.value = 0;
+            completedMonthOrder.forEach(o=>{
+                if(new Date(o.orderDate).getDate() === daySales.day){
+                    daySales.value += o.totalAmount;
+                }
+            });
+            newData.push(daySales);
+        }
+        return newData;
     }
 
     getCustomerSegmentChart(o:Order[]){
@@ -172,14 +250,32 @@ export class OrderOverviewComponent implements OnInit{
                 }
             })
         };
-        segement["Unregistered"] = (anonymous/(registered +anonymous))*100;
-        segement["Registered"] = (registered/(registered +anonymous))*100;
+        segement["Unregistered"] = (anonymous/registered +anonymous)*100;
+        segement["Registered"] = (registered/registered +anonymous)*100;
+
 
         let sChart: EChartsOption = {
+            tooltip:{
+                trigger:'item'
+            },
+            title:{
+                text:'Revenue by Segment',
+                top:'top',
+                textStyle:{ fontSize:'18px'}
+            },
+            legend:{
+                orient:'vertical',
+                left:'left',
+                top:'24px',
+                data:['Unregistered','Registered']
+            },
             series: [
                 {
                   data: [{value: segement["Unregistered"] , name: "Unregistered"}, {value: segement["Registered"], name: "Registered"}],
                   type: 'pie',
+                  top:'20%',
+                  height:'100%'
+
                 },
               ],
         }
@@ -212,12 +308,29 @@ export class OrderOverviewComponent implements OnInit{
         let percentageOnlineWebsiteRevenue= (onlineWebsiteRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100
 
         let cChart: EChartsOption = {
+            tooltip:{
+                trigger:'item'
+            },
+            title:{
+                text:'Revenue by Channel',
+                top:'top',
+                textStyle:{ fontSize:'18px'}
+            },
+            legend:{
+                orient:'vertical',
+                left:'left',
+                top:'24px',
+                data:['in-person','mobile app','website']
+            },
             series: [
                 {
                   data: [{value: percentageInPersonRevenue , name: "in-person"},
                          {value: percentageOnlineMobileAppRevenue, name: "mobile app"},
-                         {value: percentageOnlineWebsiteRevenue ,name:'Website'}],
+                         {value: percentageOnlineWebsiteRevenue ,name:'website'}],
                   type: 'pie',
+                  top:'20%',
+                  height:'100%'
+                  
                 },
               ],
         }

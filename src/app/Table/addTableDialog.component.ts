@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from "@angular/core";
 import { Table } from "../Models/Table";
 import { NgForm } from "@angular/forms";
 
 @Component({
     templateUrl:'./addTableDialog.component.html',
-    selector:'app-addTable'
+    selector:'app-addTable',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class addTableDialogComponent{

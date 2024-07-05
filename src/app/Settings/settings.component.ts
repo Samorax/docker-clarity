@@ -295,8 +295,9 @@ this.editODC.open(this.selected[0]);
 
     fillAccountSettings(){
         this._appUserSrv.getAppUserInfo().subscribe(r=>{
-
+        console.log(r.testMode,"checking app mode")
         this.appUser = r;
+        this.cd.detectChanges();
         this.CreatePaymentForm();
         this.settingsForm.get('accountDetails.firstName')?.setValue(r.firstName);
         this.settingsForm.get('accountDetails.lastName')?.setValue(r.lastName);
@@ -619,22 +620,30 @@ this.editODC.open(this.selected[0]);
      this.SwitchMode = true;
      let y = this.settingsForm.get('testMode')?.value;
     
-     this._testModeSVR.setMode(y).subscribe(s=>{
-        localStorage.setItem('access_token',s)
-        localStorage.setItem('appMode',y);
-        let sms = this.settingsForm.get('notifications.smsActivation');
-        this.Mode.mode.next(y);
-        if(y == true)
-        {
-            sms?.disable();
-            this._smsActivator.activaionState.next(true);
-        }else{
-            sms?.enable();
-        } 
-        this.SwitchMode = false;
-       
-        this.cd.detectChanges()
-     },(er)=>console.log(er))
+     this._testModeSVR.setMode(y).subscribe({
+        next:(s:any)=>{
+
+            localStorage.removeItem('access_token');
+            localStorage.setItem('access_token',s);
+            
+            localStorage.removeItem('appMode');
+            localStorage.setItem('appMode',y);
+            
+            let sms = this.settingsForm.get('notifications.smsActivation');
+            this.Mode.mode.next(y);
+            if(y == true)
+            {
+                sms?.disable();
+                this._smsActivator.activaionState.next(true);
+            }else{
+                sms?.enable();
+            } 
+            this.SwitchMode = false;
+           
+            this.cd.detectChanges()
+        },
+        error:(er)=>console.log(er)
+    })
     }
 
     onVoucherNotifications() {

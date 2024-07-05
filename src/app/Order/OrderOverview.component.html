@@ -6,12 +6,6 @@
         <span class="badge">{{salesRevenue | async | currency:currency}}</span>
     </div>
 
-    <div class="label label-green">
-        <span class="text">Approved Orders</span> 
-        <span class="badge">{{numberApprovedOrders | async}}</span>
-    </div>
-
-
     <div class="label label-red">
         <span class="text">Unapproved Orders</span>
         <span class="badge">{{numberUnApprovedOrders | async}}</span> 
@@ -22,15 +16,13 @@
     <div class="clr-col-6" style="border: none;">
         <div class="card" style="height: 100%;">
             <div class="card-block">
-                <div class="card-title"> Monthly Sales</div>
-                <div  echarts [options]="saleChart | async"></div>
+                <div id="saleChart"  echarts [options]="saleChart" (chartInit)="getSaleChartInstance($event)" (chartClick)="displayDaysOfMothsChart($event)"></div>
             </div>
         </div>
         </div>
         <div class="clr-col-3">
             <div class="card" style="height: 100%;">
                 <div class="card-block">
-                    <div class="card-title">Revenue by Channel</div>
                     <div  echarts [options]="channelChart | async"></div>
                 </div>
             </div>
@@ -38,7 +30,6 @@
             <div class="clr-col-3">
                 <div class="card" style="height: 100%;">
                     <div class="card-block">
-                        <div class="card-title">Revenue by Customer Segement</div>
                         <div  echarts [options]="customerChart | async"></div>
                     </div>
             </div>

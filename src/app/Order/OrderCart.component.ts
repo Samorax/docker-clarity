@@ -1,12 +1,10 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
-import { paymentService } from "../Services/PaymentService";
 import { CartOrder } from "../Models/CartOder";
 import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
 import { CartItem } from "../Models/CartItem";
-import { orderDetail } from "../Models/OrderDetails";
 import { TableSession } from "../Models/Session";
 import { TableSessionService } from "../Services/TableSessionsService";
 import { OrderDetailService } from "../Services/OrderDetailService";
@@ -14,21 +12,22 @@ import { OrderService } from "../Services/OrderService";
 import { TableService } from "../Services/TableService";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
-import { detailCollapseIcon } from "@cds/core/icon";
-import { number } from "echarts";
-import { Observable, map, of, scheduled } from "rxjs";
-import { sumAndSubtract } from "@cds/core/internal";
+import { Observable, of } from "rxjs";
 import { OrderCartService } from "../Services/OrderCartService";
-import { randomUUID } from "crypto";
 
 @Component({
     selector:'order-cart',
-    templateUrl:'./OrderCart.component.html'
+    templateUrl:'./OrderCart.component.html',
+    
 })
 
 export class OrderCartComponent implements OnInit, AfterViewInit {
+selectedOption: any;
+
+
+
     constructor(private tableSessionSvr: TableSessionService,
-        private orderDetailSvr:OrderDetailService,private orderSvr:OrderService,
+        private orderDetailSvr:OrderDetailService,
          private _voucherSvr:voucherService, private odSvr:OrderService, private tableSvr: TableService,
         private cartOrderSVR: OrderCartService){
             
@@ -40,6 +39,7 @@ export class OrderCartComponent implements OnInit, AfterViewInit {
             this.VatCharge = (vat/100)*s;
             this.ServiceCharge = (sCharge/100)*s;
             this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
+            
        });
     }
 
@@ -85,25 +85,40 @@ export class OrderCartComponent implements OnInit, AfterViewInit {
         }
     }
 
-    onSelected(x:any){
-        this.voucherToApply = this.vouchers.filter(v=>v.voucherNumber === x)[0];
-    }
+ 
 
     onApply(){
-        this.SubTotal.pipe(map(s=>{
+        this.voucherToApply = this.vouchers.filter(v=>v.voucherNumber === this.selectedOption)[0];
+        this.SubTotal.subscribe(s=>{
             this.SubTotal = of(s - this.voucherToApply.voucherCreditAmount); 
+            this.SubTotal.subscribe(s=>{
+                let vat:any = localStorage.getItem('vatCharge');
+                let sCharge:any = localStorage.getItem('serviceCharge');
+                this.VatCharge = (vat/100)*s;
+                this.ServiceCharge = (sCharge/100)*s;
+                this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
+                
+           });
             if(s <= 0){
             this.payButtonStatus = true;
             this.spinnerStatus = true;
             this.feedBack = 'Payment Succeeded!!'
         }
-        }))
+        })
         
     }
     
     onCancel(p:CartItem){
         this.CartItems.splice(this.CartItems.indexOf(p),1);
         this.SubTotal = of(this.getSum(this.CartItems));
+        this.SubTotal.subscribe(s=>{
+            let vat:any = localStorage.getItem('vatCharge');
+            let sCharge:any = localStorage.getItem('serviceCharge');
+            this.VatCharge = (vat/100)*s;
+            this.ServiceCharge = (sCharge/100)*s;
+            this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
+            
+       });
     }
 
     //update session isPayable to true, if items are in cart.

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { Waiter } from "../Models/Waiter";
 import { WaiterService } from "../Services/WaiterService";
 import { addWaiterDialogComponent } from "./addWaiterDialog.component";
@@ -7,7 +7,8 @@ import { editWaiterComponent } from "./editWaiterDialog.component";
 
 @Component({
     selector:'app-waiter',
-    templateUrl:'./waiter.component.html'
+    templateUrl:'./waiter.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class waiterComponent implements OnInit, AfterViewInit{
@@ -21,7 +22,7 @@ export class waiterComponent implements OnInit, AfterViewInit{
     feedBackMessage!: string;
     ifError!: boolean;
 
-    constructor(private wSvr:WaiterService){}
+    constructor(private wSvr:WaiterService, private cd: ChangeDetectorRef){}
     ngOnInit(): void {
         this.getWaiters();
     }
@@ -33,11 +34,13 @@ export class waiterComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${w.name} successfully added`;
+                this.cd.detectChanges();
             })
         },(er:Error)=>{
             this.ifError = true;
             this.feedBackStatus = 'warning';
             this.feedBackMessage = `Waiter not added: ${er.message}`;
+            this.cd.detectChanges();
         },()=>this.aWD.close());
 
         this.dWD.isOk.subscribe((w:Waiter)=>{
@@ -46,6 +49,7 @@ export class waiterComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${w.name} successfully deleted`;
+                this.cd.detectChanges();
             })
         },(er:Error)=>{
             this.ifError = true;
@@ -59,6 +63,7 @@ export class waiterComponent implements OnInit, AfterViewInit{
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${w.name} successfully updated`;
+                this.cd.detectChanges();
             },(er:Error)=>{
                 this.ifError = true;
                 this.feedBackStatus = 'warning';
@@ -70,6 +75,7 @@ export class waiterComponent implements OnInit, AfterViewInit{
     getWaiters(){
         this.wSvr.getWaiters().subscribe((w:Waiter[])=> {
             this.waiters = w.filter(c=>c.name.includes("Takeaway") == false);
+            this.cd.detectChanges();
         });
     }
 

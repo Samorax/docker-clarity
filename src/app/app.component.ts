@@ -65,7 +65,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.isAuthenticated = of(this._authSvr.isAuthenticated());
   
-   this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();});
+   this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();console.log(m)});
 
     this.signalrService.AllOrderFeedObservable.subscribe((ord:any) => {
         this.order = JSON.parse(ord);

@@ -25,7 +25,7 @@ export class appUserService{
 
     getAppUserInfo(){
         return this._httpClient.get<appUser>(this.baseUrl)
-        .pipe(catchError(this.handleError),shareReplay(1))
+        .pipe(catchError(this.handleError))
     }
       
     updateAppUserInfo(id:string,appUser: appUser){
