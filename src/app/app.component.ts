@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Signal, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
@@ -8,8 +8,6 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { appUserService } from './Services/AppUserService';
 import { Router } from '@angular/router';
 import { Notifications, notificationType } from './Models/Notification';
-import { Order } from './Models/Order.model';
-import { CustomerDto } from './Models/CustomerDto';
 import { Customer } from './Models/Customer';
 import { AuthenticationService } from './Services/AuthenticationService';
 import { ToastrService } from 'ngx-toastr';
@@ -99,26 +97,71 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cd.detectChanges();
     });
 
-    this.signalrService.AllBirthdayFeedObservable.subscribe((c:CustomerDto)=>{
-      let n:Notifications = {type: notificationType.birthday, texts: `Customer ref:${c.id} birthday is next week.` };
-      this.notifications.unshift(n);
-      this.navcomponent.show = true;
+    this.signalrService.AllBirthdayFeedObservable.subscribe((cu:any)=>{
+      let c:any = JSON.parse(cu);
+      
+      this._toaster.info(`Birthday Update: ${c.firstName} birthday is next week. Customer id:${c.customerId}`, 'Birthday Notification',{
+        closeButton:true,
+        tapToDismiss:true,
+        disableTimeOut:true
+      });
+
+      if (!("Notification" in window)) {
+        // Check if the browser supports notifications
+        alert("This browser does not support desktop notification");
+      } else if (Notification.permission === "granted") {
+        // Check whether notification permissions have already been granted;
+        // if so, create a notification
+        const notification = new Notification(`Birthday Update: ${c.firstName} birthday is next week. Customer id:${c.customerId}`);
+        // …
+      } else if (Notification.permission !== "denied") {
+        // We need to ask the user for permission
+        Notification.requestPermission().then((permission) => {
+          // If the user accepts, let's create a notification
+          if (permission === "granted") {
+            const notification = new Notification(`Birthday Update: ${c.firstName} birthday is next week. Customer id:${c.customerId}`);
+            // …
+          }
+        });
+      }
     });
+
+    this.signalrService.AllVoucherFeedObservable.subscribe((vu:any)=>{
+      let c:any = vu;
+      
+      this._toaster.error(`Voucher Update: ${c.VoucherName} has expired.`, 'Voucher Notification',{
+        closeButton:true,
+        tapToDismiss:true,
+        disableTimeOut:true
+      });
+
+      if (!("Notification" in window)) {
+        // Check if the browser supports notifications
+        alert("This browser does not support desktop notification");
+      } else if (Notification.permission === "granted") {
+        // Check whether notification permissions have already been granted;
+        // if so, create a notification
+        const notification = new Notification(`Voucher Update: ${c.VoucherName} has expired.`);
+        // …
+      } else if (Notification.permission !== "denied") {
+        // We need to ask the user for permission
+        Notification.requestPermission().then((permission) => {
+          // If the user accepts, let's create a notification
+          if (permission === "granted") {
+            const notification = new Notification(`Voucher Update: ${c.VoucherName} has expired.`);
+            // …
+          }
+        });
+      }
+    })
 
     this.signalrService.AllNewCustomerFeedObservable.subscribe((c:Customer)=>{
       let n:Notifications = {type: notificationType.customer, texts: `A new customer just registered ${c.id}.` };
       this.notifications.unshift(n);
       this.navcomponent.show = true;
-    })
-
-    
-    
-
+    });
 
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
-
-    
-
 
   }
 
@@ -147,8 +190,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       });*/
   } 
 
-  
-
    playSoundNotification(){
       let au = new Audio();
         au.src = '../assets/order-notify.mp3';
@@ -171,7 +212,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 )
   .pipe(map(() => navigator.onLine))
   .subscribe(status => {
-        console.log('status', status);
     this.networkStatus = status;
   });
 }

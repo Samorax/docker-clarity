@@ -5,12 +5,14 @@ import * as signalR from "@microsoft/signalr";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { HubConnection } from "@microsoft/signalr";
 import { Customer } from "../Models/Customer";
+import { voucher } from "../Models/Voucher";
 
 
 @Injectable({
   providedIn:'root'
 })
 export class SignalrService {
+  
   
   
   constructor(private _http: HttpClient) {
@@ -23,6 +25,7 @@ export class SignalrService {
   private $tableSessionUpdateFeed: Subject<any> = new Subject<any>();
   private $newCustomerFeed: Subject<Customer> = new Subject<Customer>();
   private $CustomerUpdateFeed: Subject<Customer> = new Subject<Customer>();
+  private $voucherFeed: Subject<any> = new Subject<any>();
 
   hubConnection: any;
   public get AllTableSessionUpdateFeedObservable():Observable<any>
@@ -33,6 +36,10 @@ export class SignalrService {
   public get AllOrderFeedObservable(): Observable<Order> {
     return this.$orderFeed.asObservable();
   };
+
+  public get AllVoucherFeedObservable(): Observable<any>{
+    return this.$voucherFeed.asObservable();
+  }
   public get AllBirthdayFeedObservable(): Observable<any> {
     return this.$birthdayFeed.asObservable();
   };
@@ -52,6 +59,13 @@ export class SignalrService {
   listenToOrderFeeds() {
     (<HubConnection>this.hubConnection).on("ordered", (data: any) => {
       this.$orderFeed.next(data);
+    });
+  }
+
+  //listen to voucher updates
+  listenToVoucherFeeds(){
+    (<HubConnection>this.hubConnection).on("voucher", (data: any) => {
+      this.$voucherFeed.next(data);
     });
   }
 
@@ -119,6 +133,7 @@ export class SignalrService {
       
 
       this.listenToOrderFeeds();
+      this.listenToVoucherFeeds();
       this.listenToBirthdayFeeds();
       this.listenToOrderUpdateFeeds();
       this.listenToCustomerFeeds();

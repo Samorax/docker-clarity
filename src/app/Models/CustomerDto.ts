@@ -1,7 +1,10 @@
 export class CustomerDto {
     
-    public id:any
-    public name: any
-    public applicationUserID:any
+public appUserId:any
+public firstName!:string
+public lastName!:string
+public birthday:any
+public customerId:any
+public birthdayNotify:any
     
 }

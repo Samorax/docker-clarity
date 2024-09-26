@@ -57,11 +57,6 @@ export class CustomerOverviewComponent implements OnInit{
         
        };
         
-        
-  
-        
-                  
-                
 
     //load customers from cache or from database. Replenish cache, if empty.
     getCustomers(){
