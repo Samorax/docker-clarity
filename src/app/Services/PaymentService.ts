@@ -9,6 +9,7 @@ import { PaymentIntentResult, loadStripe } from "@stripe/stripe-js";
 import { resolve } from "path";
 import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
+import { Order } from "../Models/Order.model";
 
 @Injectable({
     providedIn:"root"
@@ -138,6 +139,11 @@ export class paymentService{
 
     chargeDojoPayment(paymentIntentToken:string){
       return this._httpclient.get(this.dojoBaseUrl+`/charge/${paymentIntentToken}`)
+      .pipe(catchError(this.handleError));
+    }
+
+    refundDojoPayment(order:Order){
+      return this._httpclient.post(this.dojoBaseUrl+"/refund",order,this.httpOptions)
       .pipe(catchError(this.handleError));
     }
 

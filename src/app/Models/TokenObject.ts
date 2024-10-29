@@ -5,7 +5,7 @@ export class TokenObject{
     user_id:any
     currency_iso_code!:string
     api_key_1!:string
-    MessagingSID!: string
+    messagingSID!: string
     serviceCharge:any
     vatCharge: any
 }

@@ -11,12 +11,12 @@ import { FormBuilder, Validators } from "@angular/forms";
 
 export class OrderSmsComponent{
     constructor(private _formBuilder: FormBuilder){
-        this.msId = localStorage.getItem('mSID');
+        
     }
+    
     show: boolean = false;
     @Output()smsForm:EventEmitter<smsModel> = new EventEmitter<smsModel>();
     customer!:Customer
-    msId:any
     
 
     messageForm= this._formBuilder.group({
@@ -26,17 +26,19 @@ export class OrderSmsComponent{
 
 
     open(x:Customer){
+        console.log(x);
         this.customer = x;
         this.show = true;
     }
+    
     close(){
-
         this.show = false;
     }
 
     send(){
         let x:any = this.messageForm.value;
-        let sms:smsModel = {Message: x.message, PhoneNumbers:[this.customer.phoneNumber], MessageSID:this.msId }
+        console.log(this.customer.phoneNumber)
+        let sms:smsModel = {Message: x.message, PhoneNumbers:[this.customer.phoneNumber], MessageSID:localStorage.getItem('mSID') }
         this.smsForm.emit(sms);
     }
 }

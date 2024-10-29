@@ -1,28 +1,26 @@
 <div class="main-container">
-<div *ngIf="isAuthenticated |async">
-<div *ngIf="!networkStatus">
-    <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
-      <clr-alert-item>
-        <span class="alert-text">You are not Connected to the Internet</span>
-      </clr-alert-item>
-    </clr-alert>
-  </div>
-  <div *ngIf="testMode">
-    <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
-      <clr-alert-item>
-        <span class="alert-text">You are in Test Mode !!!</span>
-      </clr-alert-item>
-    </clr-alert>
-  </div>
-</div>
-  
-  
+  <div *ngIf="isAuthenticated |async">
+    <div *ngIf="!networkStatus">
+        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
+          <clr-alert-item>
+            <span class="alert-text">You are not Connected to the Internet</span>
+          </clr-alert-item>
+        </clr-alert>
+      </div>
+      <div *ngIf="testMode">
+        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
+          <clr-alert-item>
+            <span class="alert-text">You are in Test Mode !!!</span>
+          </clr-alert-item>
+        </clr-alert>
+      </div>
+    </div>
+      
+    <app-nav-menu [notifications]="notifications"  (loginStatus) = "loginStatus"></app-nav-menu>
 
-
-  
-<app-nav-menu [notifications]="notifications"  (loginStatus) = "loginStatus"></app-nav-menu>
-
-  <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
+   
+    
 
 
 </div>

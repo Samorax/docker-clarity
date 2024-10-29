@@ -10,7 +10,7 @@ import { environment } from "../../environment/environment";
 })
 export class ProductService {
   productssCache: Product[] = [];
-  baseUrl =  environment.apiBaseUrl+'api/products/';
+  baseUrl =  environment.apiBaseUrl+'api/inventory/products/';
 
    httpOptions = {
     headers: new HttpHeaders({

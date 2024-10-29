@@ -1,0 +1,57 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Reconcile Order</h3>
+    <div class="modal-body" clrModalContent>
+        <form clrForm clrLayout="vertical" class="clr-col" (ngSubmit)="onSelectedDate()">
+            <div class="clr-row">
+                <clr-date-container class="clr-col-4">
+                    <label>Start date</label>
+                    <input [(clrDate)]="startDate" type="date" autocomplete="off" />
+                </clr-date-container>
+                
+                <clr-date-container class="clr-col-4">
+                    <label>End date</label>
+                    <input [(clrDate)]="EndDate" type="date" autocomplete="off" />
+                </clr-date-container>
+                <div class="clr-col">
+                    <button type="submit" class="btn btn-primary" style="position: relative;top: 40px;" [disabled]="startDate == undefined && EndDate == undefined">Search</button>
+                </div>
+                <div class="clr-col">
+                    <p>Balance:{{balance | async}}</p>
+                </div>
+                
+            </div>
+            <div class="clr-row">
+                <clr-datagrid [(clrDgSelected)]="selected" (clrDgSelectedChange)="selectionChanged($event)">
+                    <clr-dg-column>Date</clr-dg-column>
+                    <clr-dg-column>Order No.</clr-dg-column>
+                    <clr-dg-column>Total Amount</clr-dg-column>
+                    
+                    <clr-dg-placeholder>We couldn't find any orders to reconcile</clr-dg-placeholder>
+                    <clr-dg-row *clrDgItems="let element of orderToReconcile"  [clrDgItem]="element">
+
+                      <clr-dg-cell>{{element.orderDate | date:'medium'}}</clr-dg-cell>
+                      <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
+                      <clr-dg-cell>{{element.totalAmount | currency: currencySymbol}}</clr-dg-cell>
+                    
+                    </clr-dg-row>
+                 
+                    <clr-dg-footer>
+                      <clr-dg-pagination #pagination>
+                        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+                          Elements per page
+                        </clr-dg-page-size>
+                        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+                        {{pagination.totalItems}} elements
+                      </clr-dg-pagination>
+                    </clr-dg-footer>
+                  </clr-datagrid>
+            </div>
+
+            
+        </form>
+    </div>
+    <div class="modal-footer" clrModalActions>
+      <button class="btn btn-outline" (click)="show=false">Cancel</button>
+      <button class="btn btn-primary" (click)="onReconcile()">Reconcile</button>
+    </div>
+  </clr-modal>

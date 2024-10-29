@@ -4,5 +4,5 @@ export class PaymentObject{
     public SetupIntentId!:string;
     public OrderId!:any;
     public Description!:string
-    
+    public CustomerEmail!:string
 }

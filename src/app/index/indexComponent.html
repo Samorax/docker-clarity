@@ -125,16 +125,29 @@
 					<li class="list-inline-item"><a href="https://linkedin.com/company/foodloyale"><i class="fa-solid fa-brands fa-xl fa-duotone fa-linkedin"></i></a></li>
 					<li class="list-inline-item"><a href="https://intsagram.com/food_loyale"><i class="fa-solid fa-brands fa-xl fa-duotone fa-instagram"></i></a></li>
 				</div>
-				
 			</uL>
 		</div>
-
-
 		<div class="footer-bottom">
 			<h5>Copyright 2024. All rights reserved.</h5>
 		</div>
 	</footer> <!-- end footer -->
 </div>
+	<!-- Event snippet for registration conversion page
+In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+	function gtag_report_conversion(url) {
+	  var callback = function () {
+		if (typeof(url) != 'undefined') {
+		  window.location = url;
+		}
+	  };
+	  gtag('event', 'conversion', {
+		  'send_to': 'AW-928161129/5jgTCPv1kpUBEOm6yroD',
+		  'event_callback': callback
+	  });
+	  return false;
+	}
+	</script>
 	
 
 

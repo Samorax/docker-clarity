@@ -1,30 +1,33 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Sanitizer, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, Sanitizer, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
 import { AddProductDialog } from "./AddProductDialog.component";
 import { EditProductDialog } from "./EditProductDialog.component";
-import { DeleteProductDialog } from "./DeleteProductDialog.Component";
+import { DeleteProductDialog } from "./DeleteProductDialog.component";
 import { ProductService } from "../Services/ProductService";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Observable, from, of } from "rxjs";
 import { paymentService } from "../Services/PaymentService";
+import { rxDbService } from "../Services/RxDbService";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
     selector:'app-productcatalog',
-    templateUrl:'./ProductCatalog.component.html',
+    templateUrl:'./InventoryCatalog.component.html',
     changeDetection:ChangeDetectionStrategy.OnPush
     
 })
 
-export class ProductCatalogComponent implements OnInit, AfterViewInit{
+export class InventoryCatalogComponent implements OnInit, AfterViewInit{
   ifError:boolean = false;
   ifSuccess:boolean = false;
   feedBackStatus:string = '';
   feedBackMessage:string = '';
 
   currencySymbol:any = this._paymentSvr.currencySymbol;
-  constructor(private productService: ProductService, private cd: ChangeDetectorRef, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
+  constructor(private activatedRoute:ActivatedRoute, private productService:ProductService, private cd: ChangeDetectorRef, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
    }
   
+  dbService = inject(rxDbService)
   
   ngOnInit(): void {
     this.loadInit();
@@ -127,15 +130,22 @@ export class ProductCatalogComponent implements OnInit, AfterViewInit{
     }
 
   loadInit(){
-      this.productService.getProducts().subscribe(p=>{
-        let d = p.filter(pr=>pr.isDeleted === false);
-        d.forEach(dr=>{
+       /* this.dbService.createDb();
+       this.dbService.getProducts(); */
+
+    
+      this.activatedRoute.data.subscribe(({products})=>{
+        console.log(products);
+        let d = products.filter((pr:any)=>pr.isDeleted === false);
+        d.forEach((dr:any)=>{
           this.convertImgByte(dr).subscribe(p=>{
             this.elements.push(p);
             this.cd.detectChanges();
           });
         })
-    });
+    }); 
+
+
   }
 
  

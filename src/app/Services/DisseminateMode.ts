@@ -7,12 +7,6 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 export class disseminateModeService{
 
-    takeMode(x:any){
-        return new Observable((x)=>{
-            x.next(x);
-        });
-    }
-
-    mode = new Subject<boolean>();
+    mode = new BehaviorSubject<boolean>(false);
     getMode = this.mode.asObservable();
 }

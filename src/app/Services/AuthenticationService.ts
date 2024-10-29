@@ -55,7 +55,8 @@ export class AuthenticationService {
     localStorage.setItem("expiry_date", JSON.stringify(expiresAt.valueOf()));
     localStorage.setItem("currency_iso_code", tokenObject.currency_iso_code);
     localStorage.setItem("apikey1", tokenObject.api_key_1);
-    localStorage.setItem("mSID",tokenObject.MessagingSID);
+    
+    localStorage.setItem("mSID",tokenObject.messagingSID);
     localStorage.setItem("vatCharge",tokenObject.vatCharge);
     localStorage.setItem("serviceCharge",tokenObject.serviceCharge);
     

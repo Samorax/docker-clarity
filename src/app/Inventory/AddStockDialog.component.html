@@ -1,0 +1,32 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="sm" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Add Stock</h3>
+    <div class="modal-body" clrModalContent>
+      <form clrForm clrLayout="vertical"  (ngSubmit)="onSubmit();" [formGroup]="addStockForm">
+
+        <clr-select-container>
+            <label class="clr-control-label clr-required-mark">Choose Product</label>
+            <select  clrSelect formControlName="productId" required>
+              <option *ngFor="let p of products" value="{{p.productID}}">{{p.name}}</option>
+            </select>
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-select-container>
+        
+          <clr-date-container>
+            <label class="clr-control-label clr-required-mark">Prep Date</label>
+            <input [(clrDate)]="date" formControlName="prepDate" required/>
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-date-container>
+
+        <clr-input-container>
+          <label class="clr-control-label clr-required-mark">Initial Units</label>
+          <input clrInput type="text" formControlName="initialUnits" required/>
+          <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+        </clr-input-container>
+
+        <div class="modal-footer" clrModalActions>
+          <button class="btn btn-outline" (click)="show=false" >Cancel</button>
+          <button class="btn btn-primary" [disabled]="!addStockForm.valid">OK</button>
+        </div>
+      </form>
+    </div>
+  </clr-modal>

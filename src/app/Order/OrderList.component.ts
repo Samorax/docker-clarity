@@ -22,6 +22,9 @@ import { OrderSmsComponent } from "./OrderSms.component";
 import { SmsService } from "../Services/SmsService";
 import { orderDetail } from "../Models/OrderDetails";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
+import { OrderAnnulComponent } from "./OrderAnnul.component";
+import { OrderReconcileComponent } from "./OrderReconcile.component";
+import { BehaviorSubject, of } from "rxjs";
 
 
 
@@ -33,6 +36,21 @@ import { SmSActivatorService } from "../Services/SmsActivatorService";
 })
 
 export class OrderListComponent implements OnInit, AfterViewInit{
+
+
+// On Annul, order status is changed to "Cancelled" - this implies the total amount is exempted from the total sale revenue since it is not "Completed".
+// the line-through styling is also applied to depict cancellation to the user.
+// the order is updated on the server-side and payment refund is processed
+onAnnul() {
+    let o = <Order>this.selected[0];
+    this.annulOrderModal.open(o);
+}
+
+//
+onReconcile() {
+this.reconcileOrderModal.open();
+}
+
   tables:Table[] = [];
   waiters:Waiter[] = [];
   products:Product[] = [];
@@ -51,6 +69,8 @@ export class OrderListComponent implements OnInit, AfterViewInit{
   //@ViewChild(OrderCartComponent) OrderCartModal!: OrderCartComponent;
   @ViewChild(OrderAddComponent)OrderAddModal!:OrderAddComponent;
   @ViewChild(OrderInSessionEditComponent)orderInSession!:OrderInSessionEditComponent;
+  @ViewChild(OrderAnnulComponent)annulOrderModal!:OrderAnnulComponent;
+  @ViewChild(OrderReconcileComponent)reconcileOrderModal!:OrderReconcileComponent;
 
   @ViewChild(OrderSmsComponent)orderSms!:OrderSmsComponent
   paymentFeedbackError: any;
@@ -63,7 +83,33 @@ export class OrderListComponent implements OnInit, AfterViewInit{
 
   }
     ngAfterViewInit(): void {
-      this._smsActivator.getState.subscribe(a=>{this.enableSms = a;this.cd.detectChanges();});
+      
+      this._smsActivator.getState.subscribe(a=>
+        {
+          
+          this.orders.forEach(o=>o.smsActivation = a);
+          this.cd.detectChanges();
+        });
+
+      this.reconcileOrderModal.reconcileDialog.subscribe((o:Order[])=>{
+        o.forEach(o=>{
+          o.isDeleted = true;
+          this.orderService.updateOrder(o.orderID,o).subscribe();
+        });
+
+        this.reconcileOrderModal.close();
+      });
+
+      this.annulOrderModal.annuldialog.subscribe((o:Order)=>{
+        o.isCancelled = true;
+        o.orderStatus = "Cancelled";
+        this.orderService.updateOrder(o.orderID,o).subscribe(r=>{
+          if(o.isCompleted){
+            this.paymentService.refundDojoPayment(o).subscribe(r=> console.log(r));
+          }
+          });
+          this.annulOrderModal.close();
+      });
 
       this.OrderEditModal.editdialog.subscribe(o=>{
         this.orderService.updateOrder(o.orderID,o).subscribe();
@@ -102,6 +148,7 @@ export class OrderListComponent implements OnInit, AfterViewInit{
 
 
       this.orderSms.smsForm.subscribe(s=>{
+        console.log(s);
         this._smsSvr.sendMessage(s).subscribe(x=>{
           console.log(x);
           this.orderSms.close();
@@ -122,13 +169,12 @@ export class OrderListComponent implements OnInit, AfterViewInit{
             this.cd.detectChanges();
           ;
         });
-      
+    
 
       this.getWaiters();
       this.getTables();
       this.getProducts();
       this.getVouchers();
-
 
     }
 
@@ -185,11 +231,12 @@ export class OrderListComponent implements OnInit, AfterViewInit{
     //store the returned id temporarily, using the order id as a key.
     onApprove(x:Order,y:string){
       if(y === "Approved" && x.orderStatus !== 'Approved'){
-        let pk: PaymentObject = { Amount : x.totalAmount*100, Currency : this.currencySymbol, SetupIntentId:x.paymentToken, OrderId: x.orderID,Description:`This sale is for order with reference ${x.orderID}`};
+        let pk: PaymentObject = {CustomerEmail:'damexix7@gmail.com', Amount : x.totalAmount*100, Currency : this.currencySymbol, SetupIntentId:x.paymentToken, OrderId: x.orderID,Description:`This sale is for order with reference ${x.orderID}`};
         this.paymentService.createDojoPaymentIntent(pk).subscribe((r:any)=>{
           localStorage.setItem(x.orderID,r);
           this.showChargeButton = false;
           x.orderStatus = "Approved";
+          x.isApproved = true;
           this.cd.detectChanges()
         },(er)=>
         {this.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
@@ -221,7 +268,9 @@ export class OrderListComponent implements OnInit, AfterViewInit{
           this.paymentFeedback = `Payment is ${r.status}`;
           this.showChargeButton = true;
           x.orderStatus = 'Completed';
+          x.isCompleted = true;
           x.payment = 'Paid';
+          x.paymentToken = paymentToken;
           this.cd.detectChanges()
           };
           

@@ -1,0 +1,55 @@
+<clr-datagrid [(clrDgSelected)]="selected">
+    <clr-dg-action-bar>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+            <cds-icon shape="plus"></cds-icon> 
+            Add 
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()" *ngIf="selected.length == 1">
+            <cds-icon shape="close"></cds-icon>
+            Delete
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onRestock()" *ngIf="selected.length == 1">
+            <cds-icon shape="pencil"></cds-icon>
+            ReStock
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+            <cds-icon shape="close"></cds-icon>
+            Edit
+          </button>
+          
+        </div>
+    </clr-dg-action-bar>
+    <clr-dg-column >Product</clr-dg-column>
+    <clr-dg-column >Initial Units 
+        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+     </clr-dg-column>
+    <clr-dg-column >Remaining Units</clr-dg-column>
+    <clr-dg-column >Sold Units</clr-dg-column>
+    <clr-dg-column >Stocked Date</clr-dg-column>
+
+    <clr-dg-placeholder>We couldn't find any Stock. Add new Stock</clr-dg-placeholder>
+    <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
+      <clr-dg-cell>{{element.product?.name}}</clr-dg-cell>
+      <clr-dg-cell>{{element.initialUnits}}</clr-dg-cell>
+      <clr-dg-cell>{{element.remainingUnits}}</clr-dg-cell>
+      <clr-dg-cell>{{element.soldUnits}}</clr-dg-cell>
+      <clr-dg-cell>{{element.stockedDate | date:'medium'}}</clr-dg-cell>
+    </clr-dg-row>
+    <clr-dg-footer>
+        <clr-dg-pagination #pagination>
+          <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+            Elements per page
+          </clr-dg-page-size>
+          {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+          {{pagination.totalItems}} elements
+        </clr-dg-pagination>
+    </clr-dg-footer>
+
+    </clr-datagrid>
+
+    <addStock-dialog [products]="products"></addStock-dialog>
+  
+    <deleteStk-dialog></deleteStk-dialog>
+    <restock-dialog></restock-dialog>
+    <editStk-dialog [products]="products"></editStk-dialog>

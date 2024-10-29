@@ -15,7 +15,11 @@ import * as _ from 'lodash';
 import { testModeService } from './Services/TestModeService';
 import { SettingsComponent } from './Settings/settings.component';
 import { disseminateModeService } from './Services/DisseminateMode';
-
+import 'zone.js/plugins/zone-patch-rxjs';
+import { RxDbReplService } from './Services/RxDbReplService';
+import { rxDbService } from './Services/RxDbService';
+import { environment } from '../environment/environment';
+import { HttpClient } from '@angular/common/http';
 
 
 
@@ -44,10 +48,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   paymentProvider: any;
   testMode!:boolean
   mode = inject(disseminateModeService)
+  baseUrl =  environment.apiBaseUrl+'api/sync/';
 
   constructor(private signalrService: SignalrService,private _testModeSVR:testModeService,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private _toaster:ToastrService,
-    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef,
+    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef, private _rxdbReplSvr:RxDbReplService, private rxDbSvr:rxDbService,
      private _route: Router) {
     
      }
@@ -61,6 +66,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
+
+    
     this.isAuthenticated = of(this._authSvr.isAuthenticated());
   
    this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();console.log(m)});
@@ -164,15 +171,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 
   }
-
-
+ _httpClient= inject(HttpClient)
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
+
     this.checkPaymentTerminalStatus();
     
     this.checkNetworkStatus();
 
     this.signalrService.init();
+
+    /* this.rxDbSvr.createDb().then(s=>{ 
+      let r = this.rxDbSvr.getProducts().asRxCollection;
+      let rt = this._rxdbReplSvr.sync(r, this.baseUrl,this._httpClient)
+      rt.error$.subscribe(r=>console.dir(r));
+      rt.received$.subscribe(r=>console.dir(r));
+      rt.sent$.subscribe(r=>console.dir(r));
+    }); */
+    
 
     // 2 - register for ALL relay
     this.signalrService.listenToOrderFeeds();
@@ -180,7 +196,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.signalrService.listenToOrderUpdateFeeds();
 
     let x:any = localStorage.getItem('appMode');
-    console.log(x);
+
     this.testMode = x;
 
     // 3 - subscribe to messages received

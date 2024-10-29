@@ -8,10 +8,11 @@
                 <input clrTextarea formControlName="message" placeholder="Your order has been received and will be with you shortly!!"/>
                 <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
             </clr-textarea-container>
+            <div class="modal-footer" clrModalActions>
+                <button class="btn btn-outline" type="submit">Send</button>
+                <button class="btn btn-outline" (click)="show=false">Close</button>
+              </div>
         </form>
         </div>
-        <div class="modal-footer" clrModalActions>
-            <button class="btn btn-outline" type="submit">Send</button>
-            <button class="btn btn-outline" (click)="show=false">Close</button>
-          </div>
+        
     </clr-modal>

@@ -8,8 +8,8 @@ import { CustomerListComponent } from './Customer/CustomerList.component';
 import { CustomerOverviewComponent } from './Customer/CustomerOverview.component';
 import { OrderListComponent } from './Order/OrderList.component';
 import { OrderOverviewComponent } from './Order/OrderOverview.component';
-import { ProductCatalogComponent } from './Product/ProductCatalog.omponent';
-import { ProductOverviewComponent } from './Product/ProductOverview.component';
+import { InventoryCatalogComponent } from './Inventory/InventoryCatalog.omponent';
+import { InventoryOverviewComponent } from './Inventory/InventoryOverview.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [ { path: 'login', component: loginComponent },
@@ -17,8 +17,8 @@ const routes: Routes = [ { path: 'login', component: loginComponent },
 { path: 'logout', component: logOutComponent },
 { path: 'home', component: HomeComponent, canActivate:[authGuard],
 children:[
-  {path:'products/overview', component:ProductOverviewComponent},
-  {path:'products/catalog', component:ProductCatalogComponent},
+  {path:'inventory/overview', component:InventoryOverviewComponent},
+  {path:'inventory/catalog', component:InventoryCatalogComponent},
   {path:'orders/overview', component: OrderOverviewComponent}, 
   {path:'orders/list', component: OrderListComponent},
   {path:'customers/overview',component:CustomerOverviewComponent}, 

@@ -2,10 +2,11 @@
 <clr-vertical-nav [clrVerticalNavCollapsible]="demoCollapsible">
   <clr-vertical-nav-group routerLinkActive="active">
     <cds-icon shape="bundle" clrVerticalNavIcon></cds-icon>
-    Products
+    Inventory
     <clr-vertical-nav-group-children>
-      <a clrVerticalNavLink [routerLink]="['./products/overview']" routerLinkActive="active">Overview</a>
-      <a clrVerticalNavLink routerLink="./products/catalog" routerLinkActive="active">List</a>
+      <a clrVerticalNavLink [routerLink]="['./inventory/overview']" routerLinkActive="active">Overview</a>
+      <a clrVerticalNavLink routerLink="./inventory/catalog" routerLinkActive="active">List</a>
+      <a clrVerticalNavLink routerLink="./inventory/stocks" routerLinkActive="active">Stocks</a>
     </clr-vertical-nav-group-children>
   </clr-vertical-nav-group>
   <clr-vertical-nav-group routerLinkActive="active">

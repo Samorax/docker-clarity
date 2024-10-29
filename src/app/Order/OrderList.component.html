@@ -12,6 +12,14 @@
             <cds-icon shape="pencil"></cds-icon>
             Edit
           </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onAnnul()" *ngIf="selected.length == 1">
+            <cds-icon shape="bin"></cds-icon>
+            Annul
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onReconcile()">
+            <cds-icon shape="bin"></cds-icon>
+            Reconcile
+          </button>
         </div>
     </clr-dg-action-bar>
     
@@ -24,7 +32,7 @@
   </clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any orders</clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let element of orders" [clrDgItem]="element" [class.highlight]="element.opened">
+    <clr-dg-row *clrDgItems="let element of orders"  [clrDgItem]="element" [class.highlight]="element.opened" [class.annul]="element.isCancelled">
       <clr-dg-cell>{{element.orderID}}</clr-dg-cell>
       <clr-dg-cell>{{element.totalAmount | currency: currencySymbol}}</clr-dg-cell>
       <clr-dg-cell>{{element.channel}}</clr-dg-cell>
@@ -46,7 +54,7 @@
             <div>Waiter:{{element.tableSession.waiter.name}}</div>
             <div>Table:{{element.tableSession.table.name}}</div>
           </div>
-          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms">Send Message</button>
+          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="element.smsActivation">Send Message</button>
         </div>
         <div class="clr-col">
           <h6>Delivery Address</h6>
@@ -131,3 +139,5 @@
   <add-order [waiters]="waiters" [tables]="tables" ></add-order>
   <app-orderInSession [waiters]="waiters" [tables]="tables"></app-orderInSession>
   <order-sms></order-sms>
+  <annul-order></annul-order>
+  <reconcile-order [orders]="orders"></reconcile-order>

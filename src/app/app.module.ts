@@ -1,7 +1,7 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { provideRouter, RouterModule, withViewTransitions } from '@angular/router';
 
 import { AppComponent } from './app.component';
 
@@ -10,17 +10,17 @@ import { OrderComponent } from './Order/Order.component';
 import { CustomerComponent } from './Customer/Customer.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ProductOverviewComponent } from './Product/ProductOverview.component';
-import { ProductCatalogComponent } from './Product/ProductCatalog.omponent';
+import { InventoryOverviewComponent } from './Inventory/InventoryOverview.component';
+import { InventoryCatalogComponent } from './Inventory/InventoryCatalog.omponent';
 import { OrderListComponent } from './Order/OrderList.component';
 import { OrderOverviewComponent } from './Order/OrderOverview.component';
 import { CustomerListComponent } from './Customer/CustomerList.component';
 import { CustomerOverviewComponent } from './Customer/CustomerOverview.component';
-import { AddProductDialog } from './Product/AddProductDialog.component';
+import { AddProductDialog } from './Inventory/AddProductDialog.component';
 import { ClarityModule, ClrSpinnerModule } from '@clr/angular';
 import { HomeComponent } from './home/home.component';
-import { EditProductDialog } from './Product/EditProductDialog.component';
-import { DeleteProductDialog } from './Product/DeleteProductDialog.Component';
+import { EditProductDialog } from './Inventory/EditProductDialog.component';
+import { DeleteProductDialog } from './Inventory/DeleteProductDialog.component';
 import { ProductService } from './Services/ProductService';
 import { OrderService } from './Services/OrderService';
 import { OrderEditComponent } from './Order/OrderEdit.component';
@@ -80,6 +80,16 @@ import { deleteAccountComponent } from './Settings/delAccountDialog.component';
 import { contactSalesComponent } from './index/contactSalesComponent';
 import { becomeAPartnerComponent } from './index/becomeAPartnerComponent';
 import { partnersComponent } from './index/partnersComponent';
+import { OrderAnnulComponent } from './Order/OrderAnnul.component';
+import { OrderReconcileComponent } from './Order/OrderReconcile.component';
+import { InventoryStockComponent } from './Inventory/InventoryStock.component';
+import { addStockDialog } from './Inventory/AddStockDialog.component';
+
+import { deleteStockDialogComponent } from './Inventory/DeleteStockDialog.component';
+import { restockDialogComponent } from './Inventory/ReStockDialog.component';
+import { editStockDialogComponent } from './Inventory/EditStockDialog.component';
+import { stockResolver } from './Services/Stock/StockResolver';
+import { productResolver } from './Services/ProductResolver';
 
 
 @NgModule({
@@ -94,8 +104,13 @@ import { partnersComponent } from './index/partnersComponent';
     OrderOverviewComponent,
     OrderListComponent,
     SidebarComponent,
-    ProductOverviewComponent,
-    ProductCatalogComponent,
+    InventoryOverviewComponent,
+    InventoryCatalogComponent,
+    InventoryStockComponent,
+    addStockDialog,
+    deleteStockDialogComponent,
+    restockDialogComponent,
+    editStockDialogComponent,
     AddProductDialog,
     EditProductDialog,
     DeleteProductDialog,
@@ -137,6 +152,8 @@ import { partnersComponent } from './index/partnersComponent';
     contactSalesComponent,
     becomeAPartnerComponent,
     partnersComponent,
+    OrderAnnulComponent,
+    OrderReconcileComponent
   ],
   imports: [
     HttpClientModule,
@@ -161,8 +178,9 @@ import { partnersComponent } from './index/partnersComponent';
       { path: 'logout', component: logOutComponent, pathMatch:'full' },
       { path: 'home', component: HomeComponent, canActivate:[authGuard],
     children:[
-      {path:'products/overview', component:ProductOverviewComponent},
-      {path:'products/catalog', component:ProductCatalogComponent},
+      {path:'inventory/overview', component:InventoryOverviewComponent},
+      {path:'inventory/catalog', component:InventoryCatalogComponent,resolve:{products:productResolver}},
+      {path:'inventory/stocks',component:InventoryStockComponent,resolve:{stocks:stockResolver,products:productResolver}},
       {path:'orders/overview', component: OrderOverviewComponent}, 
       {path:'orders/list', component: OrderListComponent},
       {path:'customers/overview',component:CustomerOverviewComponent}, 
@@ -173,7 +191,7 @@ import { partnersComponent } from './index/partnersComponent';
       {path:'loyaltyPoints',component:loyaltyComponent},
       {path:'settings', component:SettingsComponent}] },
       {path: '**', component:PageNotFoundComponent, pathMatch:'full'}
-    ]),
+    ],{enableViewTransitions:true}),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
