@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, catchError, throwError } from "rxjs";
+import { BehaviorSubject, Observable, catchError, throwError } from "rxjs";
 import { tap } from "rxjs/operators";
 import { loginCredentials } from "../Models/LoginCredentials";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
@@ -11,6 +11,7 @@ import { CustomerService } from "./CustomerService";
 import moment from "moment";
 import { environment } from "../../environment/environment";
 import { disseminateModeService } from "./DisseminateMode";
+import { BooleanArraySupportOption } from "prettier";
 
 @Injectable({
   providedIn: "root"
@@ -18,9 +19,12 @@ import { disseminateModeService } from "./DisseminateMode";
 
 export class AuthenticationService {
   baseUrl:string = environment.apiBaseUrl+"api/"
+  observeAuth:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _httpClient: HttpClient,
      private _appMode:disseminateModeService) { }
+
+
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -28,6 +32,7 @@ export class AuthenticationService {
       
     })
   };
+
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {
@@ -57,6 +62,7 @@ export class AuthenticationService {
     localStorage.setItem("apikey1", tokenObject.api_key_1);
     
     localStorage.setItem("mSID",tokenObject.messagingSID);
+    console.log(tokenObject.messagingSID)
     localStorage.setItem("vatCharge",tokenObject.vatCharge);
     localStorage.setItem("serviceCharge",tokenObject.serviceCharge);
     
@@ -90,10 +96,11 @@ export class AuthenticationService {
     return !this.isAuthenticated();
   }
 
-  isAuthenticated():boolean
+  isAuthenticated():Observable<boolean>
   {
 
-    return moment().isBefore(this.getExpiration());
+    this.observeAuth.next(moment().isBefore(this.getExpiration()));
+    return this.observeAuth.asObservable();
 
   }
 

@@ -3,6 +3,8 @@ import { Customer } from "../Models/Customer";
 import { CustomerService } from "../Services/CustomerService";
 import { DeleteCustomerDialogComponent } from "./DeleteCustomerDialog.component";
 import { SignalrService } from "../Services/Signalr.Service";
+import { ClarityIcons, timesCircleIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(timesCircleIcon)
 
 @Component({
     selector:'app-customers',

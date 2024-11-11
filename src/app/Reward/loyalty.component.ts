@@ -11,6 +11,8 @@ import { deleteLoyaltyDialogComponent } from "./deleteLoyaltyDialog.component";
 import { Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
 import { FormBuilder, Validators } from "@angular/forms";
+import { announcementIcon, ClarityIcons, pencilIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon,pencilIcon)
 
 @Component({
     templateUrl:'./loyalty.component.html',
@@ -108,6 +110,10 @@ export class loyaltyComponent implements OnInit, AfterViewInit
                 this._voucherSvr.getVoucherCache = v;
                 this.currencySymbol = localStorage.getItem('currency_iso_code');
             });
+        
+    }
+
+    onBroadcast(){
         
     }
 

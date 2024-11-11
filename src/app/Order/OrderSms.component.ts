@@ -26,7 +26,6 @@ export class OrderSmsComponent{
 
 
     open(x:Customer){
-        console.log(x);
         this.customer = x;
         this.show = true;
     }
@@ -37,8 +36,8 @@ export class OrderSmsComponent{
 
     send(){
         let x:any = this.messageForm.value;
-        console.log(this.customer.phoneNumber)
-        let sms:smsModel = {Message: x.message, PhoneNumbers:[this.customer.phoneNumber], MessageSID:localStorage.getItem('mSID') }
+        let customerPN = '+44'+this.customer.phoneNumber.substring(1);
+        let sms:smsModel = {Message: x.message, PhoneNumbers:[customerPN], MessageSID:localStorage.getItem('mSID') }
         this.smsForm.emit(sms);
     }
 }

@@ -25,6 +25,9 @@ export class Order {
   isCompleted: any
   isApproved: any
   smsActivation!:boolean
+  paymentFeedback!:any
+  paymentFeedbackError!:any
+  customerRecordId: any
   
 
 

@@ -16,3 +16,9 @@ html {
 .box-shadow {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
+
+.userPrompt{
+  background-color: lightgray;
+  border: 2px inset;
+  border-radius: 5px;
+}

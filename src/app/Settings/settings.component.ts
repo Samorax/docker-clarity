@@ -165,10 +165,10 @@ constructor(private _appUserSrv: appUserService,private cd:ChangeDetectorRef,pri
             voucherNotifications:['',Validators.required]
         }),
         integrationSettings:this.formBUilder.group({
-                processorName:['',Validators.required],
-                processorApiKey:['',Validators.required],
-                processorAccountId:['',Validators.required],
-                processorSoftwareHouseId:['', Validators.required]
+                Name:['',Validators.required],
+                ApiKey1:['',Validators.required],
+                AccountId:['',Validators.required],
+                SoftwareHouseId:['', Validators.required]
             
         }),
         logistics:this.formBUilder.group({
@@ -498,13 +498,23 @@ this.editODC.open(this.selected[0]);
     
     onChangePaymentProcessor(x:any){
         x.preventDefault();
-        let pp = this.settingsForm.get('integrationSettings')?.value;
+        let pp:paymentProcessor = this.settingsForm.get('integrationSettings')?.value;
+        if(this.appUser.paymentProcessor == null)
+        {
+            pp.applicationUserID = this.appUser.id
+            this.appUser.paymentProcessor = pp;
+        }
+        else
+        {
+            pp.paymentProcessorID = this.appUser.paymentProcessor.paymentProcessorID;
+            pp.applicationUserID = this.appUser.paymentProcessor.applicationUserID;
+            this.appUser.paymentProcessor = pp;
+        }
     
-        this.settingsUpdateForm.paymentProcessor = pp;
-
-        this._appUserSrv.updateAppUserInfo(this.settingsUpdateForm.id,this.settingsUpdateForm).subscribe(r=>{
+        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
             this.showPaymentProcessorUpdateFeedback = true;
-        },(er:Error)=>console.log(er.message));
+            this.cd.detectChanges()
+        },(er:Error)=>console.log(er.message)); 
     }
 
 
@@ -602,7 +612,7 @@ this.editODC.open(this.selected[0]);
     }
 
     onChangeProcessor(){
-       let y = this.settingsForm.get('integrationSettings.processorName')?.value;
+       let y = this.settingsForm.get('integrationSettings.Name')?.value;
        if(y === 'Dojo'){
          this.showDojoForms = true;
         }

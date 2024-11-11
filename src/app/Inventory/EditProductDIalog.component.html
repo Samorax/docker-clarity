@@ -8,62 +8,86 @@
         <input id="fileElem" formControlName="photo"   style="display:none" #file type="file" (change)="onfileLoaded(file.files)" class="form-control">
         <clr-control-helper>Click the image to upload new image</clr-control-helper>
       </div>
-      <clr-input-container>
-        <label class="clr-required-mark">Name</label>
-        <input clrInput type="text"  formControlName="productName" />
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-input-container>
-      <clr-input-container>
-        <label class="clr-required-mark">Code</label>
-        <input clrInput type="text" formControlName="productCode"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-input-container>
-      <clr-input-container>
-        <label class="clr-required-mark">Price</label>
-        <input clrInput type="text"  formControlName="productPrice" />
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-input-container>
-      <clr-select-container>
-        <label>Select a Category</label>
-        <select clrSelect name="category" formControlName="productCategory" (change)="monitorValue()">
-          <option *ngFor="let cat of categories" value="{{cat}}">{{cat}}</option>
-          <option value="New">New Category</option>
-        </select>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-select-container>
-      <div *ngIf="addNewCategory">
-        <clr-input-container >
-          <label>Add New Category</label>
-          <input clrInput  type="text"  #kat/>
-        </clr-input-container>
-        <button class="btn btn-primary" (click)="addCategory(kat.value)">Add</button>
+      <div class="clr-row">
+        <div class="clr-col">
+          <clr-input-container>
+            <label class="clr-required-mark">Name</label>
+            <input clrInput type="text"  formControlName="productName" />
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-input-container>
+        </div>
+        <div class="clr-col">
+          <clr-input-container>
+            <label class="clr-required-mark">Code</label>
+            <input clrInput type="text" formControlName="productCode"/>
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-input-container>
+        </div>
       </div>
-      <clr-input-container>
-        <label class="clr-required-mark">Loyalty Point (Pts)</label>
-        <input clrInput type="text" formControlName="productLoyaltyPoints" placeholder="20"/>
-        <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-input-container>
-      <clr-combobox-container>
-        <label>Allergens</label>
-        <clr-combobox formControlName="productAllergens" name="multiSelect" clrMulti="true" required>
-          <ng-container *clrOptionSelected="let selected">
-            {{ selected }}
-          </ng-container>
-          <clr-options>
-            <clr-option *clrOptionItems="let allergen of allergens; field: 'name'" [clrValue]="allergen">
-              {{allergen}}
-            </clr-option>
-          </clr-options>
-        </clr-combobox>
-      </clr-combobox-container>
-      <clr-textarea-container>
-        <label class="clr-required-mark">Description</label>
-        <textarea clrTextarea formControlName="productDescription" required></textarea>
-         <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
-      </clr-textarea-container>
+      <div class="clr-row">
+        <div class="clr-col">
+          <clr-input-container>
+            <label class="clr-required-mark">Price</label>
+            <input clrInput type="text"  formControlName="productPrice" />
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-input-container>
+        </div>
+        <div class="clr-col">
+          <clr-select-container>
+            <label>Select a Category</label>
+            <select clrSelect name="category" formControlName="productCategory" (change)="monitorValue()">
+              <option *ngFor="let cat of categories" value="{{cat}}">{{cat}}</option>
+              <option value="New">New Category</option>
+            </select>
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-select-container>
+          <div *ngIf="addNewCategory">
+            <clr-input-container >
+              <label>Add New Category</label>
+              <input clrInput  type="text"  #kat/>
+            </clr-input-container>
+            <button class="btn btn-primary" (click)="addCategory(kat.value)">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="clr-row">
+        <div class="clr-col">
+          <clr-input-container>
+            <label class="clr-required-mark">Loyalty Point (Pts)</label>
+            <input clrInput type="text" formControlName="productLoyaltyPoints" placeholder="20"/>
+            <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-input-container>
+        </div>
+        <div class="clr-col">
+          <clr-combobox-container>
+            <label>Allergens</label>
+            <clr-combobox formControlName="productAllergens" name="multiSelect" clrMulti="true" required>
+              <ng-container *clrOptionSelected="let selected">
+                {{ selected }}
+              </ng-container>
+              <clr-options>
+                <clr-option *clrOptionItems="let allergen of allergens; field: 'name'" [clrValue]="allergen">
+                  {{allergen}}
+                </clr-option>
+              </clr-options>
+            </clr-combobox>
+          </clr-combobox-container>
+        </div>
+      </div>
+      <div class="clr-row">
+        <div class="clr-col">
+          <clr-textarea-container>
+            <label class="clr-required-mark">Description</label>
+            <textarea clrTextarea formControlName="productDescription" cols="50" rows="5" required></textarea>
+             <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+          </clr-textarea-container>
+        </div>
+        <div class="clr-col"></div>
+      </div>
+      
       <div class="modal-footer" clrModalActions>
         <button class="btn btn-outline" (click)="show=false">Cancel</button>
-        <button class="btn btn-primary" type="submit">Save</button>
+        <button class="btn btn-primary" type="submit" [disabled]="!editProductForm.valid">Save</button>
       </div>
     </form>
   </div>

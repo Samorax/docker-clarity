@@ -1,26 +1,27 @@
-<div class="main-container">
-  <div *ngIf="isAuthenticated |async">
-    <div *ngIf="!networkStatus">
-        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
-          <clr-alert-item>
-            <span class="alert-text">You are not Connected to the Internet</span>
-          </clr-alert-item>
-        </clr-alert>
-      </div>
-      <div *ngIf="testMode">
-        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
-          <clr-alert-item>
-            <span class="alert-text">You are in Test Mode !!!</span>
-          </clr-alert-item>
-        </clr-alert>
-      </div>
-    </div>
-      
-    <app-nav-menu [notifications]="notifications"  (loginStatus) = "loginStatus"></app-nav-menu>
 
-    <router-outlet></router-outlet>
+<div class="main-container">
+  <header class="header-6" *ngIf="!(isAuthenticated | async)">
+    <div class="branding">
+      <a  [routerLink]="['/']" class="nav-link">
+        <img src="../../assets/foodloyale_logo.png" style="height:80px"/>
+        <span class="title">Foodloyale</span>
+      </a>
+    </div>
+    
+
+      <!-- <app-loginmenu class="header-actions" [isAuthenticated]="isAuthenticated"></app-loginmenu> -->
+      <div class="header-actions">
+        <a class="nav-link nav-text" [routerLink]='["/login"]'>Login</a>
+      </div>
+     
+    
+  </header>
+  <router-outlet></router-outlet>
+</div>
+
+    
    
     
 
 
-</div>
+

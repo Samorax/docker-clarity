@@ -16,7 +16,7 @@
             Add 
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
-            <cds-icon shape="close"></cds-icon>
+            <cds-icon shape="times-circle"></cds-icon>
             Delete
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
@@ -84,7 +84,7 @@
     <clr-dg-footer>
       <clr-dg-pagination #pagination>
         <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
-          Elements per page
+          Products per page
         </clr-dg-page-size>
         {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
         {{pagination.totalItems}} elements

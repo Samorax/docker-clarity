@@ -17,7 +17,7 @@ import { OrderOverviewComponent } from './Order/OrderOverview.component';
 import { CustomerListComponent } from './Customer/CustomerList.component';
 import { CustomerOverviewComponent } from './Customer/CustomerOverview.component';
 import { AddProductDialog } from './Inventory/AddProductDialog.component';
-import { ClarityModule, ClrSpinnerModule } from '@clr/angular';
+import { ClarityModule, ClrButtonModule, ClrLoadingModule, ClrSpinnerModule, ClrTooltipModule } from '@clr/angular';
 import { HomeComponent } from './home/home.component';
 import { EditProductDialog } from './Inventory/EditProductDialog.component';
 import { DeleteProductDialog } from './Inventory/DeleteProductDialog.component';
@@ -65,7 +65,6 @@ import { editWaiterComponent } from './Waiter/editWaiterDialog.component';
 import { SmsService } from './Services/SmsService';
 import { broadcastDialogComponent } from './Reward/broadcastDialog.component';
 import { OrderCartService } from './Services/OrderCartService';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserModule } from '@angular/platform-browser';
@@ -90,6 +89,7 @@ import { restockDialogComponent } from './Inventory/ReStockDialog.component';
 import { editStockDialogComponent } from './Inventory/EditStockDialog.component';
 import { stockResolver } from './Services/Stock/StockResolver';
 import { productResolver } from './Services/ProductResolver';
+import { ClarityIcons } from '@cds/core/icon';
 
 
 @NgModule({
@@ -158,14 +158,16 @@ import { productResolver } from './Services/ProductResolver';
   imports: [
     HttpClientModule,
     ReactiveFormsModule,
+    ClrTooltipModule,
     ClrSpinnerModule,
+    ClrButtonModule,
+    ClrLoadingModule,
     AppRoutingModule,
     FormsModule,
     BrowserModule,
     CommonModule,
     BrowserAnimationsModule,
     ClarityModule,
-    NgxMaterialTimepickerModule,
     NgxEchartsModule.forRoot({echarts: ()=>import('echarts')}),
     ToastrModule.forRoot(),
     RouterModule.forRoot([
@@ -179,8 +181,8 @@ import { productResolver } from './Services/ProductResolver';
       { path: 'home', component: HomeComponent, canActivate:[authGuard],
     children:[
       {path:'inventory/overview', component:InventoryOverviewComponent},
-      {path:'inventory/catalog', component:InventoryCatalogComponent,resolve:{products:productResolver}},
-      {path:'inventory/stocks',component:InventoryStockComponent,resolve:{stocks:stockResolver,products:productResolver}},
+      {path:'inventory/catalog', component:InventoryCatalogComponent},
+      {path:'inventory/stocks',component:InventoryStockComponent},
       {path:'orders/overview', component: OrderOverviewComponent}, 
       {path:'orders/list', component: OrderListComponent},
       {path:'customers/overview',component:CustomerOverviewComponent}, 

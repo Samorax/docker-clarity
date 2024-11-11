@@ -1,11 +1,22 @@
 <h3> Cart</h3>
 <div *ngIf="Products" style="height: 450px; border-radius: 2px;border-color: black;border-style: inset;position: relative;padding-bottom: 0;">
-    <div style="height: 65%;">
+    <div>
+        <form clrForm>
+            <clr-datalist-container>
+              <input clrDatalistInput [(ngModel)]="selectedCustomer" placeholder="Apply Customer?" name="Option" (change)="getCustomerId()" />
+              <datalist>
+                <option  *ngFor="let customer of customers" #myInput [ngValue]='customer.recordId'>{{customer.firstName + ' ' +customer.lastName}}</option>
+              </datalist>
+            </clr-datalist-container>
+          </form>
+    </div>
+    
+    <div style="height: 53%; overflow-y: auto;">
         <table class="table table-vertical table-compact" style="margin-top: 0;">
             <tbody >
                 <tr *ngFor="let item of CartItems">
                     <td>
-                        <cds-icon shape="close" (click)="onCancel(item)"></cds-icon>
+                        <cds-icon shape="times" (click)="onCancel(item)"></cds-icon>
                     </td>
                     <td class="left">{{item.name}}</td>
                     <td class="left">{{item.unitPrice}}</td>
@@ -37,20 +48,21 @@
     </div>
     
     </div>
-    <form clrform>
-        <div class="clr-row">
-            <div class="clr-col">
-                <clr-select-container>
-                    <label>Apply Voucher ?</label>
-                    <select clrSelect name="options" [(ngModel)]="selectedOption">
+    
+    
+                <form clrForm (ngSubmit)="onApply()" class="clr-row">
+                    <clr-datalist-container class="clr-col">
+                      <input clrDatalistInput [(ngModel)]="selectedOption" placeholder="Apply Voucher?" name="Option" />
+                      <datalist>
                         <option  *ngFor="let voucher of vouchers" [ngValue]='voucher.voucherNumber'>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | currency:currencySymbol}}</option>
-                    </select>
-                </clr-select-container>
-            </div>
-            <div class="clr-col">
-                <button class="btn btn-primary" (click)="onApply()" >Apply</button>
-            </div>
-        </div>
+                      </datalist>
+                    </clr-datalist-container>
+                    <div class="clr-col">
+                        <button class="btn btn-primary" type="submit">Apply</button>
+                    </div>
+                  </form>
+            
+        
         
        <!--  <clr-radio-container>
             <label>Payment Method</label>
@@ -63,7 +75,6 @@
               <label>Card</label>
             </clr-radio-wrapper>
           </clr-radio-container> -->
-    </form>
     <div *ngIf="spinnerStatus">
         <clr-spinner clrInline>Processing</clr-spinner>
         <span>{{feedBack}}</span>

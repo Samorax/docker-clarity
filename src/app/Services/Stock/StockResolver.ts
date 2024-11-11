@@ -11,7 +11,7 @@ import { stockService } from "./StockService";
 export class stockResolver implements Resolve<Stock[]>
 {
     stkSVR = inject(stockService)
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Stock[] | Observable<Stock[]> | Promise<Stock[]> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Stock[]>  {
         return this.stkSVR.getStocks();
     }
 

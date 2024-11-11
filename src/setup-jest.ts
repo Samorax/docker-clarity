@@ -1,0 +1,1 @@
+import "jest-preset-angular/setup-e2e-test"

@@ -4,6 +4,7 @@ import { loginCredentials } from "../Models/LoginCredentials";
 import { FormBuilder, NgForm, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { disseminateModeService } from "../Services/DisseminateMode";
+import { testModeService } from "../Services/TestModeService";
 
 @Component({
   selector: 'app-login',
@@ -25,7 +26,7 @@ export class loginComponent {
   credentials: loginCredentials = new loginCredentials();
   
   constructor(private authenticationService: AuthenticationService, private cd:ChangeDetectorRef,
-    private _router: Router, private formBuilder: FormBuilder,private appMode:disseminateModeService) { }
+    private _router: Router, private formBuilder: FormBuilder,private appMode:testModeService) { }
 
   onSubmit() {
     
@@ -34,7 +35,7 @@ export class loginComponent {
     this.authenticationService.logIn(this.credentials).subscribe((r:any)=>{
       this._router.navigate(["home"]);
      let mode = r.mode;
-     this.appMode.mode.next(mode);
+     this.appMode.setMode(mode);
      this.cd.detectChanges();
      localStorage.setItem('appMode',mode);
   },(er)=> this.feedback = "Invalid Email or Password !!");

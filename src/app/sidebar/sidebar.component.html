@@ -29,13 +29,14 @@
   </clr-vertical-nav-group> 
   <clr-vertical-nav-group routerLinkActive="active">
     <cds-icon shape="users" clrVerticalNavIcon></cds-icon>
-    Rewards
+    Loyalty
     <clr-vertical-nav-group-children>
       <a clrVerticalNavLink routerLink="./vouchers" routerLinkActive="active">Vouchers</a>
       <a clrVerticalNavLink routerLink="./loyaltyPoints" routerLinkActive="active">Rewards</a>
     </clr-vertical-nav-group-children>
   </clr-vertical-nav-group> 
-  <a clrVerticalNavLink routerLink="./settings" class="Settings">
+  <div class="nav-divider"></div>
+  <a clrVerticalNavLink routerLink="./settings" routerLinkActive="active">
     <cds-icon shape="cog" clrVerticalNavIcon></cds-icon>
     Settings
   </a>

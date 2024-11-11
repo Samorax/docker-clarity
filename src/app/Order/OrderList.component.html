@@ -13,11 +13,11 @@
             Edit
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onAnnul()" *ngIf="selected.length == 1">
-            <cds-icon shape="bin"></cds-icon>
+            <cds-icon shape="eraser"></cds-icon>
             Annul
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onReconcile()">
-            <cds-icon shape="bin"></cds-icon>
+            <cds-icon shape="shrink"></cds-icon>
             Reconcile
           </button>
         </div>
@@ -54,7 +54,7 @@
             <div>Waiter:{{element.tableSession.waiter.name}}</div>
             <div>Table:{{element.tableSession.table.name}}</div>
           </div>
-          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="element.smsActivation">Send Message</button>
+          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms">Send Message</button>
         </div>
         <div class="clr-col">
           <h6>Delivery Address</h6>
@@ -106,14 +106,14 @@
        
         
         
-        <div *ngIf="paymentFeedback">
+        <div *ngIf="element.paymentFeedback">
           <clr-alert  [clrAlertType]="'success'" [clrAlertAppLevel]="true">
             <clr-alert-item>
               <span class="alert-text">{{paymentFeedback}}</span>
             </clr-alert-item>
           </clr-alert>
           </div>
-          <div *ngIf="paymentFeedbackError">
+          <div *ngIf="element.paymentFeedbackError">
             <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
               <clr-alert-item>
                 <span class="alert-text">{{paymentFeedbackError}}</span>
@@ -127,10 +127,10 @@
     <clr-dg-footer>
       <clr-dg-pagination #pagination>
         <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
-          Elements per page
+          Orders per page
         </clr-dg-page-size>
         {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
-        {{pagination.totalItems}} elements
+        {{pagination.totalItems}} orders
       </clr-dg-pagination>
     </clr-dg-footer>
   </clr-datagrid>

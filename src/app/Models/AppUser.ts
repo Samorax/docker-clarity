@@ -1,3 +1,5 @@
+import { paymentProcessor } from "./PaymentProcessor"
+
 export class appUser{
     businessName:any
     businessAddress1:any
@@ -13,7 +15,7 @@ export class appUser{
     phoneNumber:any
     deliveryFee:any
     deliveryDistance:any
-    paymentProcessor:any
+    paymentProcessor!:paymentProcessor
     vatCharge:any
     serviceCharge:any
     testMode:any

@@ -18,12 +18,12 @@ export class OrderOverviewComponent implements OnInit{
     wc!: EChartsOption;
     orders!: Order[];
     ngOnInit(): void {
-    this.loadOrders().then(o=>{
+    this.loadOrders().subscribe(o=>{
         this.orders = o;
         this.salesRevenue = this.getRevenue(o);
         this.numberApprovedOrders = this.getApproved(o);
         this.numberUnApprovedOrders = this.getUnapproved(o);
-        this.saleChart = this.getMonthlySales(o);
+        this.getMonthlySales(o);
         this.customerChart = this.getCustomerSegmentChart(o);
         this.channelChart = this.getRevenueChannelChart(o);
         this.cd.detectChanges();
@@ -35,28 +35,17 @@ export class OrderOverviewComponent implements OnInit{
     salesRevenue!: Observable<number>;
     numberApprovedOrders!: Observable<number>;
     numberUnApprovedOrders!: Observable<number>;
-    saleChartInstance!:ECharts
+    saleChartInstance!:EChartsOption
     saleChart!: EChartsOption; // bar chart showing the sales made per month.
     channelChart!: Observable<EChartsOption>; // what percentage of in-person vs online channel sales pie chart
     customerChart!: Observable<EChartsOption>; //what percentage of registered customers vs unregistered customers sales pie chart.
 
     constructor(private _orderService: OrderService, private _paymentSvr: paymentService, private cd:ChangeDetectorRef){}
 
-    loadOrders(): Promise<Order[]>{
-        return new Promise((resolve)=>{
-            let cache = this._orderService.ordersCache;
-            if(cache.length != 0){
-                resolve(cache);
-            }else{
-                this._orderService.getOrders()
-                .subscribe(o=>{
-                    cache = o;
-                    resolve(cache);
-                    this.cd.detectChanges()
-                });
+    loadOrders(): Observable<Order[]>{    
+                return this._orderService.getOrders()
+    
             }
-        }) 
-    }
 
     getRevenue(o: Order[]):Observable<number>{
         let revenue = 0;
@@ -131,18 +120,18 @@ export class OrderOverviewComponent implements OnInit{
             }
         });
 
-        monthlySales["Jan"] = (jan/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Feb"] = (feb/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Mar"] = (mar/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Apr"] = (apr/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["May"] = (may/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Jun"] = (jun/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Jul"] = (jul/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Aug"] = (aug/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Sep"] = (sep/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Oct"] = (oct/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Nov"] = (nov/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
-        monthlySales["Dec"] = (dec/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100;
+        monthlySales["Jan"] = Math.round((jan/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Feb"] = Math.round((feb/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Mar"] = Math.round((mar/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Apr"] = Math.round((apr/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["May"] = Math.round((may/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Jun"] = Math.round((jun/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Jul"] = Math.round((jul/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Aug"] = Math.round((aug/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Sep"] = Math.round((sep/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Oct"] = Math.round((oct/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Nov"] = Math.round((nov/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
+        monthlySales["Dec"] = Math.round((dec/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
 
 
          this.wc = {
@@ -152,15 +141,19 @@ export class OrderOverviewComponent implements OnInit{
             animationDurationUpdate: 500,
             title:{
                 text:'Monthly Sales',
-                top:'left',
-                textStyle:{ fontSize:'18px'}
+                top:'auto',
+                left:'center',
+                textStyle:{ fontSize:'16px',fontWeight:'normal'}
             },
             xAxis:{
                 type:"category",
-                data:["Jan", 'Feb', 'Mar', 'Apr',"May", "Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+                data:["Jan", 'Feb', 'Mar', 'Apr',"May", "Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                axisTick:{ alignWithLabel:true},
+                  axisLabel:{rotate:30}
             },
             yAxis:{
                 type:"value",
+                axisLabel:{ formatter: '{value}', align:'center'}
             },
             series: [
                 {
@@ -168,58 +161,73 @@ export class OrderOverviewComponent implements OnInit{
                   monthlySales["May"] , monthlySales["Jun"],monthlySales["Jul"], monthlySales["Aug"],
                   monthlySales["Sep"],  monthlySales["Oct"],monthlySales["Nov"],monthlySales["Dec"]
                 ],
-                  type: 'bar'
+                type: 'bar',
+                showBackground: true
                 },
               ],
               
             };
-            return this.wc;
 
-    }
-
-    getSaleChartInstance(x:ECharts){
-        this.saleChartInstance = x;
-        this.cd.detectChanges()
     }
 
 
     displayDaysOfMothsChart(x:any){
-        let newData:dayMonthlySale[] = this.getDataforMonth(x.dataIndex, this.orders);
-        this.saleChartInstance.setOption({
-            xAxis:{
-              data: newData.map((item)=> item.day)
-            },
-            series:{
-                data:newData.map((item)=> item.value),
-                universalTransition:{
-                    enabled:true,
-                    divideShape:'clone'
-                  }
-            },
-            graphic: [
-                {
-                  type: 'text',
-                  left: 50,
-                  top: 20,
-                  style: {
-                    text: 'Back',
-                    fontSize: 18
-                  },
-                  onclick: ()=>{
-                    if(this.saleChartInstance){
-                        console.log(this.saleChart)
-                            this.saleChartInstance.setOption(this.saleChart);
-                            this.cd.detectChanges()
-                        
-                    }
-                  }
-                }
-              ]
+        this.getDataforMonth(x.dataIndex, this.orders).subscribe((newData:dayMonthlySale[])=>{
+            
+            this.saleChart = this.wc;
+            this.saleChartInstance = {
+                animationDurationUpdate: 500,
+                title:{
+                    text:'Monthly Sales',
+                    top:'auto',
+                    left:'center',
+                    textStyle:{ fontSize:'16px',fontWeight:'normal'}
+                },
+                tooltip:{
+                    trigger:'axis',
+                   
+                },
+                xAxis:{
+                  data: newData.map((item)=> item.day),
+                  type:"category",
+                  axisTick:{ alignWithLabel:true},
+                  axisLabel:{rotate:30},
+                },
+                yAxis:{
+                    axisLabel:{ formatter: '{value}%', align:'center'},
+                    type:"value",
+                },
+                series:{
+                    data:newData.map((item)=> Math.round(item.value)),
+                    type:'bar',
+                    showBackground:true,
+                    universalTransition:{
+                        enabled:true,
+                        divideShape:'clone'
+                      }
+                },
+                graphic: [
+                    {
+                      type: 'text',
+                      left: 50,
+                      top: 20,
+                      style: {
+                        text: 'Back',
+                        fontSize: 18
+                      },
+                      onclick: ()=>{this.wc = this.saleChart;}
+                      }
+                  ]}
+                  this.wc = this.saleChartInstance;
         });
+       
+
+             
+              
     } 
 
 
-    getDataforMonth(n:any,o:Order[]){
+    getDataforMonth(n:any,o:Order[]):Observable<any>{
         let completedMonthOrder = o.filter(or=>or.orderStatus == 'Completed' && n+1 == moment(or.orderDate).toDate().getMonth()+1);
         let totaldaysofMonth = new Date(new Date().getUTCFullYear(),n+1,0).getDate();
         let i = 1; let newData= []; 
@@ -234,7 +242,7 @@ export class OrderOverviewComponent implements OnInit{
             });
             newData.push(daySales);
         }
-        return newData;
+        return of(newData);
     }
 
     getCustomerSegmentChart(o:Order[]){
@@ -242,39 +250,33 @@ export class OrderOverviewComponent implements OnInit{
         let segement: stringDictionay = {"Unregistered":0,"Registered":0};
         let anonymous = 0; let registered = 0;
         if(o.length >= 1){
-            o.filter(o=>o.orderStatus === "Completed").forEach(o=>{
-                if(o.customerID == 0){
-                    anonymous += o.totalAmount;
+            o.filter(or=>or.orderStatus === "Completed").forEach(op=>{
+            
+                if(op.customerRecordId === 0){
+                    anonymous += op.totalAmount;
                 }else{
-                    registered += o.totalAmount;
+                    registered += op.totalAmount;
                 }
             })
         };
-        segement["Unregistered"] = (anonymous/registered +anonymous)*100;
-        segement["Registered"] = (registered/registered +anonymous)*100;
-
+        segement["Unregistered"] = Math.round(anonymous/(registered + anonymous)*100);
+        segement["Registered"] = Math.round(registered/(registered + anonymous)*100);
 
         let sChart: EChartsOption = {
             tooltip:{
                 trigger:'item'
             },
             title:{
-                text:'Revenue by Segment',
-                top:'top',
-                textStyle:{ fontSize:'18px'}
+                text:'Revenue by Customer Types',
+                top:'auto',
+                left:'center',
+                textStyle:{ fontSize:'13px',fontWeight:'normal'}
             },
-            legend:{
-                orient:'vertical',
-                left:'left',
-                top:'24px',
-                data:['Unregistered','Registered']
-            },
+            
             series: [
                 {
                   data: [{value: segement["Unregistered"] , name: "Unregistered"}, {value: segement["Registered"], name: "Registered"}],
-                  type: 'pie',
-                  top:'20%',
-                  height:'100%'
+                  type: 'pie'
 
                 },
               ],
@@ -303,33 +305,26 @@ export class OrderOverviewComponent implements OnInit{
             }
         });
 
-        let percentageInPersonRevenue = (inPersonRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100;
-        let percentageOnlineMobileAppRevenue = (onlineMobileAppRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100;
-        let percentageOnlineWebsiteRevenue= (onlineWebsiteRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100
+        let percentageInPersonRevenue = Math.round((inPersonRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100);
+        let percentageOnlineMobileAppRevenue = Math.round((onlineMobileAppRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100);
+        let percentageOnlineWebsiteRevenue= Math.round((onlineWebsiteRevenue/(inPersonRevenue+onlineMobileAppRevenue+onlineWebsiteRevenue))*100);
 
         let cChart: EChartsOption = {
             tooltip:{
                 trigger:'item'
             },
             title:{
-                text:'Revenue by Channel',
-                top:'top',
-                textStyle:{ fontSize:'18px'}
-            },
-            legend:{
-                orient:'vertical',
-                left:'left',
-                top:'24px',
-                data:['in-person','mobile app','website']
+                text:'Revenue by Channels',
+                top:'auto',
+                left:'center',
+                textStyle:{ fontSize:'13px',fontWeight:'normal'}
             },
             series: [
                 {
                   data: [{value: percentageInPersonRevenue , name: "in-person"},
                          {value: percentageOnlineMobileAppRevenue, name: "mobile app"},
                          {value: percentageOnlineWebsiteRevenue ,name:'website'}],
-                  type: 'pie',
-                  top:'20%',
-                  height:'100%'
+                  type: 'pie'
                   
                 },
               ],

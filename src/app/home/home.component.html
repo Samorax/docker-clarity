@@ -1,13 +1,67 @@
 
+<div class="main-container">
+ 
+  <div *ngIf="isAuthenticated |async">
+    <div *ngIf="!networkStatus">
+        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
+          <clr-alert-item>
+            <span class="alert-text">You are not Connected to the Internet</span>
+          </clr-alert-item>
+        </clr-alert>
+      </div>
+      <div *ngIf="testMode">
+        <clr-alert  [clrAlertType]="'danger'" [clrAlertAppLevel]="true" [clrAlertClosable]="false">
+          <clr-alert-item>
+            <span class="alert-text">You are in Test Mode !!!</span>
+          </clr-alert-item>
+        </clr-alert>
+      </div>
+    </div>
+      
+    <app-nav-menu ></app-nav-menu> 
   <div class="content-container">
     
     <app-sidebar></app-sidebar>
     <div class="content-area">
-        <router-outlet></router-outlet>
+      <button (click)="openChatBox()" class="btn btn-secondary assistantButton">
+        <cds-icon shape="chat-bubble"></cds-icon>
+      </button>
+      <div class="chatBox" [style.display]="showDialogBox?'block':'none'">
+        <div><cds-icon shape="times" class="closeDialogBox" (click)="closeDialogBox()"></cds-icon></div>
+        <div class="dialogBox">
+          <ul style="list-style-type: none;">
+            <li *ngFor="let chat of chatHistory | async;" >
+              <p *ngIf="chat.author !== ''">{{chat.author}}<br>
+                {{chat.message}}</p>
+            </li>
+          </ul>
+        </div>
+        
+        <form (ngSubmit)="onSubmit()" [formGroup]="chatForm" clrForm clrLayout="vertical" class="dialogForm" >
+            <clr-textarea-container>
+              <textarea clrTextarea formControlName="message" cols="43" rows="3" required></textarea>
+              <clr-control-helper>Insert your message</clr-control-helper>
+              <clr-control-error *clrIfError="'required'">You must write something!</clr-control-error>
+            </clr-textarea-container>
+        <div class="side-panel-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="!chatForm.valid">Send</button>
+        </div>
+      </form>
+      </div>
     
-    </div>
-    
+  <!-- <clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="false">
+    <div class="side-panel-title">Chat with Ai</div>
+    <div class="side-panel-body" style="width: fit-content;">
+      
   </div>
+  
+  </clr-side-panel> -->
+        <router-outlet></router-outlet>
+
+    </div>
+   
+  </div>
+</div>
 
 
   

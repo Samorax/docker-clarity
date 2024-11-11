@@ -20,17 +20,32 @@
   
 
     
-    <div class="clr-row">
+    <div class="clr-row clr-no-gutters">
         <div class="clr-col-6">
-            <div echarts [options]="stockVarianceChart"  ></div>
+            <div class="card">
+                <div class="card-body">
+                    <div echarts [options]="stockVarianceChart"  ></div>
+                </div>
+            </div>
+           
         </div>
         <div class="clr-col-6">
-            <div echarts [options]="initialStockWasteChart" (chartClick)="showMonthlyStockWaste($event)"></div>
+            <div class="card">
+                <div class="card-body">
+                    <div echarts [options]="initialStockWasteChart" (chartClick)="showMonthlyStockWaste($event)"></div>
+                </div>
+            </div>
+            
         </div>
     </div>
-    <div class="clr-row">
+    <div class="clr-row clr-no-gutters">
 <div class="clr-col">
-    <div echarts [options]="productDemandChart"  class="productDemandChart"></div>
+    <div class="card">
+        <div class="card-body">
+            <div echarts [options]="productDemandChart"  class="productDemandChart"></div>
+        </div>
+    </div>
+    
 </div>
     </div>
 

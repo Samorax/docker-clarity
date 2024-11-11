@@ -141,17 +141,12 @@ export class CustomerOverviewComponent implements OnInit{
         let chart: EChartsOption = {
             title:{
                 text:'Ages of Repeat Customers',
-                top:'top',
-                textStyle:{ fontSize:'18px'}
+                top:'auto',
+                left:'center',
+                textStyle:{ fontSize:'13px',fontWeight:'normal'}
             },
             tooltip:{
                 trigger:'item'
-            },
-            legend:{
-                orient:'vertical',
-                left:'left',
-                top:'24px',
-                data:['18-24','25-31','32-38']
             },
             series: [
                 {
@@ -224,8 +219,9 @@ export class CustomerOverviewComponent implements OnInit{
         let wc: EChartsOption = {
             title:{
                 text:'Rate of Repeat Customers',
-                top:'top',
-                textStyle:{ fontSize:'18px'}
+                top:'auto',
+                left:'center',
+                textStyle:{ fontSize:'13px',fontWeight:'normal'}
             },
             tooltip:{
                 trigger:'axis'

@@ -1,3 +1,38 @@
-.content-container app-sidebar{
-    
+.assistantButton{
+    position: absolute;
+    z-index: 5;
+    bottom: 2%;
+    right: 5px;
+    border-radius: 50%;
+    box-shadow: var(--cds-alias-object-shadow-100);
+}
+
+.dialogBox{
+    padding: 10px 10px 10px 10px;
+    text-align: justify;
+    overflow-y: auto;
+    display: flex;
+    margin-bottom: 0px;
+    height: 65%;
+}
+
+
+
+.closeDialogBox
+{
+    cursor: pointer;
+    position: relative;
+    left: 90%;
+}
+
+.chatBox{
+    width: 30%;
+    height: 90%;
+    position: fixed;
+    z-index: 999;
+    bottom:0%;
+    top:12%; 
+    border-radius: 5px;
+    right: 1%;
+    background-color: var(--cds-alias-object-container-background-tint);
 }

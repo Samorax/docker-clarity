@@ -6,7 +6,7 @@
             Add 
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()" *ngIf="selected.length == 1">
-            <cds-icon shape="close"></cds-icon>
+            <cds-icon shape="times-circle"></cds-icon>
             Delete
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
@@ -14,7 +14,7 @@
             Edit
      </button>
      <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()" [disabled]="activateBroadcast" *ngIf="selected.length == 1">
-      <cds-icon shape="pencil"></cds-icon>
+      <cds-icon shape="announcement"></cds-icon>
       Broadcast
     </button>
         </div>
@@ -53,7 +53,7 @@
     <clr-dg-footer>
       <clr-dg-pagination #pagination>
         <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
-          Elements per page
+          Vouchers per page
         </clr-dg-page-size>
         {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
         {{pagination.totalItems}} elements
@@ -64,5 +64,6 @@
  <add-voucher [vouchers]="vouchers"></add-voucher>
 <edit-voucher [voucher]="voucher"></edit-voucher>
 <del-voucher [vouchers]="selected"></del-voucher>
+<voucher-sms></voucher-sms>
 
   

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Injectable({
     providedIn:'root'
@@ -9,7 +9,7 @@ export class SmSActivatorService{
 
     activation!:boolean
 
-    activaionState = new Subject<boolean>();
+    activaionState = new BehaviorSubject<boolean>(false);
     getState = this.activaionState.asObservable();
 
 }

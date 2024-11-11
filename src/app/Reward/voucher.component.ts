@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { voucher } from "../Models/Voucher";
 import { voucherService } from "../Services/VoucherService";
 import { addVoucherDialogComponent } from "./addVoucherDialog.component";
@@ -11,10 +11,16 @@ import { VoucherSmsComponent } from "./voucherSms.component";
 import { CustomerService } from "../Services/CustomerService";
 import { Customer } from "../Models/Customer";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
+import { log } from "console";
+import { ChangeDetectionStrategy } from "@angular/core";
+import { announcementIcon, ClarityIcons, plusCircleIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
+import { ClrLoadingState } from "@clr/angular";
+ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon)
 
 @Component({
     templateUrl:'./voucher.component.html',
-    selector:'app-voucher'
+    selector:'app-voucher',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class voucherComponent implements OnInit, AfterViewInit{
@@ -31,30 +37,29 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(VoucherSmsComponent)bDC!:VoucherSmsComponent;
     customers!: Customer[];
 
-    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService,private _smsActivator:SmSActivatorService){}
+    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService,private _smsActivator:SmSActivatorService,private cd:ChangeDetectorRef){}
 
     ngAfterViewInit(): void {
         this._smsActivator.getState.subscribe(a=>{this.activateBroadcast = a;});
 
-       /*  this.bDC.voucherSms.subscribe(m=>{
+     this.bDC.voucherSms.subscribe(m=>{
             this.smsSVR.sendMessage(m).subscribe(r=>{
-                console.log(r);
-
-                this.bDC.close();
+  
             })
-        }); */
+            this.bDC.close();
+        }); 
 
         this.addVDC.isOk.subscribe((v:any)=>{
-            console.log(v);
             this._voucherSvr.addVoucher(v).subscribe((v:any)=>{
-                this._voucherSvr.getVoucherCache.push(v);
-            },(err)=>console.log(err),()=> this.addVDC.close());
+                this.addVDC.addButtonActivity = ClrLoadingState.DEFAULT
+                this.addVDC.close();
+            },(err)=>console.log(err));
         });
 
         this.editVDC.isOk.subscribe(v=>{
             this._voucherSvr.updateVoucher(v.voucherId,v).subscribe(()=>{
-
-            },(er)=>console.log(er),()=>this.editVDC.close());
+                this.editVDC.close()
+            },(er)=>console.log(er));
         });
 
         this.delVDC.isOk.subscribe(v=>{
@@ -62,7 +67,8 @@ export class voucherComponent implements OnInit, AfterViewInit{
                 this._voucherSvr.deleteVoucher(v.voucherId).subscribe(()=>{
                     let index = this._voucherSvr.getVoucherCache.indexOf(v);
                     this._voucherSvr.getVoucherCache.splice(index,1);
-                },(er)=>console.log(er),()=> this.delVDC.close())
+                    this.delVDC.close();
+                },(er)=>console.log(er))
             })
             
         })
@@ -72,25 +78,21 @@ export class voucherComponent implements OnInit, AfterViewInit{
     ngOnInit(): void {
         this.getVouchers();
         this.getCustomers();
+        
     }
 
     getVouchers(){
-        let cache = this._voucherSvr.getVoucherCache;
-        if(cache.length != 0){
-            this.vouchers = cache;
-            this.currencySymbol = localStorage.getItem('currency_iso_code');
-        }else{
             this._voucherSvr.getVouchers().subscribe((v:any) => 
             {
                 this.vouchers = v;
-                this._voucherSvr.getVoucherCache = v;
+                this.cd.detectChanges();
                 this.currencySymbol = localStorage.getItem('currency_iso_code');
             });
-        }
+        
     }
 
     getCustomers(){
-this.custSVR.getCustomers().subscribe(cs=> this.customers = cs)
+        this.custSVR.getCustomers().subscribe(cs=> this.customers = cs)
     }
 
     onAdd(){

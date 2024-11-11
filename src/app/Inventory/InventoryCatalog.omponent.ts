@@ -9,6 +9,8 @@ import { Observable, from, of } from "rxjs";
 import { paymentService } from "../Services/PaymentService";
 import { rxDbService } from "../Services/RxDbService";
 import { ActivatedRoute } from "@angular/router";
+import { ClarityIcons, pencilIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(pencilIcon,plusIcon,timesCircleIcon)
 
 @Component({
     selector:'app-productcatalog',
@@ -134,8 +136,7 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
        this.dbService.getProducts(); */
 
     
-      this.activatedRoute.data.subscribe(({products})=>{
-        console.log(products);
+      this.productService.getProducts().subscribe((products)=>{
         let d = products.filter((pr:any)=>pr.isDeleted === false);
         d.forEach((dr:any)=>{
           this.convertImgByte(dr).subscribe(p=>{

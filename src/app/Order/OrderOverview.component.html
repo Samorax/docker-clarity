@@ -12,26 +12,32 @@
     </div>
 </div>
 
-<div class="clr-row clr-no-gutters" style="height: 400px;">
-    <div class="clr-col-6" style="border: none;">
-        <div class="card" style="height: 100%;">
-            <div class="card-block">
-                <div id="saleChart"  echarts [options]="saleChart" (chartInit)="getSaleChartInstance($event)" (chartClick)="displayDaysOfMothsChart($event)"></div>
+<div class="clr-row clr-no-gutters">
+    
+    <div class="clr-col-6">
+        <div class="card">
+            <div class="card-body">
+                <div  echarts [options]="wc"  (chartClick)="displayDaysOfMothsChart($event)"></div>
             </div>
         </div>
+       
+    </div>
+        
+    <div class="clr-col-3">
+        <div class="card">
+            <div class="card-body">
+                <div  echarts [options]="channelChart | async"></div>
+            </div>
         </div>
-        <div class="clr-col-3">
-            <div class="card" style="height: 100%;">
-                <div class="card-block">
-                    <div  echarts [options]="channelChart | async"></div>
+                    
                 </div>
-            </div>
-            </div>
+           
             <div class="clr-col-3">
-                <div class="card" style="height: 100%;">
-                    <div class="card-block">
-                        <div  echarts [options]="customerChart | async"></div>
+               <div class="card">
+                <div class="card-body">
+                    <div  echarts [options]="customerChart | async"></div>
+                </div>
+               </div>
+                        
                     </div>
             </div>
-</div>
-</div>

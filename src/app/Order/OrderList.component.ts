@@ -25,6 +25,9 @@ import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { OrderAnnulComponent } from "./OrderAnnul.component";
 import { OrderReconcileComponent } from "./OrderReconcile.component";
 import { BehaviorSubject, of } from "rxjs";
+import { stockService } from "../Services/Stock/StockService";
+import { ClarityIcons, eraserIcon, shrinkIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(eraserIcon,shrinkIcon)
 
 
 
@@ -77,7 +80,7 @@ this.reconcileOrderModal.open();
   enableSms:boolean = true;
   
 
-  constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,private cd:ChangeDetectorRef,
+  constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,private cd:ChangeDetectorRef, private stkSVR:stockService,
     private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService, private _smsActivator:SmSActivatorService,
     private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService) {
 
@@ -86,8 +89,8 @@ this.reconcileOrderModal.open();
       
       this._smsActivator.getState.subscribe(a=>
         {
-          
-          this.orders.forEach(o=>o.smsActivation = a);
+          console.log(a,"enable sms")
+          this.enableSms = a;
           this.cd.detectChanges();
         });
 
@@ -148,11 +151,9 @@ this.reconcileOrderModal.open();
 
 
       this.orderSms.smsForm.subscribe(s=>{
-        console.log(s);
         this._smsSvr.sendMessage(s).subscribe(x=>{
-          console.log(x);
-          this.orderSms.close();
         })
+        this.orderSms.close();
       })
   }
 
@@ -231,7 +232,10 @@ this.reconcileOrderModal.open();
     //store the returned id temporarily, using the order id as a key.
     onApprove(x:Order,y:string){
       if(y === "Approved" && x.orderStatus !== 'Approved'){
-        let pk: PaymentObject = {CustomerEmail:'damexix7@gmail.com', Amount : x.totalAmount*100, Currency : this.currencySymbol, SetupIntentId:x.paymentToken, OrderId: x.orderID,Description:`This sale is for order with reference ${x.orderID}`};
+        let pk: PaymentObject = {
+          CustomerEmail:'damexix7@gmail.com', 
+          Amount : x.totalAmount*100, Currency : this.currencySymbol, SetupIntentId:x.paymentToken, OrderId: x.orderID,Description:`This sale is for order with reference ${x.orderID}`};
+
         this.paymentService.createDojoPaymentIntent(pk).subscribe((r:any)=>{
           localStorage.setItem(x.orderID,r);
           this.showChargeButton = false;
@@ -239,7 +243,7 @@ this.reconcileOrderModal.open();
           x.isApproved = true;
           this.cd.detectChanges()
         },(er)=>
-        {this.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
+        {x.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
         console.log(er)
         },()=> {
           let o = this.orderService.ordersCache.findIndex(o=>o.orderID === x.orderID);
@@ -264,23 +268,26 @@ this.reconcileOrderModal.open();
        this.paymentService.chargeDojoPayment(paymentToken).subscribe((r:any)=>{
         if(r.status === "Successful"){
           localStorage.removeItem(x.orderID);
-          this.updateCustomer(x)
-          this.paymentFeedback = `Payment is ${r.status}`;
+          x.paymentFeedback = `Payment is ${r.status}`;
           this.showChargeButton = true;
           x.orderStatus = 'Completed';
           x.isCompleted = true;
           x.payment = 'Paid';
           x.paymentToken = paymentToken;
-          this.cd.detectChanges()
+          this.cd.detectChanges();
+          this.orderService.updateOrder(x.orderID,x).subscribe(r=>{
+            this.updateCustomer(x);
+          });
           };
           
-        },(er:Error)=>{this.paymentFeedbackError = `Payment Error: ${er.message}`})}
+        },(er:Error)=>{x.paymentFeedbackError = `Payment Error: ${er.message}`})}
       
       private updateCustomer(order:Order)
-      {
-        this.custSVR.getCustomer(order.customerID).subscribe((c:Customer)=>{
+      {console.log(order);
+        this.custSVR.getCustomer(order.customerRecordId).subscribe((c:Customer)=>{
           let pts:number = 0;
           order.orderDetails.forEach(o=>{
+          //this.updateStock(o);
             let product = this.products.find(p=>p.name === o.name);
             let voucher:any = this.vouchers.find(v=>v.voucherNumber === o.name);
             if(voucher != undefined){
@@ -292,12 +299,15 @@ this.reconcileOrderModal.open();
           console.log(pts,'loyaltypts')
           c.loyaltyPoints += pts;
           c.totalAmountSpent += order.totalAmount
-          this.custSVR.updateCustomer(order.customerID,c).subscribe(); 
+          console.log(order);
+          this.custSVR.updateCustomer(order.customerRecordId,c).subscribe(); 
           });
         let o = this.orderService.ordersCache.findIndex(o=>o.orderID === order.orderID);
         this.orderService.ordersCache[o]=order;
-        this.orderService.updateOrder(order.orderID,order).subscribe();
+        
       }
+
+      
       
 
       /* this.paymentService.processOnlinePayment(r, x.paymentToken).then((r:any)=>{

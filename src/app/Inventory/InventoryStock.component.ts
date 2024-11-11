@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, inject, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, OnInit, ViewChild } from "@angular/core";
 import { Stock } from "../Models/Stock";
 import { stockService } from "../Services/Stock/StockService";
 import { addStockDialog } from "./AddStockDialog.component";
@@ -8,25 +8,32 @@ import { deleteStockDialogComponent } from "./DeleteStockDialog.component";
 import { restockDialogComponent } from "./ReStockDialog.component";
 import { editStockDialogComponent } from "./EditStockDialog.component";
 import { ActivatedRoute } from "@angular/router";
+import { ClarityIcons, pencilIcon, plusIcon, recycleIcon, timesCircleIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(timesCircleIcon,plusIcon,pencilIcon,recycleIcon)
 
 @Component({
     selector:'app-stock',
     templateUrl:'./InventoryStock.component.html',
+    changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class InventoryStockComponent implements OnInit, AfterViewInit {
     stkService = inject(stockService)
     productsService = inject(ProductService)
     activatedroute = inject(ActivatedRoute)
+    cd = inject(ChangeDetectorRef)
 
     selected:Stock[] = [];
     elements:Stock[] = []
     products:Product[] = [];
 
     ngOnInit(): void {
-        this.activatedroute.data.subscribe((s:any)=> {
-            this.elements = s['stocks'].filter((d:any)=>d.isExpired !== true); 
-            this.products = s['products'];  
+        this.stkService.getStocks().subscribe((s:any)=> {
+            this.elements = s.filter((d:any)=>d.isExpired !== true); 
+            this.cd.detectChanges();
+            this.productsService.getProducts().subscribe(p=>{
+                this.products = p;
+            })
             });
         };
         
@@ -36,7 +43,8 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
 
         this.addStkDialog.onOk.subscribe(r=>{
             this.stkService.addStock(r).subscribe(r=>{
-                console.log(r);
+                this.elements.push(r);
+                this.cd.detectChanges();
             })
             this.addStkDialog.close();
         });

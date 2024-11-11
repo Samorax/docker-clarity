@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChil
 import { Product } from "../Models/Product";
 import { FormBuilder, NgForm, Validators } from "@angular/forms";
 import { Allergen } from "../Models/Allergen";
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     templateUrl:'./AddProductDialog.component.html',
@@ -23,6 +24,7 @@ export class AddProductDialog{
     productLoyaltyPoints:['',Validators.required],
     productAllergens:['']
   })
+
   currencySymbol:any = localStorage.getItem("currency_iso_code");
   user:any = localStorage.getItem("user_id");
   show: boolean = false;
@@ -34,6 +36,13 @@ export class AddProductDialog{
   @ViewChild('file')fileInput: any;
   allergens:Array<string> = ['Celery','Cereals','Crustaceans','Eggs','Fish','Lupin','Milk','Molluscs','Mustard','Nuts','Peanuts','Sesame seeds','Soya','Sulphur Dioxide'];
   allergenSelection:Array<string>=[];
+
+  submitLoadingState:ClrLoadingState = ClrLoadingState.DEFAULT
+
+  
+
+
+
 
   open(){
         this.show = true;
@@ -120,6 +129,8 @@ handleFiles(files: FileList) {
 }
 
   onSubmit() {
+
+    this.submitLoadingState = ClrLoadingState.LOADING
     let prod:any = this.productForm.value
     
   
@@ -134,8 +145,8 @@ handleFiles(files: FileList) {
     data.append("loyaltyPoints",prod.productLoyaltyPoints);
     data.append("photosUrl",prod.photo);
     data.append("allergens", prod.productAllergens)
-    console.log(prod);
     this.onOk.emit(data);
+    this.submitLoadingState = ClrLoadingState.DEFAULT
   }
 }
 

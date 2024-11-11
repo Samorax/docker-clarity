@@ -26,7 +26,7 @@ export class StockVarianceService {
    }
 
    actualRevenueCalc(stk:Stock){
-    return (<number>stk.soldUnits * stk.product?.price)
+    return (<number>(stk.initialUnits - stk.remainingUnits) * stk.product?.price)
    }
 
    getMonthVariance(year:string, month: number):Observable<StockVariance[]>{

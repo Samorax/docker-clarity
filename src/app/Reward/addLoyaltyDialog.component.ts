@@ -4,6 +4,7 @@ import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
 import { paymentService } from "../Services/PaymentService";
 import { FormBuilder, NgForm, Validators } from "@angular/forms";
+import { ClrLoadingState } from "@clr/angular";
 
 
 @Component({
@@ -25,6 +26,7 @@ export class addLoyaltyDialogComponent implements OnInit{
     @Input()vouchers!: voucher[];
     show:boolean = false;
     @ViewChild('file')fileInput: any;
+    addButtonActivity:ClrLoadingState = ClrLoadingState.DEFAULT
 
     loyaltyForm = this._formBuilder.group({
         title:['',Validators.required],
@@ -74,6 +76,7 @@ export class addLoyaltyDialogComponent implements OnInit{
 
     onSubmit()
     {
+        this.addButtonActivity = ClrLoadingState.LOADING
         let y:any = this.loyaltyForm.value;
         let createdDate = new Date().toUTCString();
         let expiryDate = new Date(y.expiryDate).toUTCString();

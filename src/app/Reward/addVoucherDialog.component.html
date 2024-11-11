@@ -1,56 +1,85 @@
-<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false" >
+<clr-modal [(clrModalOpen)]="show" clrModalSize="md" [clrModalStaticBackdrop]="true" [clrModalClosable]="false" >
     <h3 class="modal-title" clrModalTitle>Add New Voucher</h3>
     <div class="modal-body" clrModalContent>
       <form clrForm clrLayout="vertical" [formGroup]="voucherForm"  (ngSubmit)="onSubmit()" >
-        <clr-input-container>
-          <label class="clr-required-mark">Name</label>
-          <input clrInput type="text" formControlName="voucherName" />
-          <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-        </clr-input-container>
-        <clr-input-container>
-          <label>Keyword</label>
-          <input clrInput type="text" formControlName="keyword" />
-          <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-        </clr-input-container>
-        <clr-select-container>
-          <label>Value Type</label>
-          <select clrSelect type="text" #valueType formControlName="valueType"  >
-            <option value="percentage">Percentage</option>
-            <option value="actualValue">ActualValue</option>
-          </select>
-          <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-        </clr-select-container>
-        <clr-input-container>
-          <label>Units</label>
-          <input clrInput type="text" formControlName="units"/>
-          <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-        </clr-input-container>
-        <clr-input-container *ngIf="valueType.value === 'actualValue'">
-          <label >Credit Amount {{ 0 | currency:currencySymbol}}</label>
-          <input clrInput type="text" formControlName="voucherCreditAmount" />
-        </clr-input-container>
-        <clr-input-container *ngIf="valueType.value === 'percentage'">
-          <label class="clr-required-mark">Percentage</label>
-          <input clrInput formControlName="voucherCreditAmount" />
-          <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-        </clr-input-container>
-        <clr-date-container>
-            <label class="clr-required-mark">Expiry Date</label>
-            <input type="date" autocomplete="off" clrDate formControlName="voucherExpirationDate" />
-            <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-          </clr-date-container>
-          <clr-select-container>
-            <label class="clr-required-mark">Activation</label>
-            <select clrSelect type="text" formControlName="voucherActivation" >
-              <option value="true">Enable</option>
-              <option value="false">Disable</option>
-            </select>
-            <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
-          </clr-select-container>
+        <div class="clr-row">
+          <div class="clr-col">
+            <clr-input-container>
+              <label class="clr-required-mark">Name</label>
+              <input clrInput type="text" formControlName="voucherName" />
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-input-container>
+          </div>
+          <div class="clr-col">
+            
+
+
+            <clr-input-container>
+              <label>Keyword</label>
+              <input clrInput type="text" formControlName="keyword" />
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-input-container>
+          </div>
+        </div>
+        <div class="clr-row">
+          <div class="clr-col">
+            <clr-select-container>
+              <label class="clr-required-mark">Value Type</label>
+              <select clrSelect type="text" #valueType formControlName="valueType"  >
+                <option value="percentage">Percentage</option>
+                <option value="actualValue">ActualValue</option>
+              </select>
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-select-container>
+          </div>
+          <div class="clr-col">
+            <clr-input-container>
+              <label class="clr-required-mark">Units</label>
+              <input clrInput type="text" formControlName="units"/>
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-input-container>
+          </div>
+        </div>
+        <div class="clr-row">
+          <div class="clr-col">
+            <clr-input-container *ngIf="valueType.value === 'actualValue'">
+              <label class="clr-required-mark" >Credit Amount {{ 0 | currency:currencySymbol}}</label>
+              <input clrInput type="text" formControlName="voucherCreditAmount" />
+            </clr-input-container>
+          </div>
+          <div class="clr-col">
+            <clr-input-container *ngIf="valueType.value === 'percentage'">
+              <label class="clr-required-mark">Percentage</label>
+              <input clrInput formControlName="voucherCreditAmount" />
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-input-container>
+          </div>
+        </div>
+        <div class="clr-row">
+          <div class="clr-col">
+            <clr-date-container>
+              <label class="clr-required-mark">Expiry Date</label>
+              <input type="date" autocomplete="off" clrDate formControlName="voucherExpirationDate" />
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-date-container>
+          </div>
+          <div class="clr-col">
+            <clr-select-container>
+              <label class="clr-required-mark">Activation</label>
+              <select clrSelect type="text" formControlName="voucherActivation" >
+                <option value="true">Enable</option>
+                <option value="false">Disable</option>
+              </select>
+              <clr-control-error *clrIfError="'required'">This field is required!!!</clr-control-error>
+            </clr-select-container>
+          </div>
+        </div>
+        
+          
     
         <div class="modal-footer" clrModalActions>
           <button class="btn btn-outline" (click)="show=false" >Cancel</button>
-          <button class="btn btn-primary" type="submit" [disabled]="!voucherForm.valid">Add</button>
+          <button class="btn btn-primary" type="submit" [disabled]="!voucherForm.valid" [clrLoading]="addButtonActivity">Add</button>
         </div>
       </form>
     </div>

@@ -1,35 +1,15 @@
-<header class="header header-6">
+<header class="header-6">
   <div class="branding">
     <a  [routerLink]="['/']" class="nav-link">
-      <img src="../../assets/foodloyale_logo.png" style="height: inherit;width: inherit;"/>
+      <img src="../../assets/foodloyale_logo.png" style="height:80px"/>
       <span class="title">Foodloyale</span>
     </a>
   </div>
   
-  <div *ngIf='_authService.isAuthenticated()' class="header-actions">
-    <div class="header-vav">
-      <a href="javascript://" (click)="openChatBox()" class="active nav-link nav-icon">
-        <cds-icon shape="chat-bubble"></cds-icon>
-      </a>
-    </div>
-  <clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="true">
-    <div class="side-panel-title">Chat with Ai</div>
-    <div class="side-panel-body">
-      <form (ngSubmit)="onSubmit()" [formGroup]="chatForm" clrForm clrLayout="vertical">
-      <p>{{chatResponse}}</p>
-        <clr-textarea-container>
-          <textarea clrTextarea formControlName="message" cols="50" rows="10" required></textarea>
-          <clr-control-helper>Insert your message</clr-control-helper>
-          <clr-control-error *clrIfError="'required'">You must write something!</clr-control-error>
-        </clr-textarea-container>
-    <div class="side-panel-footer">
-      <button type="submit" class="btn btn-primary" [disabled]="!chatForm.valid">Send</button>
-    </div>
-  </form>
-  </div>
   
-  </clr-side-panel>
-  </div>
+    
+      
+  
     <app-loginmenu class="header-actions" [isAuthenticated]="isAuthenticated"></app-loginmenu>
   
   

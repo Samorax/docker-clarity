@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../environment/environment";
-import { catchError, throwError } from "rxjs";
+import { catchError, Observable, throwError } from "rxjs";
 import { Stock } from "../../Models/Stock";
 
 @Injectable({
@@ -25,7 +25,7 @@ export class stockService
         return throwError(() => new Error('Something bad happened; please try again later.'));
       }
 
-      getStocks(){
+      getStocks():Observable<Stock[]>{
         return this._httpClient.get<Stock[]>(this.baseUrl).pipe(catchError(this.handleError))
       }
 

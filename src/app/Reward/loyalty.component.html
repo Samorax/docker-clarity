@@ -7,14 +7,17 @@
                 Add 
               </button>
               <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
-                <cds-icon shape="close"></cds-icon>
+                <cds-icon shape="times-circle"></cds-icon>
                 Delete
               </button>
               <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
                 <cds-icon shape="pencil"></cds-icon>
                 Edit
               </button>
-              
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onBroadcast()" *ngIf="selected.length == 1">
+                <cds-icon shape="announcement"></cds-icon>
+                Broadcast
+              </button>
             </div>
         </clr-dg-action-bar>
         
@@ -31,15 +34,30 @@
           <clr-dg-cell>{{element.createdDate| date}}</clr-dg-cell>
           <clr-dg-cell>{{element.expiryDate | date}}</clr-dg-cell>
           <clr-dg-cell>{{element.units}}</clr-dg-cell>
-          <clr-dg-row-detail *clrIfExpanded>
-            <div class="clr-row">
-              <div class="clr-col">{{element.description}}</div>
-              <div class="clr-col">
-                <img [src]="element.rewardImage" alt="reward_image" height="200px" width="200px"/>
-              </div>
-            </div>
-          </clr-dg-row-detail>
         </clr-dg-row>
+
+        <clr-dg-detail  *clrIfDetail="let element">
+          <clr-dg-detail-header>{{element.title}}</clr-dg-detail-header>
+            <clr-dg-detail-body>
+              <div class="clr-row">
+                <div class="clr-col">{{element.description}}</div>
+                <div class="clr-col">
+                  <img [src]="element.rewardImage" alt="reward_image" height="200px" width="200px"/>
+                </div>
+              </div>
+            </clr-dg-detail-body>
+          
+        </clr-dg-detail>
+
+        <clr-dg-footer>
+          <clr-dg-pagination #pagination>
+            <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+              Rewards per page
+            </clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+            {{pagination.totalItems}} elements
+          </clr-dg-pagination>
+        </clr-dg-footer>
     </clr-datagrid>
     
 

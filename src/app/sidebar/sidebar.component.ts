@@ -7,5 +7,5 @@ import { Component } from "@angular/core";
 })
 export class SidebarComponent {
 
-  demoCollapsible:any = false;
+  demoCollapsible:any = true;
 }

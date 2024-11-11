@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { Order } from "../Models/Order.model";
 import * as signalR from "@microsoft/signalr";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
@@ -19,13 +19,14 @@ export class SignalrService {
     
   }
   userId:any = localStorage.getItem("user_id");
-  private $orderFeed: Subject<any> = new Subject<any>();
-  private $birthdayFeed: Subject<any> = new Subject<any>();
-  private $orderUpdateFeed: Subject<any> = new Subject<any>();
-  private $tableSessionUpdateFeed: Subject<any> = new Subject<any>();
-  private $newCustomerFeed: Subject<Customer> = new Subject<Customer>();
-  private $CustomerUpdateFeed: Subject<Customer> = new Subject<Customer>();
-  private $voucherFeed: Subject<any> = new Subject<any>();
+  private $orderFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $birthdayFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $orderUpdateFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $tableSessionUpdateFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $newCustomerFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $CustomerUpdateFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $voucherFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private $stockUpdateFeed: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   hubConnection: any;
   public get AllTableSessionUpdateFeedObservable():Observable<any>
@@ -36,6 +37,10 @@ export class SignalrService {
   public get AllOrderFeedObservable(): Observable<Order> {
     return this.$orderFeed.asObservable();
   };
+
+  public get AllStockUpdateFeedObservable(): Observable<any>{
+    return this.$stockUpdateFeed.asObservable();
+  }
 
   public get AllVoucherFeedObservable(): Observable<any>{
     return this.$voucherFeed.asObservable();
@@ -67,6 +72,12 @@ export class SignalrService {
     (<HubConnection>this.hubConnection).on("voucher", (data: any) => {
       this.$voucherFeed.next(data);
     });
+  }
+
+  listenToStockUpdateFeeds(){
+    (<HubConnection>this.hubConnection).on('stock',(data:any)=>{
+      this.$stockUpdateFeed.next(data);
+    })
   }
 
    //listen to order updates from payment terminal
@@ -139,6 +150,7 @@ export class SignalrService {
       this.listenToCustomerFeeds();
       this.listenToCustomerUpdateFeeds();
       this.listenToTableSessionUpdateFeeds();
+      this.listenToStockUpdateFeeds();
     });
   };
  

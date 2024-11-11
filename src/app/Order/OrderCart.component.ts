@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
 import { CartOrder } from "../Models/CartOder";
@@ -14,6 +14,10 @@ import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
 import { Observable, of } from "rxjs";
 import { OrderCartService } from "../Services/OrderCartService";
+import { ClarityIcons, timesIcon } from "@cds/core/icon";
+import { CustomerService } from "../Services/CustomerService";
+import { Customer } from "../Models/Customer";
+ClarityIcons.addIcons(timesIcon)
 
 @Component({
     selector:'order-cart',
@@ -23,12 +27,13 @@ import { OrderCartService } from "../Services/OrderCartService";
 
 export class OrderCartComponent implements OnInit, AfterViewInit {
 selectedOption: any;
+selectedCustomer:any
 
 
 
     constructor(private tableSessionSvr: TableSessionService,
         private orderDetailSvr:OrderDetailService,
-         private _voucherSvr:voucherService, private odSvr:OrderService, private tableSvr: TableService,
+         private _voucherSvr:voucherService, private odSvr:OrderService, private tableSvr: TableService,private customerSvr:CustomerService,
         private cartOrderSVR: OrderCartService){
             
          }
@@ -45,6 +50,7 @@ selectedOption: any;
 
     ngOnInit(): void {
         this.getVouchers();
+        this.getCustomers();
     }
 
     appId = localStorage.getItem("user_id");
@@ -59,6 +65,7 @@ selectedOption: any;
     feedBack!:string;
     spinnerStatus:boolean = false;
     vouchers:voucher[] = [];
+    customers:Customer[] = []
     voucherToApply!: voucher;
     currencySymbol:any = localStorage.getItem('currency_iso_code');
     payButtonStatus:boolean = false;
@@ -69,20 +76,18 @@ selectedOption: any;
     VatCharge:any;
     ServiceCharge:any;
     TotalAmount:any
-
+    @ViewChild('myInput') myInputRef!: ElementRef;
     getVouchers(){
-        let cache = this._voucherSvr.getVoucherCache;
-        if(cache.length != 0){
-            this.vouchers = cache;
-
-        }else{
             this._voucherSvr.getVouchers().subscribe((v:any) => 
             {
                 this.vouchers = v;
-                this._voucherSvr.getVoucherCache = v;
-                
             });
-        }
+    }
+
+    getCustomers(){
+        this.customerSvr.getCustomers().subscribe(c=>{
+            this.customers = c;
+        })
     }
 
  
@@ -126,9 +131,10 @@ selectedOption: any;
     //update order.
     //table status to occupied.
     onLockSession(){
+        let customerAttrInfo = this.getCustomerId();
     if(this.sessionType === "Takeaway")
     {
-        console.log(this.lastorderId)
+        
         //let cache = this.orderSvr.ordersCache; 
         //let lastorderid = cache.length >= 1 ? cache[cache.length - 1].orderID: 1;
 
@@ -150,9 +156,11 @@ selectedOption: any;
         this.tableSessionSvr.addSession(this.tableSession).subscribe((r: TableSession) => {
            //create new order
         let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
+        od.customerRecordId = customerAttrInfo.rId, od.customerID = customerAttrInfo.custId,
         od.channel = "In-Person";od.totalAmount = this.TotalAmount;od.tableSessionId = r.id; od.vatCharge = this.VatCharge;od.serviceCharge = this.ServiceCharge;
             //add order to database
         this.odSvr.addOrder(od).subscribe((or:Order) => {
+            console.log(or)
                 //emit order to parent component
         or.tableSession = r;
           //if there are items in cart, create order details and add to database.
@@ -179,6 +187,12 @@ selectedOption: any;
         }); 
         
     })
+    }
+
+    getCustomerId(){
+        let recordId = this.myInputRef.nativeElement.getAttribute('ng-reflect-ng-value');
+        let customerId = this.customers.find(c=>c.recordId == recordId)?.id
+        return {rId:recordId,custId:customerId};
     }
 
     onCharge(){

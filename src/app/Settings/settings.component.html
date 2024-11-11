@@ -8,31 +8,9 @@
  </section>
  <clr-tabs clrLayout="vertical">
   <clr-tab>
-    <button clrTabLink>Guides</button>
-    <clr-tab-content>
-      <div>Do not switch the Test mode "ON". If you do not want to get charged.</div>
-        
-    </clr-tab-content>
-  </clr-tab>
-  <clr-tab>
     <button clrTabLink id="accountButton" (click)="fillAccountSettings()">Account</button>
 
       <clr-tab-content *clrIfActive>
-        <section class="clr-row">
-          <clr-spinner *ngIf="SwitchMode">Processing</clr-spinner>
-          <clr-toggle-container class="clr-toggle-right clr-col">
-            <clr-toggle-wrapper>
-              <input type="checkbox" clrToggle #switch  formControlName="testMode" (change)="onSwitchMode()" />
-              <label>Test Mode</label>
-            </clr-toggle-wrapper>
-            <clr-control-helper>Switch it off when you want to start selling</clr-control-helper>
-          </clr-toggle-container>
-          <div class="clr-col">
-            <button class="btn btn-link" (click)="onApiRequest($event)">Get Api Key</button>
-              <span *ngIf="showKey" class="label">{{apiKey}}</span>
-          </div>
-        </section>
-         
         <section>
           <div>
             <h4>Account Details</h4>
@@ -187,7 +165,7 @@
         <div [@openClose]="isOpen4 ?'close':'open'">
           <clr-select-container>
             <label class="clr-required-mark clr-control-label">Select Payment Provider</label>
-            <select clrSelect formControlName="processorName" #selection (change)="onChangeProcessor()">
+            <select clrSelect formControlName="Name" #selection (change)="onChangeProcessor()">
                 <option value="Dojo">Dojo</option>
             </select>
           </clr-select-container>
@@ -195,19 +173,19 @@
           <div class="clr-col">
             <clr-password-container>
               <label class="clr-required-mark">Api Key</label>
-              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" formControlName="processorApiKey"/>
+              <input clrPassword autocomplete="current-password" placeholder="Api Key please!" formControlName="ApiKey1"/>
               <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
             </clr-password-container>
             <clr-password-container>
               <label class="clr-required-mark">Account Id</label>
-              <input clrPassword autocomplete="current-password" placeholder="Insert account id" formControlName="processorAccountId" />
+              <input clrPassword autocomplete="current-password" placeholder="Insert account id" formControlName="AccountId" />
               <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
             </clr-password-container>
           </div>
         <div class="clr-col">
           <clr-password-container>
             <label class="clr-required-mark">Software House Id</label>
-            <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" formControlName="processorSoftwareHouseId" />
+            <input clrPassword autocomplete="current-password" placeholder="Insert softwareHouseId" formControlName="SoftwareHouseId" />
             <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
           </clr-password-container>
         </div>
@@ -220,7 +198,7 @@
           <div class="clr-col">
             <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showPaymentProcessorUpdateFeedback">
               <clr-alert-item>
-                <span class="alert-text">Address Updated!!</span>
+                <span class="alert-text">Payment Processor Updated!!</span>
               </clr-alert-item>
               </clr-alert>
           </div>
@@ -447,6 +425,26 @@
         
         </div>
        
+      </section>
+    </clr-tab-content>
+  </clr-tab>
+
+  <clr-tab>
+    <button clrTabLink>Developer</button>
+    <clr-tab-content>
+      <section class="clr-row">
+        <clr-spinner *ngIf="SwitchMode">Processing</clr-spinner>
+        <clr-toggle-container class="clr-toggle-right clr-col">
+          <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle #switch  formControlName="testMode" (change)="onSwitchMode()" />
+            <label>Test Mode</label>
+          </clr-toggle-wrapper>
+          <clr-control-helper>Switch it off when you want to start selling</clr-control-helper>
+        </clr-toggle-container>
+        <div class="clr-col">
+          <button class="btn btn-link" (click)="onApiRequest($event)">Get Api Key</button>
+            <span *ngIf="showKey" class="label">{{apiKey}}</span>
+        </div>
       </section>
     </clr-tab-content>
   </clr-tab>

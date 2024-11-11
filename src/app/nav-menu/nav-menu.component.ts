@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, inject, Input, Output, ViewChild } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { AuthenticationService } from '../Services/AuthenticationService';
 import { loginMenuComponent } from '../Authentication/loginmenu.component';
 import { loginComponent } from '../Authentication/login.component';
@@ -9,6 +9,7 @@ import { chatBubbleIcon, ClarityIcons } from '@cds/core/icon';
 import { FormBuilder, Validators } from '@angular/forms';
 import { chatService } from '../Services/ChatService';
 import { chatQuery } from '../Models/ChatQuery';
+import { IChatMessage } from '../Services/IChatMessage';
 
 ClarityIcons.addIcons(chatBubbleIcon)
 
@@ -22,18 +23,29 @@ export class NavMenuComponent implements AfterViewInit {
 formBuilder = inject(FormBuilder)
 chatSVR = inject(chatService)
 
+
+chatHistory:BehaviorSubject<IChatMessage[]> = new BehaviorSubject<IChatMessage[]>([{author:'',message:''}])
+
+
 chatForm = this.formBuilder.group({
   message:['',Validators.required]
 });
 
 
 onSubmit() {
+  let currentArray = this.chatHistory.getValue();
+  let updatedArray = [...currentArray,{author:'You',message:<string>this.chatForm.value.message}]
+  this.chatHistory.next(updatedArray) ;
+
   let x: chatQuery = {message: this.chatForm.value.message};
   this.chatSVR.sendMessage(x).subscribe(r=>{
-  this.chatResponse = r.content;
-  })
+    let currentArray = this.chatHistory.getValue();
+    let updatedArray = [...currentArray,{author:'Ai Asistant',message:<string>r.content}]
+  this.chatHistory.next(updatedArray);
+  }) 
 }
-chatResponse: any;
+chatResponse: BehaviorSubject<string> = new BehaviorSubject<string>('');
+userPrompt: string = ''
 
   openChatBox() {
     this.opened = true;
