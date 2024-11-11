@@ -2,12 +2,13 @@
 <div *ngIf="Products" style="height: 450px; border-radius: 2px;border-color: black;border-style: inset;position: relative;padding-bottom: 0;">
     <div>
         <form clrForm>
-            <clr-datalist-container>
-              <input clrDatalistInput [(ngModel)]="selectedCustomer" placeholder="Apply Customer?" name="Option" (change)="getCustomerId()" />
-              <datalist>
-                <option  *ngFor="let customer of customers" #myInput [ngValue]='customer.recordId'>{{customer.firstName + ' ' +customer.lastName}}</option>
-              </datalist>
-            </clr-datalist-container>
+          <clr-select-container>
+            <label>Apply Customer?</label>
+            <select clrSelect name="options" [(ngModel)]="selectedCustomer" required (change)="getCustomerId($event)">
+              <option  *ngFor="let customer of customers" #myInput [ngValue]='customer.recordId'>{{customer.firstName + ' ' +customer.lastName}}</option>
+            </select>
+          </clr-select-container>
+        
           </form>
     </div>
     

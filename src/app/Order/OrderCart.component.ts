@@ -28,6 +28,8 @@ ClarityIcons.addIcons(timesIcon)
 export class OrderCartComponent implements OnInit, AfterViewInit {
 selectedOption: any;
 selectedCustomer:any
+    custId!: string;
+    rId: any;
 
 
 
@@ -44,6 +46,8 @@ selectedCustomer:any
             this.VatCharge = (vat/100)*s;
             this.ServiceCharge = (sCharge/100)*s;
             this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
+
+            console.log(this.selectedCustomer)
             
        });
     }
@@ -51,6 +55,7 @@ selectedCustomer:any
     ngOnInit(): void {
         this.getVouchers();
         this.getCustomers();
+        
     }
 
     appId = localStorage.getItem("user_id");
@@ -131,7 +136,6 @@ selectedCustomer:any
     //update order.
     //table status to occupied.
     onLockSession(){
-        let customerAttrInfo = this.getCustomerId();
     if(this.sessionType === "Takeaway")
     {
         
@@ -155,9 +159,14 @@ selectedCustomer:any
             //add session to database
         this.tableSessionSvr.addSession(this.tableSession).subscribe((r: TableSession) => {
            //create new order
-        let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
-        od.customerRecordId = customerAttrInfo.rId, od.customerID = customerAttrInfo.custId,
+           console.log(this.rId);
+           let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
         od.channel = "In-Person";od.totalAmount = this.TotalAmount;od.tableSessionId = r.id; od.vatCharge = this.VatCharge;od.serviceCharge = this.ServiceCharge;
+        if(this.rId !== undefined && this.custId !== undefined)
+        {
+            od.customerRecordId = this.rId, od.customerID = this.custId;
+        }
+        
             //add order to database
         this.odSvr.addOrder(od).subscribe((or:Order) => {
                 //emit order to parent component
@@ -186,10 +195,9 @@ selectedCustomer:any
     })
     }
 
-    getCustomerId(){
-        let recordId = this.myInputRef.nativeElement.getAttribute('ng-reflect-ng-value');
-        let customerId = this.customers.find(c=>c.recordId == recordId)?.id
-        return {rId:recordId,custId:customerId};
+    getCustomerId(x:Event){
+        let customerId = <string>this.customers.find(c=>c.recordId == this.selectedCustomer)?.id
+        this.rId = this.selectedCustomer; this.custId = customerId;
     }
 
     onCharge(){
