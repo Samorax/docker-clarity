@@ -160,16 +160,13 @@ selectedCustomer:any
         od.channel = "In-Person";od.totalAmount = this.TotalAmount;od.tableSessionId = r.id; od.vatCharge = this.VatCharge;od.serviceCharge = this.ServiceCharge;
             //add order to database
         this.odSvr.addOrder(od).subscribe((or:Order) => {
-            console.log(or)
                 //emit order to parent component
         or.tableSession = r;
           //if there are items in cart, create order details and add to database.
                 if(this.CartItems.length >=1){
                     
-
                     or.orderDetails = [];
                     
-
                     this.CartItems.forEach(x => {
                         let cd:CartOrder = {name:x.name,count:x.count,price:x.unitPrice,applicationUserID:this.appId,orderId:or.orderID,cartOrderId:this.appId,dateCreated:new Date()};
                         this.cartOrderSVR.addCartOrder(cd).subscribe();
