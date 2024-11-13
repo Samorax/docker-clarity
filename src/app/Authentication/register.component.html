@@ -96,7 +96,7 @@
         <!--Stripe.js injects the Payment Element-->
       </div>
       <div class="clr-row">
-        <button id="button-text" class="btn btn-outline" #button (click)="onPaymentAuthorize($event)">
+        <button id="button-text" type="button" class="btn btn-outline" #button (click)="onPaymentAuthorize($event)">
           <!-- <div class="spinner hidden" id="spinner"></div> -->
           <span id="button-text">Authorize Payment</span>
         </button>
@@ -213,11 +213,8 @@
    -->
    <div class="clr-row">
    
-    <button type="submit" class="btn btn-primary" [disabled]="!registerForm.valid">Submit</button>
-    <div *ngIf="registeringUserInfo" class="clr-col">
-      <clr-spinner clrInline>Registering</clr-spinner>
-      <span>Registering</span>
-    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="!registerForm.valid" [clrLoading]="submitBtnState">Submit</button>
+    
     <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showRegistrationFeedback">
       <clr-alert-item>
         <span class="alert-text">Registration Successful!!</span>

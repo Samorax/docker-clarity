@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { AuthenticationService } from "../Services/AuthenticationService";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { AbstractControl, FormBuilder, FormGroup, NgForm, Validators } from "@angular/forms";
@@ -10,6 +10,7 @@ import '@cds/core/icon/register.js';
 import { ClarityIcons, infoCircleIconName,infoCircleIcon } from '@cds/core/icon';
 import { country } from "../Models/Country";
 import { environment } from "../../environment/environment";
+import { ClrLoadingState } from "@clr/angular";
 
 ClarityIcons.addIcons(infoCircleIcon);
 
@@ -17,7 +18,8 @@ ClarityIcons.addIcons(infoCircleIcon);
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl:'./register.component.css'
+  styleUrl:'./register.component.css',
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 
 export class registerComponent implements OnInit, AfterViewInit{
@@ -65,8 +67,9 @@ export class registerComponent implements OnInit, AfterViewInit{
   showRegistrationError: boolean = false;
   registeringUserInfo: boolean = false;
   stripeKey=environment.stripeTestKey
+  submitBtnState: ClrLoadingState = ClrLoadingState.DEFAULT;
   
-  constructor(private authenticationService: AuthenticationService,private stripeIntentService: paymentService, private formBUilder:FormBuilder ) { }
+  constructor(private authenticationService: AuthenticationService,private stripeIntentService: paymentService, private formBUilder:FormBuilder, private cd:ChangeDetectorRef ) { }
 
 
 
@@ -105,11 +108,12 @@ export class registerComponent implements OnInit, AfterViewInit{
 }
 
  // when authorise buton is clicked
-  onPaymentAuthorize(b:any){
-    b.preventDefault();
+  onPaymentAuthorize(b:any)
+  {
     this.stripe.createToken(this.paymentElement)
-    .then((c:any)=> {this.registerForm.get('paymentToken')?.setValue(c.token.id), this.showAuthorizePaymentFeedback = true})
-    .catch((er:Error)=>{ this.showAuthorizePaymentError = true; this.paymentErrorReason = er.message});}
+    .then((c:any)=> {this.registerForm.get('paymentToken')?.setValue(c.token.id); this.showAuthorizePaymentFeedback = true})
+    .catch((er:Error)=>{ this.showAuthorizePaymentError = true; this.paymentErrorReason = er.message});
+  }
   
   
   //load stripe form
@@ -141,8 +145,8 @@ export class registerComponent implements OnInit, AfterViewInit{
   }
 
   signUp() {
-    this.processing = true;
-    this.registeringUserInfo = true;
+    this.submitBtnState = ClrLoadingState.LOADING
+  
     let x = this.registerForm.value;
     
     let credentials: RegisterCredentials =
@@ -163,16 +167,23 @@ export class registerComponent implements OnInit, AfterViewInit{
   
     this.authenticationService.register(credentials).subscribe(x => 
       { 
+        
         this.showRegistrationFeedback = true;
-        this.registeringUserInfo = false;
+    
+        this.submitBtnState = ClrLoadingState.SUCCESS;
+        this.cd.detectChanges()
        
       }, (err:Error)=>{
-        this.registeringUserInfo = false;
+        
           this.showRegistrationError = true;
           this.registrationErrorReason = err.message;
+          this.submitBtnState = ClrLoadingState.DEFAULT;
+          this.cd.detectChanges();
       },()=>{ this.showRegistrationError = false;})
       
-  }
+      
+      
+  } 
 
 
 
