@@ -9,6 +9,7 @@ import { restockDialogComponent } from "./ReStockDialog.component";
 import { editStockDialogComponent } from "./EditStockDialog.component";
 import { ActivatedRoute } from "@angular/router";
 import { ClarityIcons, pencilIcon, plusIcon, recycleIcon, timesCircleIcon } from "@cds/core/icon";
+import { ClrLoadingState } from "@clr/angular";
 ClarityIcons.addIcons(timesCircleIcon,plusIcon,pencilIcon,recycleIcon)
 
 @Component({
@@ -28,14 +29,15 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
     products:Product[] = [];
 
     ngOnInit(): void {
-        this.stkService.getStocks().subscribe((s:any)=> {
-            this.elements = s.filter((d:any)=>d.isExpired !== true); 
+        this.activatedroute.data.subscribe((s:any)=> {
+            console.log(s.stocks);
+            this.elements = s.stocks.filter((d:any)=>d.isExpired !== true); 
             this.cd.detectChanges();
             this.productsService.getProducts().subscribe(p=>{
                 this.products = p;
-            })
-            });
-        };
+            }); 
+        })
+    }
         
     
 
@@ -63,6 +65,7 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
                 this.stkService.updateStock(<number>r.oldStock.id,r.oldStock).subscribe(y=>{
                     this.stkService.addStock(<Stock>r.newStock).subscribe()
                 });
+                this.reStkDialog.restockBtn = ClrLoadingState.SUCCESS;
                 this.reStkDialog.close();
             }
             

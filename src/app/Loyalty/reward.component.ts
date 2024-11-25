@@ -1,33 +1,31 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
-import { addLoyaltyDialogComponent } from "./addLoyaltyDialog.component";
+import { addLoyaltyDialogComponent } from "./addRewardDialog.component";
 import { Product } from "../Models/Product";
 import { Rewards } from "../Models/Rewards";
-import { ProductService } from "../Services/ProductService";
 import { RewardService } from "../Services/RewardService";
-import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
-import { editLoyaltyDialogComponent } from "./editLoyaltyDialog.component";
-import { deleteLoyaltyDialogComponent } from "./deleteLoyaltyDialog.component";
-import { Observable, of } from "rxjs";
+import { editLoyaltyDialogComponent } from "./editRewardDialog.component";
+import { deleteLoyaltyDialogComponent } from "./deleteRewardDialog.component";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
-import { FormBuilder, Validators } from "@angular/forms";
 import { announcementIcon, ClarityIcons, pencilIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
+import { ActivatedRoute } from "@angular/router";
 ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon,pencilIcon)
 
 @Component({
-    templateUrl:'./loyalty.component.html',
+    templateUrl:'./reward.component.html',
     selector:'app-loyalty',
     changeDetection:ChangeDetectionStrategy.OnPush
 })
 
-export class loyaltyComponent implements OnInit, AfterViewInit
+export class rewardComponent implements OnInit, AfterViewInit
 {
     selectedProducts:any = []
     selected:any = []
     redeemPts!:number
     vouchers!:voucher[];
     products!: Product[]
-    rewards!:Rewards[]
+    rewards:BehaviorSubject<any> = new BehaviorSubject<Rewards[]>([])
     reward:Rewards = new Rewards();
     @ViewChild(editLoyaltyDialogComponent) editLoyalty!: editLoyaltyDialogComponent;
     @ViewChild(addLoyaltyDialogComponent) addLoyalty!: addLoyaltyDialogComponent;
@@ -37,81 +35,72 @@ export class loyaltyComponent implements OnInit, AfterViewInit
     
     
 
-    constructor(private _productSvr: ProductService, private _voucherSvr: voucherService,private sanitizer: DomSanitizer,private _formBuilder: FormBuilder,private cd:ChangeDetectorRef,
+    constructor(private activatedRoute:ActivatedRoute,private sanitizer: DomSanitizer,private cd:ChangeDetectorRef,
          private _rewardsSvr:RewardService){}
 
     ngAfterViewInit(): void {
         this.addLoyalty.isOk.subscribe(r=>{
             this._rewardsSvr.addRewards(r).subscribe((r:any)=>{
                 this.convertImgByte(r).subscribe(r=>{
-                    this._rewardsSvr.rewardsCache.push(r);
+                    this.rewards.next([...this.rewards.getValue(),r])
                 })
-            },(err)=>{},()=> this.addLoyalty.close());
+                this.addLoyalty.close()
+            },(err)=>{});
             this.cd.detectChanges()
         });
 
         this.editLoyalty.isOk.subscribe((r:FormData)=>{
             let id = r.get('rewardsId');
-        
             this._rewardsSvr.updateRewards(id,r).subscribe(()=>{
-
-            },(er)=>console.log(er),()=>this.editLoyalty.close())
+                //this.rewards.getValue().findIndex(re=>re.rewardsId === id)
+            },(er)=>console.log(er))
+            this.editLoyalty.close()
         });
 
         this.delLoyalty.isOk.subscribe(r=>{
             r.forEach(r=> {
                 this._rewardsSvr.deleteRewards(r.rewardsId).subscribe(()=>{
-                    let index = this.rewards.indexOf(r);
-                    this._rewardsSvr.rewardsCache.splice(index,1);
+                    let currentArray = this.rewards.getValue().filter((re:Rewards)=>re.rewardsId !== r.rewardsId);
+                    this.rewards.next(currentArray)
 
-                },(er)=> console.log(er),()=>this.delLoyalty.close())
+                },(er)=> console.log(er))
             })
+            this.delLoyalty.close()
             this.cd.detectChanges()
         });
     }
 
     ngOnInit(): void {
-        this.getVouchers();
+    
         this.getProductswithLoyaltyPoints();
         this.getRewards();
 
     }
 
     getProductswithLoyaltyPoints(){
-        let cache = this._productSvr.productssCache;
-        if(cache.length != 0){
-            this.products = cache.filter(p=> p.loyaltyPoints != 0);
-        }else{
-            this._productSvr.getProducts().subscribe(p=>{
-                this.products = p.filter(p=>p.loyaltyPoints != 0)
+
+            this.activatedRoute.data.subscribe((p:any)=>{
+                this.products = p.products.filter((pr:Product)=>pr.loyaltyPoints != 0)
             })
         }
-    }
+    
 
     getRewards(){
-       
-            this._rewardsSvr.getRewards().subscribe(r=>{
-                r.forEach(rt=>{
+        let n:Rewards[] = [];
+            this.activatedRoute.data.subscribe((r:any)=>{
+                let result = r.rewards.filter((re:Rewards)=>re.isDeleted === false);
+                result.forEach((rt:any)=>{
                     this.convertImgByte(rt).subscribe(rx=>{
-                        this.rewards = [];
-                        this.rewards.push(rx);
-                        this._rewardsSvr.rewardsCache.push(rx);
+                       n.push(rx);
                     })
                 })
+                this.rewards.next(n);
                 this.cd.detectChanges();
             })
         
     }
 
-    getVouchers(){
-            this._voucherSvr.getVouchers().subscribe((v:any) => 
-            {
-                this.vouchers = v;
-                this._voucherSvr.getVoucherCache = v;
-                this.currencySymbol = localStorage.getItem('currency_iso_code');
-            });
-        
-    }
+    
 
     onBroadcast(){
         

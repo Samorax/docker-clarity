@@ -2,7 +2,7 @@ import { Product } from "./Product"
 
 export class Stock {
   id?:number
-  productId!:number
+  productID!:number
   product?:Product
   initialUnits!:number
   remainingUnits!:number

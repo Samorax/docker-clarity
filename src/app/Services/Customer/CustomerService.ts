@@ -1,9 +1,9 @@
 import { HttpHeaders, HttpErrorResponse, HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { throwError, retry, catchError } from "rxjs";
-import { Customer } from "../Models/Customer";
-import { AppComponent } from "../app.component";
-import { environment } from "../../environment/environment";
+import { Customer } from "../../Models/Customer";
+import { AppComponent } from "../../app.component";
+import { environment } from "../../../environment/environment";
 
 @Injectable({
     providedIn:'root'

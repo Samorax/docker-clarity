@@ -6,7 +6,7 @@ import { paymentService } from "../Services/PaymentService";
 
 @Component({
     selector:'edit-loyalty',
-    templateUrl:'./editLoyaltyDialog.component.html'
+    templateUrl:'./editRewardDialog.component.html'
 })
 
 export class editLoyaltyDialogComponent implements OnInit {

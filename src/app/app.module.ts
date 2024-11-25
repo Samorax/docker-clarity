@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule, inject, isDevMode } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideRouter, RouterModule, withViewTransitions } from '@angular/router';
@@ -28,7 +28,7 @@ import { OrderAddComponent } from './Order/OrderAdd.component';
 import { OrderCartComponent } from './Order/OrderCart.component';
 import { DeleteCustomerDialogComponent } from './Customer/DeleteCustomerDialog.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { CustomerService } from './Services/CustomerService';
+import { CustomerService } from './Services/Customer/CustomerService';
 import { loginComponent } from './Authentication/login.component';
 import { AuthenticationService } from './Services/AuthenticationService';
 import { registerComponent } from './Authentication/register.component';
@@ -37,19 +37,18 @@ import { logOutComponent } from './Authentication/logout.component';
 import { loginMenuComponent } from './Authentication/loginmenu.component';
 import { authGuard } from './Authentication/auth.guard';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AppRoutingModule } from './app-routing.module';
 import { indexComponent } from './Index/indexComponent';
 import { SettingsComponent } from './Settings/settings.component';
-import { voucherComponent } from './Reward/voucher.component';
+import { voucherComponent } from './Loyalty/voucher.component';
 import { voucherService } from './Services/VoucherService';
-import { addVoucherDialogComponent } from './Reward/addVoucherDialog.component';
-import { loyaltyComponent } from './Reward/loyalty.component';
-import { addLoyaltyDialogComponent } from './Reward/addLoyaltyDialog.component';
+import { addVoucherDialogComponent } from './Loyalty/addVoucherDialog.component';
+import {  rewardComponent } from './Loyalty/reward.component';
+import { addLoyaltyDialogComponent } from './Loyalty/addRewardDialog.component';
 import { RewardService } from './Services/RewardService';
-import { editLoyaltyDialogComponent } from './Reward/editLoyaltyDialog.component';
-import { deleteLoyaltyDialogComponent } from './Reward/deleteLoyaltyDialog.component';
-import { editVoucherDialogComponent } from './Reward/editVoucherDialog.component';
-import { deleteVoucherDialogComponent } from './Reward/deleteVoucherDialog.component';
+import { editLoyaltyDialogComponent } from './Loyalty/editRewardDialog.component';
+import { deleteLoyaltyDialogComponent } from './Loyalty/deleteRewardDialog.component';
+import { editVoucherDialogComponent } from './Loyalty/editVoucherDialog.component';
+import { deleteVoucherDialogComponent } from './Loyalty/deleteVoucherDialog.component';
 import { tableComponent } from './Table/table.component';
 import { TableService } from './Services/TableService';
 import { addTableDialogComponent } from './Table/addTableDialog.component';
@@ -63,13 +62,13 @@ import { delTableDialogComponent } from './Table/delTableDialog.component';
 import { delWaiterComponent } from './Waiter/delWaiterDialog.component';
 import { editWaiterComponent } from './Waiter/editWaiterDialog.component';
 import { SmsService } from './Services/SmsService';
-import { broadcastDialogComponent } from './Reward/broadcastDialog.component';
+import { broadcastDialogComponent } from './Loyalty/broadcastDialog.component';
 import { OrderCartService } from './Services/OrderCartService';
 import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserModule } from '@angular/platform-browser';
 import { OrderSmsComponent } from './Order/OrderSms.component';
-import { VoucherSmsComponent } from './Reward/voucherSms.component';
+import { VoucherSmsComponent } from './Loyalty/voucherSms.component';
 import { ToastrModule, provideToastr } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { operatingDaysComponent } from './Settings/operatingDaysDialog.component';
@@ -90,6 +89,12 @@ import { editStockDialogComponent } from './Inventory/EditStockDialog.component'
 import { stockResolver } from './Services/Stock/StockResolver';
 import { productResolver } from './Services/ProductResolver';
 import { ClarityIcons } from '@cds/core/icon';
+import { orderResolver } from './Services/OrderResolver';
+import { customerResolver } from './Services/Customer/CustomerResolver';
+import { voucherResolver } from './Services/VoucherResolver';
+import { rewardResolver } from './Services/RewardResolver';
+import { appUserResolver } from './Services/AppUserResolver';
+import { LoyaltyOverviewComponent } from './Loyalty/overviewcomponent';
 
 
 @NgModule({
@@ -130,7 +135,7 @@ import { ClarityIcons } from '@cds/core/icon';
     addLoyaltyDialogComponent,
     editLoyaltyDialogComponent,
     deleteLoyaltyDialogComponent,
-    loyaltyComponent,
+    rewardComponent,
     tableComponent,
     addTableDialogComponent,
     waiterComponent,
@@ -162,7 +167,6 @@ import { ClarityIcons } from '@cds/core/icon';
     ClrSpinnerModule,
     ClrButtonModule,
     ClrLoadingModule,
-    AppRoutingModule,
     FormsModule,
     BrowserModule,
     CommonModule,
@@ -180,18 +184,19 @@ import { ClarityIcons } from '@cds/core/icon';
       { path: 'logout', component: logOutComponent, pathMatch:'full' },
       { path: 'home', component: HomeComponent, canActivate:[authGuard],
     children:[
-      {path:'inventory/overview', component:InventoryOverviewComponent},
-      {path:'inventory/catalog', component:InventoryCatalogComponent},
-      {path:'inventory/stocks',component:InventoryStockComponent},
-      {path:'orders/overview', component: OrderOverviewComponent}, 
-      {path:'orders/list', component: OrderListComponent},
-      {path:'customers/overview',component:CustomerOverviewComponent}, 
-      {path:'customers/list', component: CustomerListComponent},
+      {path:'inventory/overview', component:InventoryOverviewComponent,resolve:{orders:orderResolver,products:productResolver,stocks:stockResolver}},
+      {path:'inventory/catalog', component:InventoryCatalogComponent,resolve:{products:productResolver}},
+      {path:'inventory/stocks',component:InventoryStockComponent,resolve:{stocks:stockResolver}},
+      {path:'orders/overview', component: OrderOverviewComponent,resolve:{orders:orderResolver,customers:customerResolver}}, 
+      {path:'orders/list', component: OrderListComponent,resolve:{orders:orderResolver}},
+      {path:'customers/overview',component:CustomerOverviewComponent,resolve:{customers:customerResolver,orders:orderResolver}}, 
+      {path:'customers/list', component: CustomerListComponent,resolve:{customers:customerResolver}},
       {path:'tables/list', component:tableComponent},
       {path:'waiters/list',component:waiterComponent},
-      {path:'vouchers',component: voucherComponent},
-      {path:'loyaltyPoints',component:loyaltyComponent},
-      {path:'settings', component:SettingsComponent}] },
+      {path:'loyalty/overview',component:LoyaltyOverviewComponent,resolve:{}},
+      {path:'loyalty/vouchers',component: voucherComponent,resolve:{vouchers:voucherResolver}},
+      {path:'loyalty/rewards',component:rewardComponent,resolve:{rewards:rewardResolver}},
+      {path:'settings', component:SettingsComponent,resolve:{appUser:appUserResolver}}] },
       {path: '**', component:PageNotFoundComponent, pathMatch:'full'}
     ],{enableViewTransitions:true}),
     ServiceWorkerModule.register('ngsw-worker.js', {
@@ -202,7 +207,7 @@ import { ClarityIcons } from '@cds/core/icon';
     }),
   ],
   providers: [
-    SignalrService, ProductService, OrderService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,provideToastr(),
+    SignalrService, CustomerService,voucherService, RewardService, TableService, TableSessionService, SmsService,OrderCartService,provideToastr(),
      AuthenticationService,{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap:[AppComponent]
 })

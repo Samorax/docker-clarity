@@ -10,7 +10,7 @@ import { ProductService } from "./ProductService";
 
 export class productResolver implements Resolve<Product[]>
 {
-    constructor(private productService:ProductService){}
+    productService = inject(ProductService)
     
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):  Observable<Product[]> {
         return this.productService.getProducts();

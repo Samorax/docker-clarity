@@ -54,9 +54,9 @@
             <div>Waiter:{{element.tableSession.waiter.name}}</div>
             <div>Table:{{element.tableSession.table.name}}</div>
           </div>
-          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms">Send Message</button>
+          <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms" *ngIf="element.channel !== 'In-Person'">Send Message</button>
         </div>
-        <div class="clr-col">
+        <div class="clr-col" *ngIf="element.channel !== 'In-Person'">
           <h6>Delivery Address</h6>
           <p>
             {{element.deliveryAddress}}
@@ -90,7 +90,7 @@
         </tfoot>
         </table>
 
-        <div *ngIf="element.channel !== 'On-Site' && element.orderStatus !== 'Completed'">
+        <div *ngIf="element.channel !== 'In-Person'">
           <div>
           <clr-select-container *ngIf="element.payment !== 'succeeded'">
             <label>Select Status</label>

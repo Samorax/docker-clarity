@@ -28,7 +28,7 @@
         <clr-dg-column>Units</clr-dg-column>
        
         <clr-dg-placeholder>We couldn't find any Rewards. Add Rewards</clr-dg-placeholder>
-        <clr-dg-row *clrDgItems="let element of rewards" [clrDgItem]="element">
+        <clr-dg-row *clrDgItems="let element of rewards |async" [clrDgItem]="element">
           <clr-dg-cell>{{element.title}}</clr-dg-cell>
           <clr-dg-cell>{{element.redeemPoint}}</clr-dg-cell>
           <clr-dg-cell>{{element.createdDate| date}}</clr-dg-cell>

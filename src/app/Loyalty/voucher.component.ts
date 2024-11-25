@@ -2,19 +2,21 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from "
 import { voucher } from "../Models/Voucher";
 import { voucherService } from "../Services/VoucherService";
 import { addVoucherDialogComponent } from "./addVoucherDialog.component";
-import { editLoyaltyDialogComponent } from "./editLoyaltyDialog.component";
+import { editLoyaltyDialogComponent } from "./editRewardDialog.component";
 import { deleteVoucherDialogComponent } from "./deleteVoucherDialog.component";
 import { editVoucherDialogComponent } from "./editVoucherDialog.component";
 import { broadcastDialogComponent } from "./broadcastDialog.component";
 import { SmsService } from "../Services/SmsService";
 import { VoucherSmsComponent } from "./voucherSms.component";
-import { CustomerService } from "../Services/CustomerService";
+import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { log } from "console";
 import { ChangeDetectionStrategy } from "@angular/core";
 import { announcementIcon, ClarityIcons, plusCircleIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
 import { ClrLoadingState } from "@clr/angular";
+import { ActivatedRoute } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
 ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon)
 
 @Component({
@@ -24,7 +26,7 @@ ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon)
 })
 
 export class voucherComponent implements OnInit, AfterViewInit{
-    vouchers!:voucher[];
+    vouchers:BehaviorSubject<any> = new BehaviorSubject<voucher[]>([]);
     voucher: voucher = new voucher();
     selected:any = [];
     currencySymbol:any;
@@ -37,7 +39,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(VoucherSmsComponent)bDC!:VoucherSmsComponent;
     customers!: Customer[];
 
-    constructor(private _voucherSvr: voucherService, private smsSVR: SmsService, private custSVR: CustomerService,private _smsActivator:SmSActivatorService,private cd:ChangeDetectorRef){}
+    constructor(private  activatedRoute:ActivatedRoute, private _voucherSvr:voucherService, private smsSVR: SmsService,private _smsActivator:SmSActivatorService,private cd:ChangeDetectorRef){}
 
     ngAfterViewInit(): void {
         this._smsActivator.getState.subscribe(a=>{this.activateBroadcast = a;});
@@ -51,24 +53,29 @@ export class voucherComponent implements OnInit, AfterViewInit{
 
         this.addVDC.isOk.subscribe((v:any)=>{
             this._voucherSvr.addVoucher(v).subscribe((v:any)=>{
-                this.addVDC.addButtonActivity = ClrLoadingState.DEFAULT
-                this.addVDC.close();
+                
+               this.vouchers.next([...this.vouchers.getValue(),v])
             },(err)=>console.log(err));
+            this.addVDC.close();
         });
 
         this.editVDC.isOk.subscribe(v=>{
             this._voucherSvr.updateVoucher(v.voucherId,v).subscribe(()=>{
-                this.editVDC.close()
+                let currentArray:voucher[] = this.vouchers.getValue();
+                let index = currentArray.findIndex(v=>v.voucherId === v.voucherId);
+                currentArray[index] = v;
+              this.vouchers.next([...currentArray])
             },(er)=>console.log(er));
+            this.editVDC.close()
         });
 
         this.delVDC.isOk.subscribe(v=>{
             v.forEach(v=>{
                 this._voucherSvr.deleteVoucher(v.voucherId).subscribe(()=>{
-                    let index = this._voucherSvr.getVoucherCache.indexOf(v);
-                    this._voucherSvr.getVoucherCache.splice(index,1);
-                    this.delVDC.close();
+                let latest = this.vouchers.getValue().filter((vo:voucher)=>vo.voucherId !== v.voucherId);
+                this.vouchers.next([...latest])
                 },(er)=>console.log(er))
+                this.delVDC.close();
             })
             
         })
@@ -82,9 +89,9 @@ export class voucherComponent implements OnInit, AfterViewInit{
     }
 
     getVouchers(){
-            this._voucherSvr.getVouchers().subscribe((v:any) => 
+            this.activatedRoute.data.subscribe((v:any) => 
             {
-                this.vouchers = v;
+                this.vouchers.next(v.vouchers.filter((vr:voucher)=>vr.isDeleted !== true));
                 this.cd.detectChanges();
                 this.currencySymbol = localStorage.getItem('currency_iso_code');
             });
@@ -92,7 +99,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
     }
 
     getCustomers(){
-        this.custSVR.getCustomers().subscribe(cs=> this.customers = cs)
+        this.activatedRoute.data.subscribe((cs:any)=> this.customers = cs.customers)
     }
 
     onAdd(){

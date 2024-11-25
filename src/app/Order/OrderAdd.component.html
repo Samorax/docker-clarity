@@ -32,14 +32,15 @@
                 <div class="clr-col-8">
                     <h3>Select Product(s)</h3>
                     <div style="padding: 5px; height: 450px;">
-                      <div class="card clickable" *ngFor='let product of products'  (click)="onSelect(product)" class="clr-col-lg-3" style="display: inline; float: left;"> 
+                      <div class="card clickable" *ngFor='let stock of stocks$ | async'  (click)="onSelect(stock)" class="clr-col-lg-3" style="display: inline; float: left;"> 
                         <div class="card-media-block wrap">
                           <div class="card-media-image">
-                            <img [src]="product.photosUrl" alt="..."  class="card-img" />
+                            <img [src]="stock.product?.photosUrl" alt="..."  class="card-img" style="height: 100%;width: 100%;"/>
                           </div>
                           <div class="card-media-description">
-                            <div class="card-media-title">{{product.name}}</div>
-                            <div class="card-media-text">{{product.price | currency: currencySymbol}}</div>
+                            <div class="card-media-title">{{stock.product?.name}}</div>
+                            <div class="card-media-text">{{stock.product?.price | currency: currencySymbol}}</div>
+                            <div class="card-media-text alert-danger" *ngIf="stock.remainingUnits === 0">Out-Of-Stock</div>
                           </div>
                           
                         </div>
@@ -52,7 +53,7 @@
                       </li> -->
                     </div>
               <div class="clr-col-4">
-                <order-cart [Products]="selected" [lastorderId]="lastorderId" [SubTotal]="totalAmount" [CartItems]="cartitems" [tableSession]="tableSession" (cart)="orda" [table]="table"  [sessionType]="sessionType"></order-cart>
+                <order-cart [Products]="selected" [stocks]="stocks" [lastorderId]="lastorderId" [SubTotal]="totalAmount" [CartItems]="cartitems" [tableSession]="tableSession" (cart)="orda" [table]="table"  [sessionType]="sessionType"></order-cart>
             </div>
             </div>
            

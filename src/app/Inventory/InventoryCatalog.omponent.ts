@@ -26,13 +26,22 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
   feedBackMessage:string = '';
 
   currencySymbol:any = this._paymentSvr.currencySymbol;
-  constructor(private activatedRoute:ActivatedRoute, private productService:ProductService, private cd: ChangeDetectorRef, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
+  route = inject(ActivatedRoute)
+  constructor( private productService:ProductService, private cd: ChangeDetectorRef, private sanitizer: DomSanitizer, private _paymentSvr: paymentService) {
    }
   
-  dbService = inject(rxDbService)
+  
   
   ngOnInit(): void {
-    this.loadInit();
+    this.route.data.subscribe((p:any)=>{
+       let d = p.products.filter((pr:any)=>pr.isDeleted === false);
+      d.forEach((dr:any)=>{
+        this.convertImgByte(dr).subscribe(p=>{
+          this.elements.push(p);
+          this.cd.detectChanges();
+        });
+      }) 
+  }); 
 
   }
 
@@ -132,19 +141,7 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
     }
 
   loadInit(){
-       /* this.dbService.createDb();
-       this.dbService.getProducts(); */
-
-    
-      this.productService.getProducts().subscribe((products)=>{
-        let d = products.filter((pr:any)=>pr.isDeleted === false);
-        d.forEach((dr:any)=>{
-          this.convertImgByte(dr).subscribe(p=>{
-            this.elements.push(p);
-            this.cd.detectChanges();
-          });
-        })
-    }); 
+   
 
 
   }

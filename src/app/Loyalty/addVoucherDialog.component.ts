@@ -40,7 +40,7 @@ export class addVoucherDialogComponent{
     }
 
     onSubmit(){
-        this.addButtonActivity = ClrLoadingState.LOADING;
+        
         let vc:any = this.voucherForm.value;
         vc.voucherCreationDate = new Date();
         vc.voucherExpirationDate = new Date(vc.voucherExpirationDate);
@@ -51,6 +51,6 @@ export class addVoucherDialogComponent{
         } catch (error) {
             console.log(error)
         }
-       
+    
     }
 }

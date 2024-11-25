@@ -10,75 +10,68 @@ import { StockVariance } from "./StockVariance.Interface";
 
 export class StockVarianceService {
 
-   stkSVR = inject(stockService)
-   expectedRevenue: number = 0
-   actualRevenue: number = 0
-   stocks!:Stock[] 
-
-   constructor(){
-        this.stkSVR.getStocks().subscribe(r=>{
-            this.stocks = r;
-        });
-   }
-
    expectedRevenueCalc(stK:Stock){
-    return (stK.initialUnits * stK.product?.price)
+    return  Math.round(stK.initialUnits * stK.product?.price)
    }
 
    actualRevenueCalc(stk:Stock){
-    return (<number>(stk.initialUnits - stk.remainingUnits) * stk.product?.price)
+    let sold = stk.initialUnits - stk.remainingUnits
+    return Math.round(sold * stk.product?.price);
    }
 
-   getMonthVariance(year:string, month: number):Observable<StockVariance[]>{
-        let monthStocks = this.stocks.filter(s=>new Date(s.stockedDate).getMonth() === month && new Date(s.stockedDate).getFullYear() === Number(year))
+   getMonthVariance(year:string, month: number,stocks:Stock[]):Observable<StockVariance>{
+        let monthStocks = stocks.filter(s=>new Date(s.stockedDate).getMonth() === month && new Date(s.stockedDate).getFullYear() === Number(year))
         let monthLength = new Date(Number(year),month,0).getDate();
-        let monthData: StockVariance[] = new Array<StockVariance>(monthLength).fill({actualRevenue:0,expectedRevenue:0,date:new Date()});
+        let monthDataExpRevenue: number[] = new Array<number>(monthLength).fill(0);
+        let monthDataActRevenue: number[] = new Array<number>(monthLength).fill(0);
         let days:number[] = []
 
         for (let i = 0; i < monthLength; i++) {
             days.push(i+1)          
         }
 
-        let result: BehaviorSubject<StockVariance[]> = new BehaviorSubject<StockVariance[]>(monthData);
+        let result: BehaviorSubject<StockVariance> = new BehaviorSubject<StockVariance>({actualRevenue:[],expectedRevenue:[]});
         if(monthStocks.length !== 0){
             monthStocks.forEach(stk=>{
                 let day = new Date(stk.stockedDate).getDate()
                 if(days.includes(day)){
-                    monthData[day-1] = {actualRevenue: +this.actualRevenueCalc(stk),expectedRevenue:+this.expectedRevenueCalc(stk),date:stk.stockedDate};       
+                    monthDataExpRevenue[day-1] += this.actualRevenueCalc(stk);
+                    monthDataActRevenue[day-1] += this.expectedRevenueCalc(stk);
+                  
                 }
             })
            
         }
         
-        result.next(monthData);
+
+        result.next({actualRevenue:monthDataActRevenue,expectedRevenue:monthDataExpRevenue});
         return result.asObservable();
    }
 
-   getYearVariance(year:string):Observable<StockVariance[]>{
+   getYearVariance(year:string,stocks:Stock[]):Observable<StockVariance>{
     let yearLength = 12;
-    let yearData: StockVariance[] = new Array<StockVariance>(yearLength).fill({expectedRevenue:0,actualRevenue:0,date:new Date()});
+    let yearDataExRevenue: number[] = new Array<number>(yearLength).fill(0);
+    let yearActRevenue:number[] = new Array<number>(yearLength).fill(0);
 
-    let result: BehaviorSubject<StockVariance[]> = new BehaviorSubject<StockVariance[]>(yearData);
+    let result: BehaviorSubject<StockVariance> = new BehaviorSubject<StockVariance>({actualRevenue:[],expectedRevenue:[]});
     let months:number[] = []
 
-    for (let i = 0; i < yearLength; i++) {
-              months.push(i)
-    }
+  
+    let yearStocks = stocks.filter(s=>new Date(s.stockedDate).getFullYear() === Number(year))
+    
 
-    if(this.stocks.length !== 0){
-
-        let yearStocks = this.stocks.filter(s=>new Date(s.stockedDate).getFullYear() === Number(year))
-        
         if(yearStocks.length !== 0){
+    
             yearStocks.forEach(stk=>{
                 let month = new Date(stk.stockedDate).getMonth();
-                if(months.includes(month)){
-                    yearData[month] = {actualRevenue: +this.actualRevenueCalc(stk), expectedRevenue: +this.expectedRevenueCalc(stk),date:new Date(stk.stockedDate)};
-                }
-            })           
-            } 
+                
+                yearDataExRevenue[month] += this.expectedRevenueCalc(stk);
+                yearActRevenue[month] += this.actualRevenueCalc(stk);
+            
+            } )
         }
-        result.next(yearData);
+        
+        result.next({actualRevenue:yearActRevenue,expectedRevenue:yearDataExRevenue});
         return result.asObservable()
 
    }

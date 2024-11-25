@@ -33,7 +33,7 @@
       <clr-dg-cell>{{element.product?.name}}</clr-dg-cell>
       <clr-dg-cell>{{element.initialUnits}}</clr-dg-cell>
       <clr-dg-cell>{{element.remainingUnits}}</clr-dg-cell>
-      <clr-dg-cell>{{element.soldUnits}}</clr-dg-cell>
+      <clr-dg-cell>{{element.initialUnits - element.remainingUnits}}</clr-dg-cell>
       <clr-dg-cell>{{element.stockedDate | date:'medium'}}</clr-dg-cell>
     </clr-dg-row>
     <clr-dg-footer>

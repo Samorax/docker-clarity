@@ -11,4 +11,5 @@ export class Rewards
     applicationUserID!:any
     rewardImage:any
     units!:number
+    isDeleted!: boolean
 }

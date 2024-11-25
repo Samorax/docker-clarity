@@ -9,7 +9,7 @@ import { environment } from "../../environment/environment";
   providedIn:"root"
 })
 export class OrderService {
-  ordersCache: Order[] = [];
+  
   constructor(private _httpClient: HttpClient) { }
   baseUrl = environment.apiBaseUrl+"api/orders/"
 

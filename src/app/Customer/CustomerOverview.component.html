@@ -3,45 +3,48 @@
 <br>
 <div class="label label-green">
     <span class="text">Registered customers</span>
-    <span class="badge">{{totalRegisteredCustomers}}</span>
+    <span class="badge">{{totalRegisteredCustomers|async}}</span>
 </div>
 <div class="label label-green">
     <span class="text">Birthdays this month</span>
-    <span class="badge">{{totalMonthBirthdays}}</span>
+    <span class="badge">{{totalMonthBirthdays|async}}</span>
 </div>
 <div class="label label-green">
     <span class="text">Repeat customers</span>
-    <span class="badge">{{totalRepeatCustomers}}</span>
+    <span class="badge">{{totalRepeatCustomers|async}}</span>
 </div>
 <div class="label label-purple">
     <span class="text">High Spenders </span>
-    <span class="badge">{{totalHighSpenders}}</span>
+    <span class="badge">{{totalHighSpenders|async}}</span>
 </div>
 
-<div class="clr-row clr-no-gutters">
-    <div class="clr-col-6">
-    <div class="card">
-            <div class="card-block">
-                <div  echarts [options]="WRepeatChartOption"></div>
+
+    <div class="clr-row clr-no-gutters">
+        <div class="clr-col-6">
+            <div class="card">
+                    <div class="card-block">
+                        <div  echarts [options]="WRepeatChartOption |async"></div>
+                    </div>
+                </div>
             </div>
-        </div>
+               <div class="clr-col-6">
+                <div class="card">
+                    <div class="card-block">
+                        <div echarts [options]="gPieChart | async "></div>
+                    </div>
+                </div>
+               </div>
     </div>
-       <div class="clr-col-3">
-        <div class="card">
-            <div class="card-block">
-             
-                <div  echarts [options]="rPieChart"></div>
+    <div class="clr-row">
+        <div class="clr-col">
+            <div class="card">
+                <div class="card-block">
+                    <div  echarts [options]="AverageSpendingsChart | async"></div>
+                </div>
             </div>
-        </div>
-       </div>
-       <div class="clr-col-3">
-        <div class="card">
-            <div class="card-block">
-               
-                <div echarts [options]="gPieChart"></div>
-            </div>
-        </div>
-       </div>
+           </div>
     </div>
+       
+
 </div>
         

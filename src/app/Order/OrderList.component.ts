@@ -13,7 +13,7 @@ import { TableService } from "../Services/TableService";
 import { WaiterService } from "../Services/WaiterService";
 import { OrderInSessionEditComponent } from "./OrderInSessionEdit.Component";
 import { OrderCartComponent } from "./OrderCart.component";
-import { CustomerService } from "../Services/CustomerService";
+import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
 import { ProductService } from "../Services/ProductService";
 import { voucherService } from "../Services/VoucherService";
@@ -27,6 +27,7 @@ import { OrderReconcileComponent } from "./OrderReconcile.component";
 import { BehaviorSubject, of } from "rxjs";
 import { stockService } from "../Services/Stock/StockService";
 import { ClarityIcons, eraserIcon, shrinkIcon } from "@cds/core/icon";
+import { ActivatedRoute } from "@angular/router";
 ClarityIcons.addIcons(eraserIcon,shrinkIcon)
 
 
@@ -82,7 +83,7 @@ this.reconcileOrderModal.open();
 
   constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,private cd:ChangeDetectorRef, private stkSVR:stockService,
     private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService, private _smsActivator:SmSActivatorService,
-    private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService) {
+    private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService, private activatedRoute:ActivatedRoute) {
 
   }
     ngAfterViewInit(): void {
@@ -160,10 +161,8 @@ this.reconcileOrderModal.open();
 
 
     ngOnInit(): void {
-      
-        this.orderService.getOrders().subscribe(ord => {
-          this.orders = ord.filter(o=>o.isDeleted === false);
-
+      this.activatedRoute.data.subscribe((o:any)=>{
+          this.orders = o.orders.filter((o:any)=>o.isDeleted === false);
             //index is 0 because the list is in ascending order.
             //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
             this.lastId = this.orders[0].orderID;
@@ -244,10 +243,9 @@ this.reconcileOrderModal.open();
           this.cd.detectChanges()
         },(er)=>
         {x.paymentFeedback = 'This order cannot be approved. Either the Total value is 0 or it has already been charged.';
-        console.log(er)
+        
         },()=> {
-          let o = this.orderService.ordersCache.findIndex(o=>o.orderID === x.orderID);
-          this.orderService.ordersCache[o]=x;
+          
           this.orderService.updateOrder(x.orderID,x).subscribe();
         });
       }else if(x.orderStatus === 'Approved'){
@@ -302,8 +300,7 @@ this.reconcileOrderModal.open();
           console.log(order);
           this.custSVR.updateCustomer(order.customerRecordId,c).subscribe(); 
           });
-        let o = this.orderService.ordersCache.findIndex(o=>o.orderID === order.orderID);
-        this.orderService.ordersCache[o]=order;
+    
         
       }
 
@@ -319,7 +316,7 @@ this.reconcileOrderModal.open();
         x.opened = true;
         this.orderService.updateOrder(x.orderID,x).subscribe(()=>{
           this.orderService.getOrders().subscribe((o:Order[])=>{
-            this.orderService.ordersCache = o;
+
           })
         })
       }

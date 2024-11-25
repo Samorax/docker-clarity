@@ -11,6 +11,7 @@ export class voucher{
     public valueType!:voucherValueType
     public keyword!:string
     applicationUserID:any
+    isDeleted!: boolean
 }
 
 export enum voucherValueType

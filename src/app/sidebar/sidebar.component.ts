@@ -1,4 +1,6 @@
 import { Component } from "@angular/core";
+import { ClarityIcons, heartIcon } from "@cds/core/icon";
+ClarityIcons.addIcons(heartIcon)
 
 @Component({
   selector: 'app-sidebar',

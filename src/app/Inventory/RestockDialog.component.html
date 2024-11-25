@@ -51,7 +51,7 @@
   
           <div class="modal-footer" clrModalActions>
             <button class="btn btn-outline" (click)="showAddStockForm=false" >Cancel</button>
-            <button class="btn btn-primary" [disabled]="!addStockForm.valid">OK</button>
+            <button class="btn btn-primary" [disabled]="!addStockForm.valid" [clrLoading]="restockBtn">OK</button>
           </div>
         </form>
   </div>

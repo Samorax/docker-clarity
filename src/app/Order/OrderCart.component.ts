@@ -12,16 +12,21 @@ import { OrderService } from "../Services/OrderService";
 import { TableService } from "../Services/TableService";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
-import { Observable, of } from "rxjs";
+import { BehaviorSubject, first, Observable, of } from "rxjs";
 import { OrderCartService } from "../Services/OrderCartService";
 import { ClarityIcons, timesIcon } from "@cds/core/icon";
-import { CustomerService } from "../Services/CustomerService";
+import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
+import { ClrLoading, ClrLoadingState } from "@clr/angular";
+import { Stock } from "../Models/Stock";
+import { stockService } from "../Services/Stock/StockService";
+import { appUserService } from "../Services/AppUserService";
 ClarityIcons.addIcons(timesIcon)
 
 @Component({
     selector:'order-cart',
     templateUrl:'./OrderCart.component.html',
+    styleUrl:'./OrderCart.component.css'
     
 })
 
@@ -30,31 +35,39 @@ selectedOption: any;
 selectedCustomer:any
     custId!: string;
     rId: any;
+    vat:any;
+    sCharge:any
 
 
 
-    constructor(private tableSessionSvr: TableSessionService,
+    constructor(private tableSessionSvr: TableSessionService,private stkSvr:stockService, private appUserSvr:appUserService,
         private orderDetailSvr:OrderDetailService,
          private _voucherSvr:voucherService, private odSvr:OrderService, private tableSvr: TableService,private customerSvr:CustomerService,
         private cartOrderSVR: OrderCartService){
             
          }
     ngAfterViewInit(): void {
-       this.SubTotal.subscribe(s=>{
-            let vat:any = localStorage.getItem('vatCharge');
-            let sCharge:any = localStorage.getItem('serviceCharge');
-            this.VatCharge = (vat/100)*s;
-            this.ServiceCharge = (sCharge/100)*s;
-            this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
-
-            console.log(this.selectedCustomer)
+        this.appUserSvr.getAppUserInfo().subscribe(r=>
+            {
+                this.vat = r.vatCharge;
+                this.sCharge = r.serviceCharge;
+                this.SubTotal.subscribe(s=>{
+                    this.VatCharge.next((this.vat/100)*s);
+                    this.ServiceCharge.next((this.sCharge/100)*s);
+                    this.TotalAmount.next(s+this.VatCharge.getValue()+this.ServiceCharge.getValue());
+                });
+            })
             
-       });
+
+            
+            
+       ;
     }
 
     ngOnInit(): void {
         this.getVouchers();
         this.getCustomers();
+        
         
     }
 
@@ -64,23 +77,26 @@ selectedCustomer:any
     @Input()table!:Table;
     newOder!:Order;
     @Input()Products!: Product[];
-    @Input()SubTotal!: Observable<number>;
-    @Input()CartItems!:CartItem[];
+    @Input()SubTotal!: BehaviorSubject<number>;
+    @Input()CartItems!:BehaviorSubject<CartItem[]> ;
     @Input()sessionType:any;
+    @Input()stocks!:BehaviorSubject<Stock[]>;
     feedBack!:string;
     spinnerStatus:boolean = false;
+
     vouchers:voucher[] = [];
     customers:Customer[] = []
-    voucherToApply!: voucher;
+    voucherToApply: any;
     currencySymbol:any = localStorage.getItem('currency_iso_code');
     payButtonStatus:boolean = false;
     paymentMethod!:string;
     @Input()tableSession!:TableSession;
-    vat:any = localStorage.getItem('vatCharge');
-    sCharge:any = localStorage.getItem('serviceCharge');
-    VatCharge:any;
-    ServiceCharge:any;
-    TotalAmount:any
+
+    VatCharge:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    ServiceCharge:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    TotalAmount:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    applyVouchBtn:ClrLoadingState = ClrLoadingState.DEFAULT
+
     @ViewChild('myInput') myInputRef!: ElementRef;
     getVouchers(){
             this._voucherSvr.getVouchers().subscribe((v:any) => 
@@ -97,38 +113,60 @@ selectedCustomer:any
 
  
 
-    onApply(){
-        this.voucherToApply = this.vouchers.filter(v=>v.voucherNumber === this.selectedOption)[0];
-        this.SubTotal.subscribe(s=>{
-            this.SubTotal = of(s - this.voucherToApply.voucherCreditAmount); 
-            this.SubTotal.subscribe(s=>{
-                let vat:any = localStorage.getItem('vatCharge');
-                let sCharge:any = localStorage.getItem('serviceCharge');
-                this.VatCharge = (vat/100)*s;
-                this.ServiceCharge = (sCharge/100)*s;
-                this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
-                
-           });
-            if(s <= 0){
-            this.payButtonStatus = true;
-            this.spinnerStatus = true;
-            this.feedBack = 'Payment Succeeded!!'
+    //on applying a voucher, the applied vocher should be validated
+    //if validation is successful, charges should be affected and changed
+    //otherwise, vice-versa.
+     onApply(){
+        this.applyVouchBtn = ClrLoadingState.LOADING;
+        let vat:any = localStorage.getItem('vatCharge');
+        let sCharge:any = localStorage.getItem('serviceCharge');
+
+        this.voucherToApply = this.vouchers.find(v=>v.voucherNumber === this.selectedOption)
+
+        if(this.voucherToApply !== undefined)
+        {
+            let currentSubCharge = this.SubTotal.getValue();
+            this.SubTotal.next(currentSubCharge - this.voucherToApply.voucherCreditAmount);
+            this.VatCharge.next((vat/100)*currentSubCharge);
+            this.ServiceCharge.next((sCharge/100)*currentSubCharge);
+            this.TotalAmount.next(currentSubCharge+this.VatCharge.getValue()+this.ServiceCharge.getValue());
         }
+
+        
+        
+    } 
+    
+    //remove the cancelled item from the cart.
+    //as the item is removed, stock quantity has to be increased
+    //as the item is removed, charges has to be changed
+    onCancel(p:CartItem){
+        let vat:any = localStorage.getItem('vatCharge');
+        let sCharge:any = localStorage.getItem('serviceCharge');
+
+        this.CartItems.pipe(first()).subscribe(c=>{
+            let updatedCart = c.filter(ci=>ci.name !== p.name);
+            this.CartItems.next(updatedCart);
+        });
+
+        this.stocks.pipe(first()).subscribe(stks=>{
+            let updatedStks = stks.map(s=>{
+                if(s.product?.name === p.name){
+                    return {...s, remainingUnits: +1}
+                }else{
+                    return s;
+                }
+            })
+            this.stocks.next(updatedStks);
         })
         
-    }
-    
-    onCancel(p:CartItem){
-        this.CartItems.splice(this.CartItems.indexOf(p),1);
-        this.SubTotal = of(this.getSum(this.CartItems));
-        this.SubTotal.subscribe(s=>{
-            let vat:any = localStorage.getItem('vatCharge');
-            let sCharge:any = localStorage.getItem('serviceCharge');
-            this.VatCharge = (vat/100)*s;
-            this.ServiceCharge = (sCharge/100)*s;
-            this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
-            
-       });
+  
+        let c = this.CartItems.getValue();
+        this.SubTotal.next(this.getSum(c));
+
+        this.VatCharge.next((vat/100)*this.SubTotal.getValue());
+        this.ServiceCharge.next((sCharge/100)*this.SubTotal.getValue());
+        this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
+
     }
 
     //update session isPayable to true, if items are in cart.
@@ -154,43 +192,62 @@ selectedCustomer:any
     }
         this.tableSession.applicationUserID = this.appId;
         this.tableSession.createdAt = new Date();
-        this.tableSession.isPayable = this.CartItems.length >=1;
+        this.tableSession.isPayable = this.CartItems.getValue().length >=1;
         
             //add session to database
         this.tableSessionSvr.addSession(this.tableSession).subscribe((r: TableSession) => {
            //create new order
            console.log(this.rId);
            let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
-        od.channel = "In-Person";od.totalAmount = this.TotalAmount;od.tableSessionId = r.id; od.vatCharge = this.VatCharge;od.serviceCharge = this.ServiceCharge;
+        od.channel = "In-Person";od.totalAmount = this.TotalAmount.getValue();od.tableSessionId = r.id; od.vatCharge = this.VatCharge.getValue();od.serviceCharge = this.ServiceCharge.getValue();
         if(this.rId !== undefined && this.custId !== undefined)
         {
             od.customerRecordId = this.rId, od.customerID = this.custId;
         }
+        
         
             //add order to database
         this.odSvr.addOrder(od).subscribe((or:Order) => {
                 //emit order to parent component
         or.tableSession = r;
           //if there are items in cart, create order details and add to database.
-                if(this.CartItems.length >=1){
+                if(this.CartItems.getValue().length >=1){
                     
                     or.orderDetails = [];
                     
-                    this.CartItems.forEach(x => {
+                    this.CartItems.forEach(x => { x.forEach(x=>{
                         let cd:CartOrder = {name:x.name,count:x.count,price:x.unitPrice,applicationUserID:this.appId,orderId:or.orderID,cartOrderId:this.appId,dateCreated:new Date()};
                         this.cartOrderSVR.addCartOrder(cd).subscribe();
                         or.orderDetails.push({name:x.name, quantity:x.count,unitPrice:x.unitPrice,applicationUserID:this.appId, orderId:or.orderID});
-                    });
+                    })});
                     or.orderDetails.forEach(d => {
                         this.orderDetailSvr.addOrderDetail(d).subscribe();
               });
              
-              this.CartItems = [];
+              this.CartItems.next([]);
               this.cart.emit(or);
               
             //if Dine-In, then update a stored table
         };
         }); 
+
+        //update stocks
+        /* this.stocks.subscribe(s=>{
+            
+            s.forEach(stk=>{
+                console.log(stk);
+                let stkTopudate:Stock = {
+                    prepDate:stk.prepDate,
+                    stockedDate:stk.stockedDate,
+                    remainingUnits:stk.remainingUnits,
+                    applicationUserID:stk.applicationUserID,
+                    productID:stk.productID,
+                    hasWaste:stk.hasWaste,initialUnits:stk.initialUnits,id:stk.id,isDeleted:stk.isDeleted,isExpired:stk.isExpired
+                } 
+                this.stkSvr.updateStock(<number>stkTopudate.id,stkTopudate).subscribe();
+            });
+        }) */
+        
         
     })
     }

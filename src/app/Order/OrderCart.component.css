@@ -1,0 +1,20 @@
+.cartBlock{
+    height: 80%; 
+    border-radius: 2px;
+    border-color: black;
+    border-style: inset;position: relative;padding-bottom: 0;
+}
+
+.cartItems-Block{
+    height: 43%; overflow-y: auto;
+}
+
+.cartFinale-Block{
+    overflow: hidden;
+    height: 35%;
+
+}
+
+.customerSelection-Block{
+    height: 22%;
+}

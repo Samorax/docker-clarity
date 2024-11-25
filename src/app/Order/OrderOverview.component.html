@@ -12,18 +12,10 @@
     </div>
 </div>
 
+
+
 <div class="clr-row clr-no-gutters">
-    
     <div class="clr-col-6">
-        <div class="card">
-            <div class="card-body">
-                <div  echarts [options]="wc"  (chartClick)="displayDaysOfMothsChart($event)"></div>
-            </div>
-        </div>
-       
-    </div>
-        
-    <div class="clr-col-3">
         <div class="card">
             <div class="card-body">
                 <div  echarts [options]="channelChart | async"></div>
@@ -32,7 +24,7 @@
                     
                 </div>
            
-            <div class="clr-col-3">
+            <div class="clr-col-6">
                <div class="card">
                 <div class="card-body">
                     <div  echarts [options]="customerChart | async"></div>
@@ -40,4 +32,19 @@
                </div>
                         
                     </div>
+
+</div>
+<div class="clr-row">
+    
+    <div class="clr-col">
+        <div class="card">
+            <div class="card-body">
+                <div  echarts [options]="wc | async"  (chartClick)="displayDaysOfMothsChart($event)"></div>
             </div>
+        </div>
+       
+    </div>
+</div>
+        
+    
+            

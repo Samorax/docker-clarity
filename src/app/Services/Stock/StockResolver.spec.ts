@@ -23,7 +23,7 @@ describe('StockResolver',()=>{
     });
 
     it('should resolve stocks', () => {
-        const mockstk:Stock[] = [{ id: 1, prepDate:new Date(), productId:2,isDeleted:false,initialUnits:2, remainingUnits:2,isExpired:false,hasWaste:false,stockedDate:new Date(), applicationUserID:9 }];
+        const mockstk:Stock[] = [{ id: 1, prepDate:new Date(), productID:2,isDeleted:false,initialUnits:2, remainingUnits:2,isExpired:false,hasWaste:false,stockedDate:new Date(), applicationUserID:9 }];
         stkService.getStocks.and.returnValue(of(mockstk));
     
         const route:any = {

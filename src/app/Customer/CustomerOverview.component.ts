@@ -1,11 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
 import { Customer } from "../Models/Customer";
-import { CustomerService } from "../Services/CustomerService";
-import { OrderService } from "../Services/OrderService";
 import { Order } from "../Models/Order.model";
-import { BehaviorSubject, Observable, observable, of } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { EChartsOption } from "echarts";
 import moment from "moment";
+import { ActivatedRoute } from "@angular/router";
+import { ageDemographicService } from "../Services/Customer/AgeDemographicService";
+import { averageHighSpendingService } from "../Services/Customer/Average.V.HighSpendingService";
+import { customerRepeatRateService } from "../Services/Customer/CustomerRepeatRateService";
 
 @Component({
     selector:'app-customeroverview',
@@ -16,131 +18,100 @@ import moment from "moment";
 export class CustomerOverviewComponent implements OnInit{
     
     
-    WRepeatChartOption!: EChartsOption;
-    gPieChart!: EChartsOption;
-    rPieChart!: EChartsOption;
-    constructor(private _customerService: CustomerService, private _orderService: OrderService, private cd:ChangeDetectorRef){}
+    WRepeatChartOption: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
+    gPieChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
+    rPieChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
+    AverageSpendingsChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
+
+    ageDemographicSvr = inject(ageDemographicService)
+    customerRepeatRateSvr = inject(customerRepeatRateService)
+    averageSpendingsSvr = inject(averageHighSpendingService)
+    cd = inject(ChangeDetectorRef)
+    activatedRoute = inject(ActivatedRoute)
+
     
-    customers: Customer[] = []
-    totalRegisteredCustomers!: number;
-    totalRepeatCustomers!:number;
-    totalMonthBirthdays!: number;
-    totalHighSpenders: number = 0;
-    highSpenders: Customer[] = [];
-    repeatCustomers: Customer[] = [];
+    customers: BehaviorSubject<Customer[]> = new BehaviorSubject<Customer[]>([])
+    orders: BehaviorSubject<Order[]> = new BehaviorSubject<Order[]>([])
+    totalRegisteredCustomers: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    totalRepeatCustomers:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    totalMonthBirthdays: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    totalHighSpenders:  BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    highSpenders: BehaviorSubject<Customer[]> = new BehaviorSubject<Customer[]>([]);
+    repeatCustomers: BehaviorSubject<Customer[]> = new BehaviorSubject<Customer[]>([]);;
 
     
 
     ngOnInit(): void {
-        this.getCustomers().subscribe(c=>{
-            this.getOrders().subscribe(o=>{
-                this.totalRegisteredCustomers = c.length;
-                this.totalMonthBirthdays = this.calBirthdays(c);
-                this.gPieChart = this.drawDemographPieChart(c);
-                let cr = this.calRepeatCusts(o,c);
-                
-                this.totalRepeatCustomers = cr.total;
+       this.getCustomers();
+       this.getOrders();
 
-                let hSp = this.calHighSpenders(c,o);
-                this.totalHighSpenders = hSp.total;
-              
-                //charts
-                this.WRepeatChartOption = this.drawWRepeatChart(c,o);
-                
-                this.rPieChart = this.drawDemographPieChart(cr.repeatCustomers);
+        this.calBirthdays();
+        this.drawDemographPieChart();
+        this.calRepeatCusts();
+        this.calHighSpenders();
 
-                this.cd.detectChanges()
-            })
+        this.drawAverageSpendingsBarChart(11,"2024")
+        this.drawMRepeatChart(11,"2024");
 
-            
-        })
+        this.cd.detectChanges();
         
        };
         
 
     //load customers from cache or from database. Replenish cache, if empty.
     getCustomers(){
-          return new Observable<Customer[]>((o)=>{
-            this._customerService.getCustomers().subscribe(c=>{
-                o.next(c);
-             });
-             //o.unsubscribe();
-            });;
+          this.activatedRoute.data.subscribe((o:any)=>{
+            this.customers.next(o.customers)
+            this.totalRegisteredCustomers.next(o.customers.length)
+          })
         }
 
      getOrders(){
-        return new Observable<Order[]>((or)=>{
-            this._orderService.getOrders().subscribe(o=> or.next(o));
-            //or.unsubscribe();
+        this.activatedRoute.data.subscribe((o:any)=>{
+            this.orders.next(o.orders)
         })
        
      }
 
 
     //total number of customers having their birthdays in a typical month.
-    calBirthdays(c: Customer[]){
+    calBirthdays(){
         let month = new Date().getUTCMonth();
         let months: number[] = [];
-        c.forEach(c=> months.push(moment(c.birthday,"DD/MM/YYYY").toDate().getMonth()));
-        return months.filter(m=> m == month).length;
+        this.customers.subscribe(cust=>{
+            cust.forEach(c=> months.push(moment(c.birthday,"DD/MM/YYYY").toDate().getMonth()));
+        this.totalMonthBirthdays.next(months.filter(m=> m == month).length);
         
-      };
-
+      });
+    }
     
 
     //calculates repeat customers
     //argument: array of orders, array of customers
     //return object with properties: totalnumber and array of repeat customers
-    calRepeatCusts(o: Order[], y: Customer[] ){
-        let rCustomers = [];
-        if(o.length > 1){
-            for (let c = 0; c < y.length; c++) {
-                let r = o.filter(o=> o.customerID == y[c].id);
-                if(r.length >= 2){
-                    rCustomers.push(y[c]);
-                } 
-            }
-        }
-        return {total: rCustomers.length, repeatCustomers: rCustomers};
+    calRepeatCusts(){
+        let rCustomers = []; 
+        this.orders.subscribe(o=>{
+            this.customers.subscribe(y=>{
+                if(o.length > 1){
+                    for (let c = 0; c < y.length; c++) {
+                        let r = o.filter(o=> o.customerID == y[c].id);
+                        if(r.length >= 2){
+                            rCustomers.push(y[c]);
+                        } 
+                    }
+                }
+            })
+            this.totalRepeatCustomers.next(rCustomers.length)
+        })
     }
 
-    //using a pie chart, display the %s of repate customers based on their ages.
-    //argument: array of repeat customers or ALL Customers.
-    calDRepeatCustomers(x:Customer[]): any{
-        let teenagers: Customer[] = [];
-        let youngAdults: Customer[] = [];
-        let adults: Customer[] = [] = []
-        let olderPeople: Customer[] = []
-
-        type stringDictionay = Record<string,number>;
-        let ages: stringDictionay = {
-            "18-24":0,
-            "25-31":0,
-            "32-38":0
-        };
-
-        x.forEach(c=>{
-            let age = this.getAge(new Date(c.birthday));
-            if(age >= 18 && age <=24){
-                youngAdults.push(c);
-            }else if(age >= 25 && age<= 31){
-                adults.push(c);
-            }else if(age >= 32 && age <= 38){
-                olderPeople.push(c);
-            }
-        });
-        ages["18-24"] = (youngAdults.length/x.length)*100;
-        ages["25-31"] = (adults.length/x.length)*100;
-        ages["32-38"] = (olderPeople.length/x.length)*100;
-
-        return ages;
-    }
-
-    drawDemographPieChart(c:Customer[]){
-        let ageSegment = this.calDRepeatCustomers(c);
-        let chart: EChartsOption = {
+    
+    drawDemographPieChart(){
+        let ageSegment = this.ageDemographicSvr.calDRepeatCustomers(this.customers);
+        this.gPieChart.next({
             title:{
-                text:'Ages of Repeat Customers',
+                text:'Age Demographics of Customers',
                 top:'auto',
                 left:'center',
                 textStyle:{ fontSize:'13px',fontWeight:'normal'}
@@ -150,126 +121,237 @@ export class CustomerOverviewComponent implements OnInit{
             },
             series: [
                 {
-                  data: [{value: ageSegment['18-24'] , name: "18-24"}, {value: ageSegment["25-31"] , name: "25-31"}, {value: ageSegment["32-38"] , name: "32-38"}],
+                  data: [
+                    {value: ageSegment["18-26"] , name: "18-26 (GenZ)"}, 
+                    {value: ageSegment["27-42"] , name: "27-42 (Millenials)"}, 
+                    {value: ageSegment["43-58"] , name: "43-58 (GenX)"},
+                    {value: ageSegment["59-and-above"] , name: "59-and-above (BabyBoomers)"},
+                    {value: ageSegment["below-18"], name: "below-18 (Children)"},
+                ],
                   type: 'pie',
                 },
               ],
-        }
-        return chart;
-    }
-
-    //using a bar chart, display the %s of weekly rate of repeat customers in a month
-    //argument: array of repeat customers, array of orders.
-    calWRepeatCustomers(x:Customer[], or: Order[]): any{
-        let w1: any[] = [];let w2: any[] = []; let w3: any[] = [];let w4: any[] = [];
-
-        type stringDictionay = Record<string, number>;
-        let weeks: stringDictionay = {"week1":0,"week2":0,"week3":0,"week4":0};
-
-        let monthOrder = or.filter(o=> new Date(o.orderDate).getUTCMonth() == new Date().getUTCMonth());
-        if(monthOrder.length >= 1){
-            for (let c = 0; c < x.length; c++) {
-                const element = x[c];
-                let o1: Order[] = []; let o2: Order[] = []; let o3: Order[] = []; let o4: Order[] = [];
-                monthOrder.forEach(o=>{
-                    let dateOfMonth = new Date(o.orderDate).getDate();
-                    if(dateOfMonth >= 1 && dateOfMonth <=7){
-                        if(element.id == o.customerID){
-                            o1.push(o);
-                        }
-                    }else if( dateOfMonth >=8 && dateOfMonth <= 15){
-                        
-                        if(element.id == o.customerID){
-                            o2.push(o);
-                        }
-                    }else if(dateOfMonth >= 16 && dateOfMonth <= 23){
-                        if(element.id == o.customerID){
-                            o3.push(o);
-                        }
-                    }else{
-                        if(element.id == o.customerID){
-                            o4.push(o);
-                        }
-                    }
-                });
-                if(o1.length >= 2){
-                    w1.push(element);
-                }
-                if(o2.length >= 2){
-                    w2.push(element);
-                }
-                if(o3.length >= 2){
-                    w3.push(element);
-                }
-                if(o4.length >= 2){
-                    w4.push(element);
-                }
-            } 
-        }
-        weeks["week1"] = (w1.length/x.length)*100;
-        weeks["week2"] = (w2.length/x.length)*100;
-        weeks["week3"] = (w3.length/x.length)*100;
-        weeks["week4"] = (w4.length/x.length)*100;
-       
-        return weeks;
-    }
-
-    drawWRepeatChart(x: Customer[],o: Order[]):EChartsOption{
-        let w = this.calWRepeatCustomers(x,o);
-        let wc: EChartsOption = {
-            title:{
-                text:'Rate of Repeat Customers',
-                top:'auto',
-                left:'center',
-                textStyle:{ fontSize:'13px',fontWeight:'normal'}
-            },
-            tooltip:{
-                trigger:'axis'
-            },
-            xAxis:{
-                type:"category",
-                data:['week 1', 'week 2', 'week 3', 'week 4']
+        })
     
-            },
-            yAxis:{
-                type:"value",
-            },
-            series: [
-                {
-                  data: [ w["week1"], w["week2"], w["week3"], w["week4"]],
-                  type: 'bar',
-                },
-              ],
-            };
-            return wc;
+    }
+
+    drawAverageSpendingsBarChart(month:number, year:string)
+    {  
+        let days:number[] = []
+        let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
+
+        this.customers.subscribe(c=>{
+            this.orders.subscribe(o=>{
+                let mdataSeries = this.averageSpendingsSvr.getMonthlyAverageSpendings(o,c,month,year);
+                let ydataSeries = this.averageSpendingsSvr.getYearlyAverageSpendings(o,c,month,year);
+
+                for (let i = 0; i < mdataSeries.length; i++) {
+                     days.push(i+1)
+                }
+                let init:EChartsOption;
+                let latter:EChartsOption;
+
+                latter = {
+                    title:{
+                        text:'Average Spendings of Customers',
+                        top:'auto',
+                        left:'center',
+                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
+                    },
+                    tooltip:{
+                        trigger:'axis',
+                       
+                    },
+                    xAxis:{
+                        type:"category",
+                        axisTick:{ alignWithLabel:true},
+                        axisLabel:{rotate:30},
+                        data:months
+            
+                    },
+                    yAxis:{
+                        axisLabel:{ formatter: '{value}', align:'center'},
+                        type:"value",
+                    },
+                    series: [
+                        {
+                          data: ydataSeries,
+                          type: 'bar',
+                          showBackground: true
+                        }
+                      ],
+                      graphic: [
+                        {
+                          type: 'text',
+                          left: 50,
+                          top: 20,
+                          style: {
+                            text: 'Back',
+                            fontSize: 18
+                          },
+                          onclick: ()=>{this.AverageSpendingsChart.next(init)}
+                        }
+                      ]
+                    };
+                init = {
+                    title:{
+                        text:'Average Spendings of Customers',
+                        top:'auto',
+                        left:'center',
+                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
+                    },
+                    tooltip:{
+                        trigger:'axis',
+                       
+                    },
+                    xAxis:{
+                        type:"category",
+                        axisTick:{ alignWithLabel:true},
+                        axisLabel:{rotate:30},
+                        data:days
+            
+                    },
+                    yAxis:{
+                        axisLabel:{ formatter: '{value}', align:'center'},
+                        type:"value",
+                    },
+                    series: [
+                        {
+                          data: mdataSeries,
+                          type: 'bar',
+                          showBackground: true,
+                          universalTransition:{
+                            enabled:true,
+                            divideShape:'clone'
+                          }
+                        }
+                      ],
+                }
+
+                this.AverageSpendingsChart.next(init)
+            })
+        })
+        
+    }
+
+    
+
+    drawMRepeatChart(m:number,y:string){
+        let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
+        let weeks =  ['Week 1', 'Week 2','Week 3','Week 4','Week 5'];
+        this.customers.subscribe(c=>{
+            this.orders.subscribe(o=>{
+                let mDataSeries = this.customerRepeatRateSvr.getMontlyRepeatRate(c,o,y);
+                let wDataSeries = this.customerRepeatRateSvr.getWeeklyRepeatRate(c,o,m,y);
+
+                let init: EChartsOption;
+                let latter: EChartsOption;
+                init = {
+                    title:{
+                        text:'Rate of Repeat Customers',
+                        top:'auto',
+                        left:'center',
+                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
+                    },
+                    tooltip:{
+                        trigger:'axis'
+                    },
+                    xAxis:{
+                        type:"category",
+                        axisTick:{ alignWithLabel:true},
+                        axisLabel:{rotate:30},
+                        data:months
+            
+                    },
+                    yAxis:{
+                        type:"value",
+                    },
+                    series: [
+                        {
+                          data: mDataSeries,
+                          type: 'bar',
+                          showBackground: true,
+                          universalTransition:{
+                            enabled:true,
+                            divideShape:'clone'
+                          }
+                        },
+                      ]
+                    };
+                latter = {
+                    title:{
+                        text:'Rate of Repeat Customers',
+                        top:'auto',
+                        left:'center',
+                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
+                    },
+                    tooltip:{
+                        trigger:'axis'
+                    },
+                    xAxis:{
+                        type:"category",
+                        axisTick:{ alignWithLabel:true},
+                        axisLabel:{rotate:30},
+                        data:weeks
+            
+                    },
+                    yAxis:{
+                        type:"value",
+                    },
+                    series: [
+                        {
+                          data: wDataSeries,
+                          type: 'bar',
+                          showBackground: true
+                        },
+                        
+                      ],
+                      graphic: [
+                        {
+                          type: 'text',
+                          left: 50,
+                          top: 20,
+                          style: {
+                            text: 'Back',
+                            fontSize: 18
+                          },
+                          onclick: ()=>{this.WRepeatChartOption.next(init)}
+                        }
+                      ]
+                }
+                this.WRepeatChartOption.next(init)
+            })
+        })
+        
     }
     
 
     //get the number of high spending customers and the list.
     //argument: array of customers, array of orders
-    calHighSpenders(x: Customer[], y: Order[]){
+    calHighSpenders(){
         let highSpenders: Customer[] = [];
-        let orderOfMonth = y.filter(o=>{
-            new Date(o.orderDate).getUTCMonth() == new Date().getUTCMonth();
-        });
-        let revenueAverage = this.getRevenue(orderOfMonth)/orderOfMonth.length;
-        for (let c = 0; c < x.length; c++) {
-            const element = x[c];
-            orderOfMonth.forEach(o=>{
-                if(o.customerID == element.id && o.totalAmount >= revenueAverage){
-                    highSpenders.push(element);
-                }
-            });
-        };
-        return {total: highSpenders.length, highSpenders: highSpenders};
+        this.customers.subscribe(x=>{
+            this.orders.subscribe(y=>{
+                let orderOfMonth = y.filter(o=>{
+                    new Date(o.orderDate).getUTCMonth() == new Date().getUTCMonth();
+                });
+                let revenueAverage = this.getRevenue(orderOfMonth)/orderOfMonth.length;
+                for (let c = 0; c < x.length; c++) {
+                    const element = x[c];
+                    orderOfMonth.forEach(o=>{
+                        if(o.customerID == element.id && o.totalAmount >= revenueAverage){
+                            highSpenders.push(element);
+                        }
+                    });
+                };
+            })
+            this.totalHighSpenders.next(highSpenders.length)
+            this.highSpenders.next(highSpenders)
+        })
     }
 
     //Get the age of a customer. Arguments: new Date(birthday of customer)
-    getAge(d1:any, d2?:any){
-        d2 = d2 || new Date();
-        var diff = d2.getTime() - d1.getTime();
-        return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
-    }
+    
 
     //Get the total value of all orders.
     getRevenue(o: Order[]):number{

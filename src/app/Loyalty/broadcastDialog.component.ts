@@ -2,7 +2,7 @@ import { Component, EventEmitter, MissingTranslationStrategy, OnInit, Output, in
 import { voucher } from "../Models/Voucher";
 import { smsModel } from "../Models/SmsModel";
 import { NgForm } from "@angular/forms";
-import { CustomerService } from "../Services/CustomerService";
+import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
 
 

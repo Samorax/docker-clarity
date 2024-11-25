@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { Observable, catchError, retry, throwError } from "rxjs";
+import { Observable, catchError, map, retry, throwError } from "rxjs";
 import { Product } from "../Models/Product";
 import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
@@ -9,7 +9,7 @@ import { environment } from "../../environment/environment";
   providedIn: 'root',
 })
 export class ProductService {
-  productssCache: Product[] = [];
+  
   baseUrl =  environment.apiBaseUrl+'api/inventory/products/';
 
    httpOptions = {
@@ -18,9 +18,7 @@ export class ProductService {
     }),
     
   };  
-  constructor(private _httpclient: HttpClient) {
-
-  }
+  constructor(private _httpclient: HttpClient) {}
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {
@@ -32,9 +30,9 @@ export class ProductService {
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 
-  getProducts() {
+  getProducts():Observable<Product[]> {
     return this._httpclient.get<Product[]>(this.baseUrl).
-      pipe(retry(3),catchError(this.handleError));
+      pipe(catchError(this.handleError));
   }
  
   addProduct(prod: any) {

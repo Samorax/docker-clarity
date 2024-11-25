@@ -34,7 +34,7 @@ export class addStockDialog{
         let result = this.addStockForm.value;
         let stk:Stock = {
             prepDate:result.prepDate,
-            productId:<number>result.productId,
+            productID:<number>result.productId,
             initialUnits:<number>result.initialUnits,
             remainingUnits:<number>result.initialUnits,
             stockedDate:new Date(),

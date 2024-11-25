@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { voucher } from "../Models/Voucher";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
-import { catchError, throwError } from "rxjs";
+import { catchError, Observable, throwError } from "rxjs";
 import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
 
@@ -31,8 +31,8 @@ export class voucherService{
         return throwError(() => new Error('Something bad happened; please try again later.'));
       }
 
-      getVouchers(){
-        return this._httpClient.get(this.baseUrl,this.httpOptions)
+      getVouchers():Observable<voucher[]>{
+        return this._httpClient.get<voucher[]>(this.baseUrl,this.httpOptions)
         .pipe(catchError(this.handleError));
       }
 

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ECharts, EChartsOption} from "echarts";
 import { Order } from "../Models/Order.model";
-import { Observable, Subscription, of, scheduled } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, of, scheduled } from "rxjs";
 import { OrderService } from "../Services/OrderService";
 import moment from "moment";
 import { paymentService } from "../Services/PaymentService";
 import { dayMonthlySale } from "../Models/dayMonthlySale";
+import { monthlySalesChart } from "../Services/Order/MonthlySales.Chart";
 
 
 @Component({
@@ -15,7 +16,7 @@ import { dayMonthlySale } from "../Models/dayMonthlySale";
 })
 
 export class OrderOverviewComponent implements OnInit{
-    wc!: EChartsOption;
+    wc: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
     orders!: Order[];
     ngOnInit(): void {
     this.loadOrders().subscribe(o=>{
@@ -40,7 +41,7 @@ export class OrderOverviewComponent implements OnInit{
     channelChart!: Observable<EChartsOption>; // what percentage of in-person vs online channel sales pie chart
     customerChart!: Observable<EChartsOption>; //what percentage of registered customers vs unregistered customers sales pie chart.
 
-    constructor(private _orderService: OrderService, private _paymentSvr: paymentService, private cd:ChangeDetectorRef){}
+    constructor(private _orderService: OrderService, private _paymentSvr: paymentService, private cd:ChangeDetectorRef, private monthlySaleSVR: monthlySalesChart){}
 
     loadOrders(): Observable<Order[]>{    
                 return this._orderService.getOrders()
@@ -67,74 +68,8 @@ export class OrderOverviewComponent implements OnInit{
 
     
     getMonthlySales(o: Order[]){
-        type stringDictionay = Record<string,number>;
-        let monthlySales: stringDictionay = {"Jan":0, "Feb":0, 'Mar':0, 'Apr':0,"May":0, "Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0};
-        let jan = 0; let feb =0; let mar =0; let apr = 0; let may =0; let jun = 0; let jul =0; let aug =0;
-        let sep = 0; let oct = 0; let nov =0 ; let dec =0 ;
-        o.filter(o=>o.orderStatus === "Completed").forEach(o=>{
-            let oDate = moment(o.orderDate).toDate();
-            let m = oDate.getUTCMonth();
-            let oy = oDate.getUTCFullYear();
-            let ny = new Date().getUTCFullYear();
-            if(oy == ny){
-                switch (m) {
-                    case 0:
-                        jan += o.totalAmount;
-                        break;
-                    case 1:
-                        feb += o.totalAmount;
-                        break;
-                    case 2:
-                        mar += o.totalAmount;
-                        break;
-                    case 3:
-                        apr += o.totalAmount;
-                        break;
-                    case 4:
-                        may += o.totalAmount;
-                        break;
-                    case 5:
-                        jun += o.totalAmount;
-                        break;
-                    case 6:
-                        jul += o.totalAmount;
-                        break;
-                    case 7:
-                        aug += o.totalAmount;
-                        break;
-                    case 8:
-                        sep += o.totalAmount;
-                        break;
-                    case 9:
-                        oct += o.totalAmount;
-                        break;
-                    case 10:
-                        nov += o.totalAmount;
-                        break;
-                    case 11:
-                        dec += o.totalAmount;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        monthlySales["Jan"] = Math.round((jan/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Feb"] = Math.round((feb/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Mar"] = Math.round((mar/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Apr"] = Math.round((apr/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["May"] = Math.round((may/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Jun"] = Math.round((jun/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Jul"] = Math.round((jul/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Aug"] = Math.round((aug/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Sep"] = Math.round((sep/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Oct"] = Math.round((oct/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Nov"] = Math.round((nov/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-        monthlySales["Dec"] = Math.round((dec/(jan+feb+mar+apr+may+jun+jul+aug+sep+oct+nov+dec))*100);
-
-
-         this.wc = {
+        let r = this.monthlySaleSVR.getMonthlySales(o,'2024');
+         this.wc.next( {
             tooltip:{
                 trigger:'axis'
             },
@@ -153,29 +88,38 @@ export class OrderOverviewComponent implements OnInit{
             },
             yAxis:{
                 type:"value",
-                axisLabel:{ formatter: '{value}', align:'center'}
+                axisLabel:{ formatter: '{value}%', align:'center'}
             },
             series: [
                 {
-                  data: [monthlySales["Jan"]  ,monthlySales["Feb"],monthlySales["Mar"],monthlySales["Apr"],
-                  monthlySales["May"] , monthlySales["Jun"],monthlySales["Jul"], monthlySales["Aug"],
-                  monthlySales["Sep"],  monthlySales["Oct"],monthlySales["Nov"],monthlySales["Dec"]
-                ],
+                  data: r,
                 type: 'bar',
-                showBackground: true
+                showBackground: true,
+                universalTransition:{
+                    enabled:true,
+                    divideShape:'clone'
+                  }
                 },
               ],
               
-            };
+            });
 
     }
 
 
     displayDaysOfMothsChart(x:any){
-        this.getDataforMonth(x.dataIndex, this.orders).subscribe((newData:dayMonthlySale[])=>{
+        
+        this.getDataforMonth(x.dataIndex, this.orders).subscribe((r:number[])=>{
+            let monthLength = new Date(2024,x.dataIndex+1,0).getDate()
+            console.log(monthLength)
+            let days:number[] = [monthLength]
+            for (let i = 0; i < monthLength; i++) {
+                days[i] = i+1;
+                
+            }
             
-            this.saleChart = this.wc;
-            this.saleChartInstance = {
+            let init:EChartsOption = this.wc.getValue();
+            let latter:EChartsOption = {
                 animationDurationUpdate: 500,
                 title:{
                     text:'Monthly Sales',
@@ -188,7 +132,7 @@ export class OrderOverviewComponent implements OnInit{
                    
                 },
                 xAxis:{
-                  data: newData.map((item)=> item.day),
+                  data: days,
                   type:"category",
                   axisTick:{ alignWithLabel:true},
                   axisLabel:{rotate:30},
@@ -197,15 +141,15 @@ export class OrderOverviewComponent implements OnInit{
                     axisLabel:{ formatter: '{value}%', align:'center'},
                     type:"value",
                 },
-                series:{
-                    data:newData.map((item)=> Math.round(item.value)),
+                series:[{
+                    data:r,
                     type:'bar',
                     showBackground:true,
                     universalTransition:{
                         enabled:true,
                         divideShape:'clone'
                       }
-                },
+                }],
                 graphic: [
                     {
                       type: 'text',
@@ -215,10 +159,10 @@ export class OrderOverviewComponent implements OnInit{
                         text: 'Back',
                         fontSize: 18
                       },
-                      onclick: ()=>{this.wc = this.saleChart;}
+                      onclick: ()=>{this.wc.next(init)}
                       }
                   ]}
-                  this.wc = this.saleChartInstance;
+                  this.wc.next(latter);
         });
        
 
@@ -227,22 +171,8 @@ export class OrderOverviewComponent implements OnInit{
     } 
 
 
-    getDataforMonth(n:any,o:Order[]):Observable<any>{
-        let completedMonthOrder = o.filter(or=>or.orderStatus == 'Completed' && n+1 == moment(or.orderDate).toDate().getMonth()+1);
-        let totaldaysofMonth = new Date(new Date().getUTCFullYear(),n+1,0).getDate();
-        let i = 1; let newData= []; 
-        while (i < totaldaysofMonth) {
-            let daySales:dayMonthlySale = <dayMonthlySale>{};
-            daySales.day = i++;
-            daySales.value = 0;
-            completedMonthOrder.forEach(o=>{
-                if(new Date(o.orderDate).getDate() === daySales.day){
-                    daySales.value += o.totalAmount;
-                }
-            });
-            newData.push(daySales);
-        }
-        return of(newData);
+    getDataforMonth(n:any,o:Order[]):Observable<number[]>{
+        return of(this.monthlySaleSVR.getDaySales(o,n,'2024'));
     }
 
     getCustomerSegmentChart(o:Order[]){

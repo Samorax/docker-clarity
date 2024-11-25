@@ -8,6 +8,9 @@ import { orderDetail } from "../Models/OrderDetails";
 import moment from "moment";
 import { StockWasteService } from "../Services/Stock/StockWasteService";
 import { StockVarianceService } from "../Services/Stock/StockVarianceService";
+import { BehaviorSubject } from "rxjs";
+import { ActivatedRoute } from "@angular/router";
+import { Stock } from "../Models/Stock";
 
 @Component({
     selector:'app-productoverview',
@@ -19,22 +22,23 @@ import { StockVarianceService } from "../Services/Stock/StockVarianceService";
 export class InventoryOverviewComponent implements OnInit{
 
 
-initialStockWasteChart!: EChartsOption;
+initialStockWasteChart:BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({})
 drilledStockWasteChart!:EChartsOption;
-stockVarianceChart!: EChartsOption;
+stockVarianceChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({});
 
 stkWasteSVR = inject(StockWasteService)
 stkVarianceSVR = inject(StockVarianceService)
+stocks!: Stock[];
 
 
-    constructor(private productSvr:ProductService, private orderSvr: OrderService,private cd: ChangeDetectorRef){}
+    constructor(private activatedRoute:ActivatedRoute,private cd: ChangeDetectorRef){}
     products: Product[] = [];
     productCount: number = 0;
     categoriesCount: number = 0;
     orders!: Order[];
     date!:Date
     today = new Date().toString()
-    productDemandChart!: EChartsOption
+    productDemandChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<EChartsOption>({})
     productDemandChartInstance!: ECharts;
 
     ngOnInit(): void {
@@ -44,15 +48,16 @@ stkVarianceSVR = inject(StockVarianceService)
 
     initialize(){
         
-                this.productSvr.getProducts().subscribe(p=>{
-                    this.products = p;
-                    this.productCount = p.length;
-                    this.getProductCategories(p).then(x=>{
+                this.activatedRoute.data.subscribe((p:any)=>{
+                    this.products = p.products;
+                    this.productCount = this.products.length;
+                    this.getProductCategories(this.products).then(x=>{
                         this.categoriesCount = x.length;
                     });
                     this.getOrders();
+                    this.getStocks();
                     this.getStockWasteChart('2024');
-                    this.stockVarianceChart = this.getStockVarianceChart('2024');
+                    this.getStockVarianceChart('2024');
                     this.cd.detectChanges()
                 });
             
@@ -63,13 +68,18 @@ stkVarianceSVR = inject(StockVarianceService)
         }
 
     getOrders(){
-                this.orderSvr.getOrders().subscribe(or=> 
+                this.activatedRoute.data.subscribe((or:any)=> 
                     {
-                        this.orderSvr.ordersCache = or;
-                        this.orders = or;
-                        this.productDemandChart = this.getProductDemandChart();
+                        this.orders = or.orders;
+                        this.getProductDemandChart();
                         this.cd.detectChanges()
                     });
+    }
+
+    getStocks(){
+        this.activatedRoute.data.subscribe((stk:any)=>{
+            this.stocks = stk.stocks;
+        })
     }
 
     getProductCategories(p: Array<Product>):Promise<string[]>{
@@ -91,8 +101,8 @@ stkVarianceSVR = inject(StockVarianceService)
     getStockWasteChart(year:string){
     
         let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
-        this.stkWasteSVR.getYearWasteStock(year).subscribe(r=>{
-            this.initialStockWasteChart  = {
+        this.stkWasteSVR.getYearWasteStock(year,this.stocks).subscribe(r=>{
+            this.initialStockWasteChart.next({
                 animationDurationUpdate: 500,
                 title:{
                     text:'Food Waste Value',
@@ -124,7 +134,7 @@ stkVarianceSVR = inject(StockVarianceService)
                       showBackground: true
                     },
                   ],
-            };
+            });
         })
             
     }
@@ -133,12 +143,12 @@ stkVarianceSVR = inject(StockVarianceService)
         let index = $event.dataIndex;
         let days:number[] = []
 
-        this.stkWasteSVR.getMonthWasteStock('2024',index).subscribe(r=>{
+        this.stkWasteSVR.getMonthWasteStock('2024',index,this.stocks).subscribe(r=>{
             for (let i = 0; i < r.data.length; i++) {
                 days.push(i+1)
             }
             
-            let y:EChartsOption = this.initialStockWasteChart
+            let y:EChartsOption = this.initialStockWasteChart.getValue()
             let x:EChartsOption = {
             title:{
                     text:'Food Waste Value',
@@ -181,20 +191,76 @@ stkVarianceSVR = inject(StockVarianceService)
                         text: 'Back',
                         fontSize: 18
                       },
-                      onclick: ()=>{this.initialStockWasteChart = y}
+                      onclick: ()=>{this.initialStockWasteChart.next(y)}
                     }
                   ]
             }
-            this.initialStockWasteChart = x;
+            this.initialStockWasteChart.next(x);
         })
     }
 
+    showMonthlyStockVariance($event:ECElementEvent){
+        let index = $event.dataIndex;
+        let days:number[] = []
+
+        this.stkVarianceSVR.getMonthVariance("2024",index,this.stocks).subscribe(r=>{
+            
+            for (let i = 0; i < r.actualRevenue.length; i++) {
+                days.push(i+1)
+            }
+
+            let init = this.stockVarianceChart.getValue();
+            let latter:EChartsOption = {
+                legend:{data:['ExpectedRevenue','ActualRevenue'], top:'bottom'},
+                title:{
+                    text:'Stock Variance',
+                    left:'center',
+                    top:'auto',
+                    textStyle:{ fontSize:'16px',fontWeight:'normal'}
+                },
+                tooltip:{
+                    trigger:'axis'
+                },
+                xAxis: {
+                    data: days
+                  },
+                  yAxis: {},
+                  series: [
+                    {
+                      name:'ActualRevenue',
+                      data: r.actualRevenue,
+                      type: 'line',
+                      stack: 'Total'
+                    },
+                    {
+                      name:'ExpectedRevenue',
+                      data: r.expectedRevenue,
+                      type: 'line',
+                      stack: 'Total'
+                    }
+                  ],
+                  graphic: [
+                    {
+                      type: 'text',
+                      left: 50,
+                      top: 20,
+                      style: {
+                        text: 'Back',
+                        fontSize: 18
+                      },
+                      onclick: ()=>{this.stockVarianceChart.next(init)}
+                    }
+                  ]
+            }
+            this.stockVarianceChart.next(latter);
+        })
+    }
     //default chart is year chart - showing monthly variances
     getStockVarianceChart(year:string){
-        let stkVC!:EChartsOption
+        
         let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
-        this.stkVarianceSVR.getYearVariance(year).subscribe(r=>{
-            stkVC = {
+        this.stkVarianceSVR.getYearVariance(year, this.stocks).subscribe(r=>{
+            this.stockVarianceChart.next({
                 legend:{data:['ExpectedRevenue','ActualRevenue'], top:'bottom'},
                 title:{
                     text:'Stock Variance',
@@ -212,26 +278,24 @@ stkVarianceSVR = inject(StockVarianceService)
                   series: [
                     {
                       name:'ActualRevenue',
-                      data: [r[0].actualRevenue,r[1].actualRevenue,r[2].actualRevenue,r[3].actualRevenue,
-                      r[4].actualRevenue,r[5].actualRevenue,r[6].actualRevenue,r[7].actualRevenue,r[8].actualRevenue,r[9].actualRevenue,r[10].actualRevenue,r[11].actualRevenue],
+                      data: r.actualRevenue,
                       type: 'line',
                       stack: 'Total'
                     },
                     {
                       name:'ExpectedRevenue',
-                      data: [r[0].expectedRevenue,r[1].expectedRevenue,r[2].expectedRevenue,r[3].expectedRevenue,r[4].expectedRevenue,r[5].expectedRevenue,r[6].expectedRevenue,
-                      r[7].expectedRevenue,r[8].expectedRevenue,r[9].expectedRevenue,r[10].expectedRevenue,r[11].expectedRevenue],
+                      data: r.expectedRevenue,
                       type: 'line',
                       stack: 'Total'
                     }
                   ]
-            }
+            })
         })
-        return stkVC
+        
     }
 
     getProductDemandChart(){
-        let wc: EChartsOption = {
+        this.productDemandChart.next({
             title:{
                 text:'Product Demand (%)',
                 left:'center',
@@ -258,9 +322,8 @@ stkVarianceSVR = inject(StockVarianceService)
                   showBackground: true
                 },
               ],
-            };
+            });
             
-            return wc;
     }
 
     onSelectedDate(){
@@ -374,7 +437,7 @@ stkVarianceSVR = inject(StockVarianceService)
         let ns:number[] = [];
         p.forEach(pr => {
             let x = this.getTotalNumberOfUniqueProducts(pr,this.orders);
-          let n = this.calculatePercentageDemand(this.orders.length, x);
+          let n = Math.round(this.calculatePercentageDemand(this.orders.length, x));
             ns.push(n);
         });
         return ns;

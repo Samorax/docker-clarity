@@ -5,13 +5,9 @@ import { tap } from "rxjs/operators";
 import { loginCredentials } from "../Models/LoginCredentials";
 import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { TokenObject } from "../Models/TokenObject";
-import { ProductService } from "./ProductService";
-import { OrderService } from "./OrderService";
-import { CustomerService } from "./CustomerService";
 import moment from "moment";
 import { environment } from "../../environment/environment";
 import { disseminateModeService } from "./DisseminateMode";
-import { BooleanArraySupportOption } from "prettier";
 
 @Injectable({
   providedIn: "root"

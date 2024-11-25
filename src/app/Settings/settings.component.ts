@@ -20,6 +20,8 @@ import { AuthenticationService } from "../Services/AuthenticationService";
 import { deleteAccountComponent } from "./delAccountDialog.component";
 import { ChangeDetectionStrategy } from "@angular/core";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
+import { ActivatedRoute } from "@angular/router";
+import { environment } from "../../environment/environment";
 
 @Component({
     templateUrl:'./settings.component.html',
@@ -90,7 +92,7 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     
     
 
-constructor(private _appUserSrv: appUserService,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
+constructor(private _appUserSrv: appUserService,private activatedRoute: ActivatedRoute,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
     private _smsActivator:SmSActivatorService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
 
     ngAfterViewInit(): void {
@@ -185,13 +187,13 @@ constructor(private _appUserSrv: appUserService,private cd:ChangeDetectorRef,pri
     )
 
 
-    async ngOnInit(){
+    ngOnInit(){
         //complete the inital tab form.
-        this._appUserSrv.getAppUserInfo()
-          .subscribe((x:appUser) => {
-            x = this.appUser;
+        this.activatedRoute.data.subscribe((x:any) => {
+            this.appUser = x.appUser;
+            loadStripe(environment.stripeTestKey).then(r=> this.stripe = r);
           });
-        this.stripe = await loadStripe("pk_test_51OZtsPLMinwGqDJe4WXbskkZ1G2voTezl8OneMarPyB4tweJbNANCrKtyWVdZ0hBxA9pAAid9hs9JVxc6i9kd11g00xRANg6LK");
+        
     }
 
     NotMatch(controlName: string, matchingControlName: string) {
@@ -294,9 +296,8 @@ this.editODC.open(this.selected[0]);
     }
 
     fillAccountSettings(){
-        this._appUserSrv.getAppUserInfo().subscribe(r=>{
+        let r:appUser = this.appUser;
         console.log(r.testMode,"checking app mode")
-        this.appUser = r;
         this.cd.detectChanges();
         this.CreatePaymentForm();
         this.settingsForm.get('accountDetails.firstName')?.setValue(r.firstName);
@@ -335,8 +336,9 @@ this.editODC.open(this.selected[0]);
             id:this.appUser.id
         }
 
-        localStorage.setItem('password',this.appUser.password);});
-    }
+        localStorage.setItem('password',this.appUser.password);
+    };
+    
 
     onAccountDelete(x:any){
         x.preventDefault();
@@ -352,8 +354,7 @@ this.editODC.open(this.selected[0]);
 
     fillShopSettings(){
         
-        this._appUserSrv.getAppUserInfo().subscribe(a=>{
-        this.appUser = a;
+       
         this.settingsForm.get('shopSettings.vatCharge')?.setValue(this.appUser.vatCharge);
         this.settingsForm.get('shopSettings.serviceCharge')?.setValue(this.appUser.serviceCharge);
         
@@ -368,14 +369,13 @@ this.editODC.open(this.selected[0]);
 
         this.settingsForm.get('logistics.deliveryDistance')?.setValue(this.appUser.deliveryDistance);
         this.settingsForm.get('logistics.deliveryFee')?.setValue(this.appUser.deliveryFee);
-        })
+        
 
     }
 
     fillIntegrationSettings(){
-        this._appUserSrv.getAppUserInfo().subscribe((a:any)=>{
-            this.appUser = a;
-            let processor = a.paymentProcessor;
+       
+            let processor = this.appUser.paymentProcessor;
             if(processor !== null){
                 this.settingsForm.get('integrationSettings.processorName')?.setValue(processor.name);
                 this.settingsForm.get('integrationSettings.processorApiKey')?.setValue(processor.apiKey1);
@@ -385,12 +385,11 @@ this.editODC.open(this.selected[0]);
             }
            
             
-        })
+        
     }
 
     fillNotificationSettings(){
-        this._appUserSrv.getAppUserInfo().subscribe((a:appUser)=>{
-            console.log(a)
+        let a:appUser = this.appUser;
             if(a.testMode){
                 this.settingsForm.get('notifications.smsActivation')?.disable();
         
@@ -402,7 +401,7 @@ this.editODC.open(this.selected[0]);
             this.settingsForm.get('notifications.birthdayNotifications')?.setValue(a.birthdayNotify);
             this.settingsForm.get('notifications.voucherNotifications')?.setValue(a.voucherNotify);
             this.cd.detectChanges();
-        });
+        
         
 
 

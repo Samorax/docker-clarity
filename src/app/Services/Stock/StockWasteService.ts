@@ -9,20 +9,13 @@ import { AttributeData, MonthData, YearData } from "./YearData.model";
 })
 
 export class StockWasteService{
-    stockService = inject(stockService)
-    wasteStock!:Stock[]
+    
+    
 
-    constructor(){
-        this.getWasteStock();
-    }
+   
 
-    getWasteStock(){
-        this.stockService.getStocks().subscribe(stk=>{
-            this.wasteStock = stk.filter(s=>s.hasWaste === true);
-        })
-    }
-
-    getMonthWasteStock(year:string, month:number):Observable<MonthData>{
+    getMonthWasteStock(year:string, month:number, stk:Stock[]):Observable<MonthData>{
+        let wasteStock = stk.filter(s=>s.hasWaste === true);
         let monthLength = new Date(Number(year),month,0).getDate();
         let monthData: MonthData = {data: new Array<AttributeData>(monthLength).fill({stockQuanity:0,stockValue:0})}
         let result: BehaviorSubject<MonthData> = new BehaviorSubject<MonthData>(monthData);
@@ -32,8 +25,8 @@ export class StockWasteService{
             days.push(i+1)          
         }
 
-        if(this.wasteStock.length !== 0){
-            let monthWasteStock = this.wasteStock.filter(s=>new Date(s.stockedDate).getFullYear().toString() === year && new Date(s.stockedDate).getMonth() === month);
+        if(wasteStock.length !== 0){
+            let monthWasteStock = wasteStock.filter(s=>new Date(s.stockedDate).getFullYear().toString() === year && new Date(s.stockedDate).getMonth() === month);
             if(monthWasteStock.length !== 0){
                 monthWasteStock.forEach(stk=>{
                     let day = new Date(stk.stockedDate).getDate()
@@ -50,8 +43,9 @@ export class StockWasteService{
         return result.asObservable();
     }
 
-    getYearWasteStock(year:string):Observable<YearData>{
-        let yearWasteStock = this.wasteStock.filter(s=>new Date(s.stockedDate).getFullYear().toString() === year);
+    getYearWasteStock(year:string, stk:Stock[]):Observable<YearData>{
+        let wasteStock = stk.filter(s=>s.hasWaste === true);
+        let yearWasteStock = wasteStock.filter(s=>new Date(s.stockedDate).getFullYear().toString() === year);
         let yearData: YearData = {
             jan:{stockQuanity:0,stockValue:0},
             feb:{stockQuanity:0,stockValue:0},
@@ -69,7 +63,7 @@ export class StockWasteService{
         let result:BehaviorSubject<YearData> = new BehaviorSubject<YearData>(yearData);
    
     
-        if(this.wasteStock.length !== 0){
+        if(wasteStock.length !== 0){
             if(yearWasteStock.length !== 0){
                 yearWasteStock.forEach(stk=> {
                     switch (new Date(stk.stockedDate).getMonth()) {

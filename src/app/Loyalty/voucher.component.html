@@ -31,14 +31,14 @@
     <clr-dg-column>Activation</clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any Vouchers. Add new Voucher</clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let element of vouchers" [clrDgItem]="element">
+    <clr-dg-row *clrDgItems="let element of vouchers | async" [clrDgItem]="element">
       <clr-dg-cell>{{element.voucherName}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherNumber}}</clr-dg-cell>
       <clr-dg-cell *ngIf="element.valueType === 1">{{element.voucherCreditAmount| currency:currencySymbol}}</clr-dg-cell>
       <clr-dg-cell *ngIf="element.valueType === 0">{{element.voucherCreditAmount/100| percent}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherCreationDate | date: 'medium'}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherExpirationDate | date: 'medium'}}</clr-dg-cell>
-      <clr-dg-cell>{{element.voucherStatus? 'Active':'Expired'}}</clr-dg-cell>
+      <clr-dg-cell>{{element.voucherStatus? 'Expired':'Active'}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherActivation? 'Enabled':'Disabled'}}</clr-dg-cell>
     </clr-dg-row>
   

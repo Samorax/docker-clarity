@@ -3,6 +3,7 @@ import { Stock } from "../Models/Stock";
 import { FormBuilder, Validators } from "@angular/forms";
 import { stockService } from "../Services/Stock/StockService";
 import { Restock } from "../Models/Restock.model";
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     selector:'restock-dialog',
@@ -18,6 +19,7 @@ export class restockDialogComponent
     date!:any
     showAddStockForm: boolean = false;
     showReStockForm: boolean = false;
+    restockBtn:ClrLoadingState = ClrLoadingState.DEFAULT
 
     reStockForm = this.formBuilder.group({
         additionalUnits:[0, Validators.required]
@@ -39,7 +41,9 @@ export class restockDialogComponent
                 this.showConfirmWasteDialog = true;
             }else{
                 this.showAddStockForm = true;
-                this.addStockForm.get('productName')?.disable;
+
+                this.addStockForm.get('productName')?.disable();
+                this.addStockForm.get('productName')?.setValue(this.stk.product?.name);
             }  
         }
         else{
@@ -77,6 +81,7 @@ export class restockDialogComponent
 
     onSubmit()
     {
+        this.restockBtn = ClrLoadingState.LOADING
         //if just restocking - update the units of the stock and update server.
         //otherwise, create a new and old stock, add and update respectively to server.
 
@@ -91,7 +96,7 @@ export class restockDialogComponent
             //this.stk.hasWaste = this.stk.remainingUnits === 0 ? false: true;
 
             let newStock:Stock = 
-            {   productId:this.stk.product?.productID,
+            {   productID:this.stk.product?.productID,
                 initialUnits:<number>this.addStockForm.value.initialUnits,
                 prepDate:this.addStockForm.value.prepDate,
                 remainingUnits:<number>this.addStockForm.value.initialUnits,

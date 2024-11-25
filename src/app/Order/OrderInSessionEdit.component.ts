@@ -68,7 +68,7 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
             p.forEach(product=> {
                 this.convertImgByte(product).subscribe(p=>{
                     this.products.push(p)
-                    this.productService.productssCache.push(p)
+                    
                 })
             });
         });

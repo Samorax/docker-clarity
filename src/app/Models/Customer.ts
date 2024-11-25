@@ -16,5 +16,6 @@ export class Customer{
     public membership:any
     public rewardClaims!:Array<Rewards>
     phoneNumber!: string
+    registrationDate!: string | number | Date
 
 }

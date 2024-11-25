@@ -4,7 +4,7 @@ import { NgForm } from "@angular/forms";
 
 @Component({
     selector:'del-loyalty',
-    templateUrl:'./deleteLoyaltyDialog.component.html'
+    templateUrl:'./deleteRewardDialog.component.html'
 })
 
 export class deleteLoyaltyDialogComponent{

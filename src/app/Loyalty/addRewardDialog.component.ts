@@ -8,7 +8,7 @@ import { ClrLoadingState } from "@clr/angular";
 
 
 @Component({
-    templateUrl:'./addLoyaltyDialog.component.html',
+    templateUrl:'./addRewardDialog.component.html',
     selector:'app-rewardsDialog'
 })
 
