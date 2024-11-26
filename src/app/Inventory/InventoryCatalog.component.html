@@ -33,7 +33,7 @@
     <clr-dg-column >Product Code</clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
+    <clr-dg-row *clrDgItems="let element of elements |async" [clrDgItem]="element">
       <clr-dg-cell>{{element.name}}</clr-dg-cell>
       <clr-dg-cell>{{element.price | currency:currencySymbol}}</clr-dg-cell>
       <clr-dg-cell>{{element.category}}</clr-dg-cell>
@@ -92,7 +92,7 @@
     </clr-dg-footer>
   </clr-datagrid>
 
- <add-product [products]="elements"></add-product>
-<edit-product [products]="elements"></edit-product>
+ <add-product [products]="elements|async"></add-product>
+<edit-product [products]="elements|async"></edit-product>
 <del-product></del-product>
   

@@ -1,6 +1,8 @@
 import { paymentProcessor } from "./PaymentProcessor"
 
 export class appUser{
+    birthdayNotify:any
+    voucherNotify:any
     businessName:any
     businessAddress1:any
     businessAddress2:any
@@ -20,9 +22,10 @@ export class appUser{
     serviceCharge:any
     testMode:any
     smsMode:any
-    birthdayNotify:any
-    voucherNotify:any
+   
     openingTimes:any
     id?:any
+   
+    isDeleted: any
 
 }

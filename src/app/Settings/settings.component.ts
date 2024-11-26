@@ -6,7 +6,7 @@ import { RegisterCredentials } from "../Models/RegisterCredentials";
 import { paymentService } from "../Services/PaymentService";
 import { apiKeyRequestService } from "../Services/ApiKeyRequestService";
 import { OpenTimes } from "../Models/OpenTimes";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { loadStripe } from "@stripe/stripe-js";
 import { appUser } from "../Models/AppUser";
 import { animate, state, style, transition, trigger } from "@angular/animations";
@@ -51,7 +51,7 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     paymentProvider:paymentProcessor = new paymentProcessor();
     appUserId: any = localStorage.getItem("user_id");
     currency: any = localStorage.getItem('currency_iso_code');
-    appUser:any ={};
+    appUser:BehaviorSubject<appUser> = new BehaviorSubject<appUser>(new appUser());
     feedBack!:string
     showSpinner:boolean = false;
     showFeeback:boolean = false;
@@ -92,7 +92,8 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     
     
 
-constructor(private _appUserSrv: appUserService,private activatedRoute: ActivatedRoute,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
+constructor(private _appUserSrv: appUserService,private activatedRoute: ActivatedRoute,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,
+    private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
     private _smsActivator:SmSActivatorService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
 
     ngAfterViewInit(): void {
@@ -190,7 +191,8 @@ constructor(private _appUserSrv: appUserService,private activatedRoute: Activate
     ngOnInit(){
         //complete the inital tab form.
         this.activatedRoute.data.subscribe((x:any) => {
-            this.appUser = x.appUser;
+            this.appUser.next(x.appUser);
+            console.log(this.appUser.getValue())
             loadStripe(environment.stripeTestKey).then(r=> this.stripe = r);
           });
         
@@ -296,47 +298,54 @@ this.editODC.open(this.selected[0]);
     }
 
     fillAccountSettings(){
-        let r:appUser = this.appUser;
-        console.log(r.testMode,"checking app mode")
-        this.cd.detectChanges();
-        this.CreatePaymentForm();
-        this.settingsForm.get('accountDetails.firstName')?.setValue(r.firstName);
-        this.settingsForm.get('accountDetails.lastName')?.setValue(r.lastName);
-        this.settingsForm.get('accountDetails.email')?.setValue(r.email);
-        this.settingsForm.get('accountDetails.phoneNumber')?.setValue(r.phoneNumber);
-        this.settingsForm.get('testMode')?.setValue(r.testMode);
-        this.Mode.mode.next(r.testMode);
-        
-        
-        this.openingTimes = r.openingTimes;
-            this.cd.detectChanges();
-        //complete the form to be sent.
-        this.settingsUpdateForm = {
-            businessName: this.appUser.businessName,
-            businessAddress1:this.appUser.businessAddress1,
-            businessAddress2:this.appUser.businessAddress2,
-            state:this.appUser.state,
-            postalCode:this.appUser.postalCode,
-            country:this.appUser.country,
-            firstName:this.appUser.firstName,
-            lastName:this.appUser.lastName,
-            email:this.appUser.email,
-            phoneNumber:this.appUser.phoneNumber,
-            deliveryDistance:this.appUser.deliveryDistance,
-            deliveryFee:this.appUser.deliveryFee,
-            paymentProcessor:this.appUser.paymentProcessor,
-            vatCharge: this.appUser.vatCharge,
-            serviceCharge:this.appUser.serviceCharge,
-            openingTimes:this.appUser.openingTimes,
-            paymentToken:this.appUser.paymentToken,
-            testMode:this.appUser.testMode,
-            smsMode:this.appUser.smsMode,
-            voucherNotify:this.appUser.voucherNotifications,
-            birthdayNotify:this.appUser.birthdayNotifications,
-            id:this.appUser.id
-        }
+         this.appUser.subscribe(r=>{
+            
+            this.CreatePaymentForm();
+            this.settingsForm.get('accountDetails.firstName')?.setValue(r.firstName);
+            this.settingsForm.get('accountDetails.lastName')?.setValue(r.lastName);
+            this.settingsForm.get('accountDetails.email')?.setValue(r.email);
+            this.settingsForm.get('accountDetails.phoneNumber')?.setValue(r.phoneNumber);
+            this.settingsForm.get('testMode')?.setValue(r.testMode);
+            this.Mode.mode.next(r.testMode);
+            this.openingTimes = r.openingTimes;
 
-        localStorage.setItem('password',this.appUser.password);
+             this.settingsUpdateForm = {
+                businessName: r.businessName,
+                businessAddress1:r.businessAddress1,
+                businessAddress2:r.businessAddress2,
+                state:r.state,
+                postalCode:r.postalCode,
+                country:r.country,
+                firstName:r.firstName,
+                lastName:r.lastName,
+                email:r.email,
+                phoneNumber:r.phoneNumber,
+                deliveryDistance:r.deliveryDistance,
+                deliveryFee:r.deliveryFee,
+                paymentProcessor:r.paymentProcessor,
+                vatCharge: r.vatCharge,
+                serviceCharge:r.serviceCharge,
+                openingTimes:r.openingTimes,
+                paymentToken:r.paymentToken,
+                testMode:r.testMode,
+                smsMode:r.smsMode,
+                voucherNotify:r.voucherNotify,
+                birthdayNotify:r.birthdayNotify,
+                isDeleted:r.isDeleted,
+                id:r.id
+            }
+            this.cd.detectChanges();
+            localStorage.setItem('password',r.password);
+        }) 
+        
+       
+        
+        
+        
+        //complete the form to be sent.
+        
+
+       
     };
     
 
@@ -347,49 +356,51 @@ this.editODC.open(this.selected[0]);
     }
 
     deleteAccount(x:boolean){
-        this.appUser.isDeleted = true;
-        return this._appUserSrv.deleteAppUserInfo(this.appUser)
+        let user:appUser = this.appUser.getValue();
+        user.isDeleted = true;
+        return this._appUserSrv.deleteAppUserInfo(user)
         
     }
 
     fillShopSettings(){
-        
+        this.appUser.subscribe(r=>{
+            this.settingsForm.get('shopSettings.vatCharge')?.setValue(r.vatCharge);
+            this.settingsForm.get('shopSettings.serviceCharge')?.setValue(r.serviceCharge);
+            
+    
+            this.settingsForm.get('businessDetails.businessName')?.setValue(r.businessName);
+            this.settingsForm.get('businessDetails.businessAddressLine1')?.setValue(r.businessAddress1);
+            this.settingsForm.get('businessDetails.businessAddressLine2')?.setValue(r.businessAddress2);
+            this.settingsForm.get('businessDetails.city')?.setValue(r.state);
+    
+            this.settingsForm.get('businessDetails.postalCode')?.setValue(r.postalCode);
+            this.settingsForm.get('businessDetails.country')?.setValue(r.country);
+    
+            this.settingsForm.get('logistics.deliveryDistance')?.setValue(r.deliveryDistance);
+            this.settingsForm.get('logistics.deliveryFee')?.setValue(r.deliveryFee);
+        })
        
-        this.settingsForm.get('shopSettings.vatCharge')?.setValue(this.appUser.vatCharge);
-        this.settingsForm.get('shopSettings.serviceCharge')?.setValue(this.appUser.serviceCharge);
         
-
-        this.settingsForm.get('businessDetails.businessName')?.setValue(this.appUser.businessName);
-        this.settingsForm.get('businessDetails.businessAddressLine1')?.setValue(this.appUser.businessAddress1);
-        this.settingsForm.get('businessDetails.businessAddressLine2')?.setValue(this.appUser.businessAddress2);
-        this.settingsForm.get('businessDetails.city')?.setValue(this.appUser.state);
-
-        this.settingsForm.get('businessDetails.postalCode')?.setValue(this.appUser.postalCode);
-        this.settingsForm.get('businessDetails.country')?.setValue(this.appUser.country);
-
-        this.settingsForm.get('logistics.deliveryDistance')?.setValue(this.appUser.deliveryDistance);
-        this.settingsForm.get('logistics.deliveryFee')?.setValue(this.appUser.deliveryFee);
         
 
     }
 
     fillIntegrationSettings(){
-       
-            let processor = this.appUser.paymentProcessor;
-            if(processor !== null){
-                this.settingsForm.get('integrationSettings.processorName')?.setValue(processor.name);
-                this.settingsForm.get('integrationSettings.processorApiKey')?.setValue(processor.apiKey1);
-                this.settingsForm.get('integrationSettings.processorAccountId')?.setValue(processor.accountId);
-                this.settingsForm.get('integrationSettings.processorSoftwareHouseId')?.setValue(processor.softwareHouseId); 
+       this.appUser.subscribe(r=>{
+        let processor = r.paymentProcessor;
+        if(processor !== null){
+            this.settingsForm.get('integrationSettings.processorName')?.setValue(processor.name);
+            this.settingsForm.get('integrationSettings.processorApiKey')?.setValue(processor.apiKey1);
+            this.settingsForm.get('integrationSettings.processorAccountId')?.setValue(processor.accountId);
+            this.settingsForm.get('integrationSettings.processorSoftwareHouseId')?.setValue(processor.softwareHouseId); 
 
-            }
-           
-            
-        
+        }
+       })
+
     }
 
     fillNotificationSettings(){
-        let a:appUser = this.appUser;
+        this.appUser.subscribe(a=>{
             if(a.testMode){
                 this.settingsForm.get('notifications.smsActivation')?.disable();
         
@@ -401,9 +412,8 @@ this.editODC.open(this.selected[0]);
             this.settingsForm.get('notifications.birthdayNotifications')?.setValue(a.birthdayNotify);
             this.settingsForm.get('notifications.voucherNotifications')?.setValue(a.voucherNotify);
             this.cd.detectChanges();
-        
-        
-
+        })
+           
 
     }
 
@@ -441,46 +451,55 @@ this.editODC.open(this.selected[0]);
     showDojoForms:boolean = false;
 
     onChangeBusinessDetails(){
-        let a = this.settingsForm.get('businessDetails.businessAddressLine1')?.value;
-        let b = this.settingsForm.get('businessDetails.businessAddressLine2')?.value;
-        let c = this.settingsForm.get('businessDetails.city')?.value;
-        let d = this.settingsForm.get('businessDetails.postalCode')?.value;
-        let e = this.settingsForm.get('businessDetails.country')?.value;
-
-        this.appUser.businessAddress1 = a;
-        this.appUser.businessAddress2 = b;
-        this.appUser.state = c;
-        this.appUser.postalCode = d;
-        this.appUser.country = e;
-
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(x=>{
-            this.showBusinessDetailsUpdateFeedback = true;
-        },(er:Error)=>console.log(er.message));
+        this.appUser.subscribe(r=>{
+            let a = this.settingsForm.get('businessDetails.businessAddressLine1')?.value;
+            let b = this.settingsForm.get('businessDetails.businessAddressLine2')?.value;
+            let c = this.settingsForm.get('businessDetails.city')?.value;
+            let d = this.settingsForm.get('businessDetails.postalCode')?.value;
+            let e = this.settingsForm.get('businessDetails.country')?.value;
+    
+            r.businessAddress1 = a;
+            r.businessAddress2 = b;
+            r.state = c;
+            r.postalCode = d;
+            r.country = e;
+    
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(x=>{
+                this.showBusinessDetailsUpdateFeedback = true;
+            },(er:Error)=>console.log(er.message));
+        })
+      
     }
 
     onChangeLogisticsDetails(){
-        let x = this.settingsForm.get('logistics.deliveryDistance')?.value;
-        let y = this.settingsForm.get('logistics.deliveryFee')?.value;
-
-        this.appUser.deliveryDistance = x;
-        this.appUser.deliveryFee = y;
-        
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
-            this.showLogisticsUpdateFeedback = true;
-        },(er:Error)=> console.log(er.message));
+        this.appUser.subscribe(r=>{
+            let x = this.settingsForm.get('logistics.deliveryDistance')?.value;
+            let y = this.settingsForm.get('logistics.deliveryFee')?.value;
+    
+            r.deliveryDistance = x;
+            r.deliveryFee = y;
+            
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(r=>{
+                this.showLogisticsUpdateFeedback = true;
+            },(er:Error)=> console.log(er.message));
+        })
+       
     }
 
     //update the vat charge fee and the service charge. 
     onChangeReceiptDetails(){
-        let x = this.settingsForm.get('shopSettings.vatCharge')?.value;
-        let y = this.settingsForm.get('shopSettings.serviceCharge')?.value;
-
-        this.appUser.vatCharge = x;
-        this.appUser.serviceCharge = y;
-
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
-            this.showReceiptUpdateFeedback = true;
-        },(er:Error)=>console.log(er.message));
+        this.appUser.subscribe(r=>{
+            let x = this.settingsForm.get('shopSettings.vatCharge')?.value;
+            let y = this.settingsForm.get('shopSettings.serviceCharge')?.value;
+    
+            r.vatCharge = x;
+            r.serviceCharge = y;
+    
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(r=>{
+                this.showReceiptUpdateFeedback = true;
+            },(er:Error)=>console.log(er.message));
+        })
+       
     }
     
     onChangePaymentDetails(x:any){
@@ -496,24 +515,27 @@ this.editODC.open(this.selected[0]);
     }
     
     onChangePaymentProcessor(x:any){
-        x.preventDefault();
-        let pp:paymentProcessor = this.settingsForm.get('integrationSettings')?.value;
-        if(this.appUser.paymentProcessor == null)
-        {
-            pp.applicationUserID = this.appUser.id
-            this.appUser.paymentProcessor = pp;
-        }
-        else
-        {
-            pp.paymentProcessorID = this.appUser.paymentProcessor.paymentProcessorID;
-            pp.applicationUserID = this.appUser.paymentProcessor.applicationUserID;
-            this.appUser.paymentProcessor = pp;
-        }
-    
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(r=>{
-            this.showPaymentProcessorUpdateFeedback = true;
-            this.cd.detectChanges()
-        },(er:Error)=>console.log(er.message)); 
+        this.appUser.subscribe(r=>{
+            x.preventDefault();
+            let pp:paymentProcessor = this.settingsForm.get('integrationSettings')?.value;
+            if(r.paymentProcessor == null)
+            {
+                pp.applicationUserID = r.id
+                r.paymentProcessor = pp;
+            }
+            else
+            {
+                pp.paymentProcessorID = r.paymentProcessor.paymentProcessorID;
+                pp.applicationUserID = r.paymentProcessor.applicationUserID;
+                r.paymentProcessor = pp;
+            }
+        
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(r=>{
+                this.showPaymentProcessorUpdateFeedback = true;
+                this.cd.detectChanges()
+            },(er:Error)=>console.log(er.message)); 
+        })
+        
     }
 
 
@@ -656,24 +678,32 @@ this.editODC.open(this.selected[0]);
     }
 
     onVoucherNotifications() {
-        let s = this.settingsForm.get('notifications.voucherNotifications')?.value;
-        this.appUser.voucherNotify = s;
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe();
+        this.appUser.subscribe(r=>{
+            let s = this.settingsForm.get('notifications.voucherNotifications')?.value;
+            r.voucherNotify = s;
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
+        })
     }
+    
+            onSmsActivation() {
+                this.appUser.subscribe(r=>{
+                    let s = this.settingsForm.get('notifications.smsActivation')?.value;
+                    r.smsMode = s;
+                    this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(()=>{
+                       let d = s == true?false:true;
+                       this._smsActivator.activaionState.next(d);
+                    });
+                })
 
-        onSmsActivation() {
-         let s = this.settingsForm.get('notifications.smsActivation')?.value;
-         this.appUser.smsMode = s;
-         this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe(()=>{
-            let d = s == true?false:true;
-            this._smsActivator.activaionState.next(d);
-         });
-            
-        }
-
-        onBirthdayNotifications() {
-        let s = this.settingsForm.get('notifications.birthdayNotifications')?.value;
-        this.appUser.birthdayNotify = s;
-        this._appUserSrv.updateAppUserInfo(this.appUser.id,this.appUser).subscribe();
+            }
+    
+            onBirthdayNotifications() {
+                this.appUser.subscribe(r=>{
+                    let s = this.settingsForm.get('notifications.birthdayNotifications')?.value;
+                    r.birthdayNotify = s;
+                    this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
+                })
+           
+       
         }
 }

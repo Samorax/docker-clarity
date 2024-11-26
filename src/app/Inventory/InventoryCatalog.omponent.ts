@@ -5,7 +5,7 @@ import { EditProductDialog } from "./EditProductDialog.component";
 import { DeleteProductDialog } from "./DeleteProductDialog.component";
 import { ProductService } from "../Services/ProductService";
 import { DomSanitizer } from "@angular/platform-browser";
-import { Observable, from, of } from "rxjs";
+import { BehaviorSubject, Observable, from, of } from "rxjs";
 import { paymentService } from "../Services/PaymentService";
 import { rxDbService } from "../Services/RxDbService";
 import { ActivatedRoute } from "@angular/router";
@@ -37,7 +37,7 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
        let d = p.products.filter((pr:any)=>pr.isDeleted === false);
       d.forEach((dr:any)=>{
         this.convertImgByte(dr).subscribe(p=>{
-          this.elements.push(p);
+          this.elements.next([...this.elements.getValue(),p]);
           this.cd.detectChanges();
         });
       }) 
@@ -51,13 +51,13 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
       //add new product to the catalog
       this.modal.onOk.subscribe(prod =>
       {
+        let addArray:Product[] = []
         this.productService.addProduct(prod)
           .subscribe(p => {
-            this.convertImgByte(p).subscribe(p=>{
-              this.elements.push(p);
-              this.cd.detectChanges();
-              
+            this.convertImgByte(p).subscribe(pr=>{
+              this.elements.next([...this.elements.getValue(),pr]);
             });
+            
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
             this.feedBackMessage = 'You have successfully addedd '+p.name+' to the collection';
@@ -67,8 +67,8 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
             this.ifError = true;
             this.feedBackStatus = 'warning';
             this.feedBackMessage = 'Product not added to collection. Reason: '+ err.message;
-          },()=>this.modal.close());
-        
+          });
+          this.modal.close();
       });
 
       this.editModal.onOk.subscribe((prod:FormData) => {
@@ -77,8 +77,11 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
           .subscribe(
             (r:Product)=>
           { 
-            let i = this.elements.findIndex(p=>p.productID === r.productID);
-            this.elements[i] = r;
+            let a = this.elements.getValue();
+            let i = a.findIndex((p:any)=>p.productID === r.productID);
+            a[i] = r;
+            this.elements.next(a)
+
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
             this.feedBackMessage = `${prod.get('name')} was successfully updated.`;
@@ -97,8 +100,8 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
       this.delModal.onOk.subscribe(prods => {
         prods.forEach(p => {
           this.productService.removeProduct(p.productID).subscribe(()=>{
-            let indexOfDeletedProduct = this.elements.indexOf(p);
-            this.elements.splice(indexOfDeletedProduct,1);
+            let indexOfDeletedProduct = this.elements.getValue().filter((pr:any)=>pr.productID !== p.productID);
+            this.elements.next(indexOfDeletedProduct);
 
             this.ifSuccess = true;
             this.feedBackStatus = 'success';
@@ -117,7 +120,7 @@ export class InventoryCatalogComponent implements OnInit, AfterViewInit{
     }
     
     selected: any = [];
-    elements: Array<Product> = [];
+    elements: BehaviorSubject<any> = new BehaviorSubject<Product[]>([]);
     @ViewChild(AddProductDialog) modal!: AddProductDialog;
     @ViewChild(EditProductDialog) editModal!: EditProductDialog;
     @ViewChild(DeleteProductDialog) delModal!: DeleteProductDialog;
