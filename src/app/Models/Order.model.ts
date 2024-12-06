@@ -1,4 +1,5 @@
 import { orderDetail } from "./OrderDetails"
+import { TableSession } from "./Session"
 
 export class Order {
   orderDetails!: Array<orderDetail>
@@ -10,13 +11,13 @@ export class Order {
   payment!: any
   vatCharge:any
   serviceCharge:any
-  customerID?: any
+  customerId?: any
   paymentToken?:any 
   applicationUserID:any
   channel:any
   opened: any
   tableSessionId:any
-  tableSession:any
+  tableSession!:TableSession
   totalTax:any
   paidAmount:any
   type:any

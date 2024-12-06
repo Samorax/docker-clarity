@@ -1,0 +1,13 @@
+.reconcileBalances li{
+    display: inline;
+    margin-right: 15px;
+}
+.reconcileBalances{
+    list-style-type: none;
+    display: inline;
+}
+
+.balancesParent{
+    padding-top: 25px;
+    padding-left: 0px;
+}

@@ -29,7 +29,7 @@
     <clr-dg-column >Stocked Date</clr-dg-column>
 
     <clr-dg-placeholder>We couldn't find any Stock. Add new Stock</clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let element of elements" [clrDgItem]="element">
+    <clr-dg-row *clrDgItems="let element of elements |async" [clrDgItem]="element">
       <clr-dg-cell>{{element.product?.name}}</clr-dg-cell>
       <clr-dg-cell>{{element.initialUnits}}</clr-dg-cell>
       <clr-dg-cell>{{element.remainingUnits}}</clr-dg-cell>

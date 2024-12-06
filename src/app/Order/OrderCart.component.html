@@ -51,17 +51,17 @@
     </div>
     
     <div class="height:20%">
-      <form clrForm (ngSubmit)="onApply()" class="clr-row">
-        <div class="clr-col-6">
-          <clr-datalist-container>
-            <input clrDatalistInput [(ngModel)]="selectedOption" placeholder="Apply Voucher?" name="Option" />
-            <datalist>
-              <option  *ngFor="let voucher of vouchers" [ngValue]='voucher.voucherNumber'>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | currency:currencySymbol}}</option>
-            </datalist>
-          </clr-datalist-container>
+      <form clrForm (ngSubmit)="onApply()" class="clr-row" *ngIf="vouchers.length >= 1">
+        <div class="clr-col">
+          <clr-select-container>
+            <label>Apply Voucher</label>/>
+            <select clrSelect name="options" [(ngModel)]="selectedOption" required (change)="getVoucherAmouunt($event)">
+              <option  *ngFor="let voucher of vouchers" [ngValue]='voucher.voucherNumber'>{{voucher.voucherNumber}} {{voucher.voucherCreditAmount | customFormat:voucher.valueType}}</option>
+            </select>
+          </clr-select-container>
         </div>
-        <div class="clr-col-6">
-            <button class="btn btn-primary" type="submit" style="margin-top: 25%;margin-bottom: 0%;" [clrLoading]="applyVouchBtn">Apply</button>
+        <div class="clr-col">
+            <button class="btn btn-primary" type="submit"  [clrLoading]="applyVouchBtn">Apply</button>
         </div>
       </form>
     </div>

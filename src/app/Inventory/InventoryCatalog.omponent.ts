@@ -3,7 +3,7 @@ import { Product } from "../Models/Product";
 import { AddProductDialog } from "./AddProductDialog.component";
 import { EditProductDialog } from "./EditProductDialog.component";
 import { DeleteProductDialog } from "./DeleteProductDialog.component";
-import { ProductService } from "../Services/ProductService";
+import { ProductService } from "../Services/Product/ProductService";
 import { DomSanitizer } from "@angular/platform-browser";
 import { BehaviorSubject, Observable, from, of } from "rxjs";
 import { paymentService } from "../Services/PaymentService";

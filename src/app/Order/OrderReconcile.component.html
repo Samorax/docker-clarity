@@ -15,11 +15,32 @@
                 <div class="clr-col">
                     <button type="submit" class="btn btn-primary" style="position: relative;top: 40px;" [disabled]="startDate == undefined && EndDate == undefined">Search</button>
                 </div>
-                <div class="clr-col">
-                    <p>Balance:{{balance | async}}</p>
+                </div>  
+                <div class="clr-row">
+                  <form clrForm class="clr-row" clrLayout="horizontal">
+                    <div class="clr-col">
+                      <clr-input-container >
+                        <input clrInput placeholder="endBalance" #balance type="text"/>
+                      </clr-input-container>
+                    </div>
+                    <div class="clr-col">
+                      <button type="button" class="btn btn-primary" (click)="onAddEndbalance(balance.value)">Add</button>
+                    </div>
+                  </form>
+                  <div class="clr-col balancesParent">
+                    <ul class="reconcileBalances">
+                     <li>EndBalance:{{endBalance | async}}</li>
+                     <li>ActualBalance:{{actualBalance | async}}</li>
+                     <li>DiscrepancyBalance:{{discrepancy | async}}</li>
+                    </ul>
+                       
+                   </div>
                 </div>
+                  
                 
-            </div>
+               
+                
+            
             <div class="clr-row">
                 <clr-datagrid [(clrDgSelected)]="selected" (clrDgSelectedChange)="selectionChanged($event)">
                     <clr-dg-column>Date</clr-dg-column>
@@ -52,6 +73,6 @@
     </div>
     <div class="modal-footer" clrModalActions>
       <button class="btn btn-outline" (click)="show=false">Cancel</button>
-      <button class="btn btn-primary" (click)="onReconcile()">Reconcile</button>
+      <button class="btn btn-primary" (click)="onReconcile()" [disabled]="discrepancy.getValue() !== 0 || endBalance.getValue() === 0">Reconcile</button>
     </div>
   </clr-modal>

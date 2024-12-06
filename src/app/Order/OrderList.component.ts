@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
 import { SignalrService } from "../Services/Signalr.Service";
-import { OrderService } from "../Services/OrderService";
+import { OrderService } from "../Services/Order/OrderService";
 import { OrderEditComponent } from "./OrderEdit.component";
 import { OrderAddComponent } from "./OrderAdd.component";
 import { paymentService } from "../Services/PaymentService";
@@ -15,7 +15,7 @@ import { OrderInSessionEditComponent } from "./OrderInSessionEdit.Component";
 import { OrderCartComponent } from "./OrderCart.component";
 import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
-import { ProductService } from "../Services/ProductService";
+import { ProductService } from "../Services/Product/ProductService";
 import { voucherService } from "../Services/VoucherService";
 import { voucher } from "../Models/Voucher";
 import { OrderSmsComponent } from "./OrderSms.component";
@@ -24,10 +24,13 @@ import { orderDetail } from "../Models/OrderDetails";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { OrderAnnulComponent } from "./OrderAnnul.component";
 import { OrderReconcileComponent } from "./OrderReconcile.component";
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject, distinct, of } from "rxjs";
 import { stockService } from "../Services/Stock/StockService";
 import { ClarityIcons, eraserIcon, shrinkIcon } from "@cds/core/icon";
 import { ActivatedRoute } from "@angular/router";
+import { saveAs } from "file-saver";
+import { ClrLoadingState } from "@clr/angular";
+import { TableSessionService } from "../Services/TableSessionsService";
 ClarityIcons.addIcons(eraserIcon,shrinkIcon)
 
 
@@ -40,6 +43,7 @@ ClarityIcons.addIcons(eraserIcon,shrinkIcon)
 })
 
 export class OrderListComponent implements OnInit, AfterViewInit{
+  orderSignalRUpdate: any;
 
 
 // On Annul, order status is changed to "Cancelled" - this implies the total amount is exempted from the total sale revenue since it is not "Completed".
@@ -82,7 +86,7 @@ this.reconcileOrderModal.open();
   
 
   constructor(private orderService: OrderService, private custSVR:CustomerService, private voucherSVR:voucherService,private cd:ChangeDetectorRef, private stkSVR:stockService,
-    private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService, private _smsActivator:SmSActivatorService,
+    private tableSvr: TableService, private waiterSvr: WaiterService, private signalrSVR: SignalrService, private _smsActivator:SmSActivatorService, private tableSessionSVR:TableSessionService,
     private paymentService: paymentService, private productSVR: ProductService, private _smsSvr: SmsService, private activatedRoute:ActivatedRoute) {
 
   }
@@ -90,7 +94,7 @@ this.reconcileOrderModal.open();
       
       this._smsActivator.getState.subscribe(a=>
         {
-          console.log(a,"enable sms")
+        
           this.enableSms = a;
           this.cd.detectChanges();
         });
@@ -99,55 +103,66 @@ this.reconcileOrderModal.open();
         o.forEach(o=>{
           o.isDeleted = true;
           this.orderService.updateOrder(o.orderID,o).subscribe();
-        });
 
+        });
+        this.orderService.downloadReconcilationFile(o).subscribe(d=>saveAs(d,'reconcilation.pdf'));
         this.reconcileOrderModal.close();
       });
 
       this.annulOrderModal.annuldialog.subscribe((o:Order)=>{
         o.isCancelled = true;
         o.orderStatus = "Cancelled";
+        o.tableSession.isPayable = false;
         this.orderService.updateOrder(o.orderID,o).subscribe(r=>{
           if(o.isCompleted){
             this.paymentService.refundDojoPayment(o).subscribe(r=> console.log(r));
           }
+          this.tableSessionSVR.updateSession(o.tableSession, o.tableSession.id).subscribe();
           });
+
           this.annulOrderModal.close();
       });
 
       this.OrderEditModal.editdialog.subscribe(o=>{
         this.orderService.updateOrder(o.orderID,o).subscribe();
-        this.orderService.getOrders().subscribe(ord => {
-              this.orders = ord;
-          
-        });
+        
       });
 
       //add order from session to list from POS
       this.OrderAddModal.orda.subscribe(o => {
-          this.orders.unshift(o);
+        let currentOrders = this.orders.getValue();
+        currentOrders.unshift(o);
+        this.orders.next(currentOrders);
           this.OrderAddModal.close();
         });
 
 
         this.orderInSession.OrderSessionCartModal.cart.subscribe((o:any)=>{
-          let index = this.orders.findIndex(x=> x.orderID === o.orderID);
-          this.orders[index] = o;
+          
+          let currentOrders = this.orders.getValue();
+          let index = currentOrders.findIndex((x:Order)=> x.orderID === o.orderID);
+          currentOrders[index] = o;
+          this.orders.next(currentOrders);
+          this.orderInSession.OrderSessionCartModal.applyVouchBtn = ClrLoadingState.DEFAULT
           this.orderInSession.close();
-        },(er:Error)=>console.log(er));
+        });
 
 
       this.signalrSVR.AllOrderFeedObservable.subscribe((o:any)=>{
         let ord = JSON.parse(o);
-        this.orders.unshift(ord);
-        this.cd.detectChanges();
+        this.orders.subscribe(o=>
+          {
+            o.unshift(ord);
+            
+          });
       })
 
       this.signalrSVR.AllOrderUpdateFeedObservable.subscribe((o: any) => {
         let ord = JSON.parse(o);
-        let x = this.orders.findIndex((x:any) => x.OrderID === ord.orderID);
-        this.orders[x].orderStatus = ord.OrderStatus;
-        this.cd.detectChanges();
+        let currentOrders = this.orders.getValue();
+        let x = currentOrders.findIndex((x:any) => x.OrderID === ord.orderID);
+        currentOrders[x].orderStatus = ord.OrderStatus;
+        this.orders.next(currentOrders);
       });
 
 
@@ -161,12 +176,14 @@ this.reconcileOrderModal.open();
 
 
     ngOnInit(): void {
+      
       this.activatedRoute.data.subscribe((o:any)=>{
-          this.orders = o.orders.filter((o:any)=>o.isDeleted === false);
+          let latestOrders= o.orders.filter((o:any)=>o.isDeleted === false);
             //index is 0 because the list is in ascending order.
             //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
-            this.lastId = this.orders[0].orderID;
-            this.cd.detectChanges();
+            this.orders.next(latestOrders);
+            this.orders.pipe(distinct())
+            
           ;
         });
     
@@ -183,7 +200,7 @@ this.reconcileOrderModal.open();
     selected: any[] = [];
   
     
-    orders: Array<Order> =[];
+    orders: BehaviorSubject<any> = new BehaviorSubject<Order[]>([]);
     getVouchers(){
       this.voucherSVR.getVouchers().subscribe((v:any)=> this.vouchers = v);
     }
@@ -215,7 +232,8 @@ this.reconcileOrderModal.open();
     //open the edit dialog accordingly
     onEdit(){
       let od = <Order>this.selected[0];
-      if(od.channel !== 'On-Site'){
+    
+      if(od.channel !== 'In-Person'){
         this.OrderEditModal.open(od);
       }else{
         this.OrderInSessionEditModal.open(od)

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
-import { ProductService } from "../Services/ProductService";
+import { ProductService } from "../Services/Product/ProductService";
 import { Product } from "../Models/Product";
 import { Order } from "../Models/Order.model";
 import { ECElementEvent, ECharts, EChartsOption } from "echarts";
-import { OrderService } from "../Services/OrderService";
+import { OrderService } from "../Services/Order/OrderService";
 import { orderDetail } from "../Models/OrderDetails";
 import moment from "moment";
 import { StockWasteService } from "../Services/Stock/StockWasteService";
@@ -11,6 +11,7 @@ import { StockVarianceService } from "../Services/Stock/StockVarianceService";
 import { BehaviorSubject } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { Stock } from "../Models/Stock";
+import { productDemandChartService } from "../Services/Product/ProductDemand.chart";
 
 @Component({
     selector:'app-productoverview',
@@ -28,13 +29,14 @@ stockVarianceChart: BehaviorSubject<EChartsOption> = new BehaviorSubject<ECharts
 
 stkWasteSVR = inject(StockWasteService)
 stkVarianceSVR = inject(StockVarianceService)
+productDemandChartSVR = inject(productDemandChartService)
 stocks!: Stock[];
 
 
     constructor(private activatedRoute:ActivatedRoute,private cd: ChangeDetectorRef){}
     products: Product[] = [];
-    productCount: number = 0;
-    categoriesCount: number = 0;
+    productCount = new BehaviorSubject<number>(0);
+    categoriesCount = new BehaviorSubject<number>(0);
     orders!: Order[];
     date!:Date
     today = new Date().toString()
@@ -50,14 +52,15 @@ stocks!: Stock[];
         
                 this.activatedRoute.data.subscribe((p:any)=>{
                     this.products = p.products;
-                    this.productCount = this.products.length;
+                    this.productCount.next(this.products.length);
                     this.getProductCategories(this.products).then(x=>{
-                        this.categoriesCount = x.length;
+                        this.categoriesCount.next(x.length);
                     });
                     this.getOrders();
                     this.getStocks();
                     this.getStockWasteChart('2024');
                     this.getStockVarianceChart('2024');
+                    this.getProductDemandChart(this.orders,this.products,'2024');
                     this.cd.detectChanges()
                 });
             
@@ -71,8 +74,6 @@ stocks!: Stock[];
                 this.activatedRoute.data.subscribe((or:any)=> 
                     {
                         this.orders = or.orders;
-                        this.getProductDemandChart();
-                        this.cd.detectChanges()
                     });
     }
 
@@ -294,39 +295,42 @@ stocks!: Stock[];
         
     }
 
-    getProductDemandChart(){
-        this.productDemandChart.next({
-            title:{
-                text:'Product Demand (%)',
-                left:'center',
-                textStyle:{ fontSize:'16px',fontWeight:'normal'}
-            },
-            tooltip:{
-                trigger:'axis'
-            },
-            xAxis:{
-                type:"category",
-                axisTick:{ alignWithLabel:true},
-                axisLabel:{rotate:30},
-                data:this.getTheNamesOfProducts(this.products)
-    
-            },
-            yAxis:{
-                axisLabel:{ formatter: '{value}%', align:'center'},
-                type:"value",
-            },
-            series: [
-                {
-                  data: this.calculateThePercentageDemandOfAllProducts(this.products),
-                  type: 'bar',
-                  showBackground: true
+    getProductDemandChart(o:Order[],p:Product[],year:string){
+        
+        this.productDemandChartSVR.getOverallProductPercentageDemand(o,p,year).subscribe(data=>{
+            this.productDemandChart.next({
+                title:{
+                    text:'Product Demand (%)',
+                    left:'center',
+                    textStyle:{ fontSize:'16px',fontWeight:'normal'}
                 },
-              ],
-            });
-            
+                tooltip:{
+                    trigger:'axis'
+                },
+                xAxis:{
+                    type:"category",
+                    axisTick:{ alignWithLabel:true},
+                    axisLabel:{rotate:30},
+                    data:data.productNames
+        
+                },
+                yAxis:{
+                    axisLabel:{ formatter: '{value}%', align:'center'},
+                    type:"value",
+                },
+                series: [
+                    {
+                      data: data.productDemand,
+                      type: 'bar',
+                      showBackground: true
+                    },
+                  ],
+                });
+        })
+          
     }
 
-    onSelectedDate(){
+    /* onSelectedDate(){
         let ns:number[] = [];
         this.products.forEach(pr => {
             let x = this.getProductDemandByDate(pr,this.orders);
@@ -392,12 +396,11 @@ stocks!: Stock[];
                 ]
         })
         return ns;
-    }
+    } */
 
     getProductDemandByDate(p:Product, o:Order[]){
         let uniqueProductArray: orderDetail[] = [];
         o.filter(o=>o.orderStatus === "Completed" && moment(o.orderDate).toDate().toDateString() === this.date.toDateString()).forEach(or=>{
-            console.log(or)
             let x = or.orderDetails.filter(pr=> p.name === pr.name);
             x.forEach(a=> uniqueProductArray.push(a));
             x = [];
@@ -405,23 +408,9 @@ stocks!: Stock[];
         return uniqueProductArray.length;
     }
 
-    calculatePercentageDemand(x:number,y: number): number{
-        let totalNumberOfOrders: number =x;
-        let totalNumberOfUniqueProduct: number = y;
-      
-        return (totalNumberOfUniqueProduct/totalNumberOfOrders)*100;
-    }
+    
 
-    getTotalNumberOfUniqueProducts(p:Product, o:Order[]){
-        let uniqueProductArray: orderDetail[] = [];
-        o.filter(o=>o.orderStatus === "Completed").forEach(or=>{
-            let x = or.orderDetails.filter(pr=> p.name === pr.name);
-            x.forEach(a=> uniqueProductArray.push(a));
-
-            x = [];
-        });
-        return uniqueProductArray.length;
-    }
+    
 
     getTheNamesOfProducts(p:Product[]):string[]{
         let names:string[]  = [];
@@ -433,15 +422,7 @@ stocks!: Stock[];
         return names;
     }
 
-    calculateThePercentageDemandOfAllProducts(p:Product[]):number[]{
-        let ns:number[] = [];
-        p.forEach(pr => {
-            let x = this.getTotalNumberOfUniqueProducts(pr,this.orders);
-          let n = Math.round(this.calculatePercentageDemand(this.orders.length, x));
-            ns.push(n);
-        });
-        return ns;
-    }
+    
 
     
 }

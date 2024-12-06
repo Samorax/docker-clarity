@@ -5,7 +5,7 @@
           <form clrForm  #sessionForm="ngForm">
             <clr-select-container>
               <label>Select Type</label>
-              <select clrSelect #select (change)=onChangeSessionType(select.value)>
+              <select clrSelect #select  (change)=onChangeSessionType(select.value)>
                 <option value="Takeaway">Takeaway</option>
                 <option value="Dine-In">Dine-In</option>
               </select>
@@ -13,7 +13,7 @@
             <div *ngIf="showDineInSessionForm">
               <clr-select-container>
                 <label>Select Table</label>
-                <select clrSelect name="tableName" #select [(ngModel)]="table.name" [value]="table?.name" (change)="onChangeSessionTable(select.value)" >
+                <select clrSelect name="name" #select [(ngModel)]="table.name" [value]="table?.name" (change)="onChangeSessionTable(select.value)" >
                   <option *ngFor="let t of tables" value="{{t.name}}">{{t.name}}</option>
                 </select>
               </clr-select-container>
@@ -26,19 +26,18 @@
             </div>
             
           </form>
-         
             <div class="clr-row">
                 <div class="clr-col-8">
                     <h3>Select Product(s)</h3>
                     <div style="padding: 5px; height: 450px;">
-                      <div class="card clickable" *ngFor='let product of products'  (click)="onSelect(product)" class="clr-col-lg-2" style="display: inline; float: left;"> 
+                      <div class="card clickable" *ngFor='let stock of stocks | async'  (click)="onSelect(stock)" class="clr-col-lg-2" style="display: inline; float: left;"> 
                         <div class="card-img">
-                          <img [src]="product.photosUrl" alt="..."/>
+                          <img [src]="stock.product?.photosUrl" alt="..."/>
                         </div>
                         <div class="card-block">
                           <p class="card-text">
-                            {{product.name}}<br>
-                            {{product.price | currency: currencySymbol}}
+                            {{stock.product?.name}}<br>
+                            {{stock.product?.price | currency: currencySymbol}}
                           </p>
                         </div>
                       </div>
@@ -49,7 +48,7 @@
                       </li> -->
                 </div>
               <div class="clr-col-4">
-                <order-EditCart [Products]="selected" [SubTotal]="totalAmount" [order]="order" [tableSession]="tableSession"  [orders]="cart"></order-EditCart>
+                <order-EditCart [Products]="selected" [stocks]="stocks" [order]="order"  [SubTotal]="totalAmount" [CartItems]="cartitems" [tableSession]="tableSession"  [table]="table"  [sessionType]="sessionType"></order-EditCart>
             </div>
             </div>
            

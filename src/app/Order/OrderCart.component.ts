@@ -7,13 +7,13 @@ import { voucher } from "../Models/Voucher";
 import { CartItem } from "../Models/CartItem";
 import { TableSession } from "../Models/Session";
 import { TableSessionService } from "../Services/TableSessionsService";
-import { OrderDetailService } from "../Services/OrderDetailService";
-import { OrderService } from "../Services/OrderService";
+import { OrderDetailService } from "../Services/Order/OrderDetailService";
+import { OrderService } from "../Services/Order/OrderService";
 import { TableService } from "../Services/TableService";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
 import { BehaviorSubject, first, Observable, of } from "rxjs";
-import { OrderCartService } from "../Services/OrderCartService";
+import { OrderCartService } from "../Services/Order/OrderCartService";
 import { ClarityIcons, timesIcon } from "@cds/core/icon";
 import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
@@ -31,6 +31,8 @@ ClarityIcons.addIcons(timesIcon)
 })
 
 export class OrderCartComponent implements OnInit, AfterViewInit {
+getVoucherAmouunt($event: Event) {
+}
 selectedOption: any;
 selectedCustomer:any
     custId!: string;
@@ -73,7 +75,7 @@ selectedCustomer:any
 
     appId = localStorage.getItem("user_id");
     @Output()cart: EventEmitter<Order> = new EventEmitter<Order>();
-    @Input()lastorderId:any
+    @Input()lastorderId!:BehaviorSubject<number>
     @Input()table!:Table;
     newOder!:Order;
     @Input()Products!: Product[];
@@ -86,7 +88,7 @@ selectedCustomer:any
 
     vouchers:voucher[] = [];
     customers:Customer[] = []
-    voucherToApply: any;
+    voucherToApply!: voucher;
     currencySymbol:any = localStorage.getItem('currency_iso_code');
     payButtonStatus:boolean = false;
     paymentMethod!:string;
@@ -117,22 +119,25 @@ selectedCustomer:any
     //if validation is successful, charges should be affected and changed
     //otherwise, vice-versa.
      onApply(){
+        let voucherCartItem:CartItem;
         this.applyVouchBtn = ClrLoadingState.LOADING;
-        let vat:any = localStorage.getItem('vatCharge');
-        let sCharge:any = localStorage.getItem('serviceCharge');
-
-        this.voucherToApply = this.vouchers.find(v=>v.voucherNumber === this.selectedOption)
+        
+    
+        this.voucherToApply = <voucher>this.vouchers.find(v=>v.voucherNumber === this.selectedOption)
 
         if(this.voucherToApply !== undefined)
         {
-            let currentSubCharge = this.SubTotal.getValue();
-            this.SubTotal.next(currentSubCharge - this.voucherToApply.voucherCreditAmount);
-            this.VatCharge.next((vat/100)*currentSubCharge);
-            this.ServiceCharge.next((sCharge/100)*currentSubCharge);
-            this.TotalAmount.next(currentSubCharge+this.VatCharge.getValue()+this.ServiceCharge.getValue());
-        }
+            let voucherAmount = this.voucherToApply.valueType === 1?this.voucherToApply.voucherCreditAmount:(this.voucherToApply.voucherCreditAmount/100)*this.SubTotal.getValue()
+            this.SubTotal.next(this.SubTotal.getValue() - voucherAmount);
+            this.VatCharge.next((this.vat/100)*this.SubTotal.getValue());
+            this.ServiceCharge.next((this.sCharge/100)*this.SubTotal.getValue());
+            this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
 
+            voucherCartItem = {name: this.voucherToApply.voucherNumber+'(Voucher)',unitPrice:-(voucherAmount),count:1 }
+            this.CartItems.next([...this.CartItems.getValue(),voucherCartItem]);
+        }
         
+        this.applyVouchBtn = ClrLoadingState.DEFAULT;
         
     } 
     
@@ -197,12 +202,12 @@ selectedCustomer:any
             //add session to database
         this.tableSessionSvr.addSession(this.tableSession).subscribe((r: TableSession) => {
            //create new order
-           console.log(this.rId);
-           let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt; 
+    
+           let od = new Order(); od.orderStatus = 'In-Session'; od.applicationUserID = r.applicationUserID;od.orderDate = r.createdAt;
         od.channel = "In-Person";od.totalAmount = this.TotalAmount.getValue();od.tableSessionId = r.id; od.vatCharge = this.VatCharge.getValue();od.serviceCharge = this.ServiceCharge.getValue();
         if(this.rId !== undefined && this.custId !== undefined)
         {
-            od.customerRecordId = this.rId, od.customerID = this.custId;
+            od.customerRecordId = this.rId, od.customerId = this.custId;
         }
         
         

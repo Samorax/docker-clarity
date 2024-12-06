@@ -86,9 +86,10 @@ export class restockDialogComponent
         //otherwise, create a new and old stock, add and update respectively to server.
 
         if(this.showReStockForm){
-            let a = <number>this.reStockForm.value.additionalUnits;
+            let a = Number(this.reStockForm.value.additionalUnits);
             this.stk.remainingUnits = <number>this.stk.remainingUnits + a;
-            console.log(this.stk)
+            this.stk.initialUnits = this.stk.initialUnits + a;
+            
             this.onOk.emit({oldStock:this.stk,newStock:null});
         }
         else{
@@ -104,6 +105,7 @@ export class restockDialogComponent
                 hasWaste:false,
                 isExpired:false,
                 isDeleted:false,
+            
                 applicationUserID:localStorage.getItem("user_id")
             }
             this.onOk.emit({oldStock:this.stk,newStock:newStock})

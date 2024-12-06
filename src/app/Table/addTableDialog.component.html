@@ -1,27 +1,25 @@
-<clr-modal [(clrModalOpen)]="show" clrModalSize="lg" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
-    <h3 class="modal-title" clrModalTitle>Add a Table</h3>
-    <div class="modal-body" clrModalContent>
-      <form clrForm clrLayout="Horizontal" #tableForm="ngForm" (ngSubmit)="onSubmit(tableForm)" >
+<clr-modal [(clrModalOpen)]="show" clrModalSize="md">
+    <h3 class="modal-title">Add a Table</h3>
+    <div class="modal-body">
+      <form clrLayout="horizontal" [formGroup]="tableForm"  (ngSubmit)="onSubmit()">
         <clr-input-container>
-          <label>Name</label>
-          <input clrInput type="text" name="name" [(ngModel)]="table.name" />
+          <label class="clr-required-mark clr-control-label">Name</label>
+          <input clrInput formControlName="name" name="name"/>
         </clr-input-container>
         <clr-input-container>
-            <label>Capacity</label>
-            <input clrInput type="text" name="maxCovers" [(ngModel)]="table.maxCovers" placeholder="12" />
-          </clr-input-container>
+          <label class="clr-required-mark">Capacity</label>
+          <input clrInput formControlName="maxCovers" name="maxCovers"/>
+        </clr-input-container>
         <clr-select-container>
-          <label>Status</label>
-          <select clrSelect name="status" [(ngModel)]="table.status">
-            <option value="Pending Available">Pending Available</option>
-            <option value="Occupied">Occupied</option>
-            <option value="Available">Available</option>
+          <label class="clr-required-mark">Availability</label>
+          <select clrSelect formControlName="status">
+            <option *ngFor="let n of tableStatus" value="{{n}}">{{n}}</option>
           </select>
+          <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
         </clr-select-container>
-
         <div class="modal-footer" clrModalActions>
           <button class="btn btn-outline" (click)="show=false" >Cancel</button>
-          <button class="btn btn-primary" type="submit">Add</button>
+          <button class="btn btn-primary" type="submit" [disabled]="!tableForm.valid">Add</button>
         </div>
       </form>
     </div>

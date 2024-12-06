@@ -8,14 +8,16 @@ import { TableSession } from "../Models/Session";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
 import { paymentService } from "../Services/PaymentService";
-import { ProductService } from "../Services/ProductService";
+import { ProductService } from "../Services/Product/ProductService";
 import { TableSessionService } from "../Services/TableSessionsService";
 import { OrderCartComponent } from "./OrderCart.component";
-import { OrderService } from "../Services/OrderService";
+import { OrderService } from "../Services/Order/OrderService";
 import { CartItem } from "../Models/CartItem";
 import { OrderInSessionEditCartComponent } from "./OrderInSessionEditCart.component";
-import { OrderCartService } from "../Services/OrderCartService";
+import { OrderCartService } from "../Services/Order/OrderCartService";
 import { CartOrder } from "../Models/CartOder";
+import { Stock } from "../Models/Stock";
+import { stockService } from "../Services/Stock/StockService";
 
 @Component({
     selector:'app-orderInSession',
@@ -36,16 +38,17 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
     sessionType: any;
     tableSession!:TableSession;
 
+    stocks = new BehaviorSubject<Stock[]>([])
+
     showDineInSessionForm:boolean = false;
     currencySymbol:any = this.paymentSvr.currencySymbol;
     cart:CartItem[] = [];
-    cartitems = new Subject<CartItem>();
+    cartitems = new BehaviorSubject<CartItem[]>([]);
     cartOrders!: Observable<CartOrder[]>;
     selectedDetails = [];
     cartOrderToUpdate: CartOrder[] = [];
     constructor(private paymentSvr: paymentService, private orderSvr: OrderService, private cartOrderSVR: OrderCartService,
-        private productService: ProductService, private sanitizer: DomSanitizer){
-            this.cartOrders = this.cartOrderSVR.getCartOrders();
+        private productService: ProductService,private stktService:stockService, private sanitizer: DomSanitizer){
         }
 
     ngAfterViewInit(): void {
@@ -64,15 +67,36 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
     
 
     ngOnInit(): void {
-        this.productService.getProducts().subscribe(p=>{
-            p.forEach(product=> {
-                this.convertImgByte(product).subscribe(p=>{
-                    this.products.push(p)
-                    
+        this.stktService.getStocks().subscribe(s=>{
+            let realStocks = s.filter(i=>i.isExpired !== true)
+            let excludeSameNameStocks = this.filterItems(realStocks);
+            
+            excludeSameNameStocks.forEach(stk=> {
+                this.convertImgByte(<Product>stk.product).subscribe(p=>{
+                    excludeSameNameStocks[excludeSameNameStocks.indexOf(stk)].product =p;
+                    let latestArray = [...excludeSameNameStocks];
+                    this.stocks.next(latestArray);
                 })
             });
         });
     }
+
+    filterItems(items: Stock[]): Stock[] {
+        let filteredItems: Stock[] = [];
+        items.forEach(item=>{
+            for (let index = 0; index < items.length; index++) {
+                const element = items[index];
+                if(item.product?.name === element.product?.name){
+                    if(item.remainingUnits > element.remainingUnits){
+                        filteredItems.push(item);
+                    }
+                }
+            }
+            
+                
+        })
+        return filteredItems = filteredItems.length === 0? items: filteredItems;
+        }
 
     products:Product[] = [];
     selected:Product[] = [];
@@ -129,39 +153,61 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
  */
 
 
-    onSelect(p:Product){
+    onSelect(p:Stock)
+    {
         //this.selected.push(p);
-        
-        if(this.cart.length === 0){
-            let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
-            let nCartOrder: CartOrder = {name:cy.name,count:cy.count,price:cy.unitPrice,applicationUserID:this.appId,orderId:this.order.orderID,cartOrderId:this.appId,dateCreated:new Date()}
-            this.cartOrderSVR.addCartOrder(nCartOrder).subscribe(c=> {this.cartOrderToUpdate.push(c); cy.recordId= c.recordId;this.cart.push(cy);});
-        }else{
-            let dup = this.cart.filter(i=>i.name === p.name);
-            if(dup.length === 0){
-                let cy:CartItem= {name: p.name, count : 1, unitPrice:p.price};
-                let nCartOrder: CartOrder = {name:cy.name,count:cy.count,price:cy.unitPrice,applicationUserID:this.appId,orderId:this.order.orderID,cartOrderId:this.appId,dateCreated:new Date()}
-                this.cartOrderSVR.addCartOrder(nCartOrder).subscribe(c=> {this.cartOrderToUpdate.push(c); cy.recordId= c.recordId;this.cart.push(cy);});
-            }else{
-                let index = this.cart.indexOf(dup[0]);
-                this.cart[index].count++;
-                this.cartOrders.subscribe(c=> {
-                    let nCartOrder:any = c.find(c=> c.name === this.cart[index].name);
-                    nCartOrder.count++;
-                   this.cartOrderSVR.updateCartOrder(nCartOrder).subscribe();
-                });
-            }
+        this.configureCartItems(p);
     }
-            this.totalAmount.next(this.getSum(this.cart));
+
+        private configureCartItems(p: Stock) {
+            if (this.cartitems.getValue().length === 0 && p.remainingUnits > 0) {
+    
+                let cy: CartItem = { name: p.product?.name, count: 1, unitPrice: p.product?.price };
+                let latestArray = [...this.cartitems.getValue(), cy];
+                this.cartitems.next(latestArray);
+                p.remainingUnits--;
+    
+    
+                //if the cart is not empty and the selected stock is still available.
+                //check if the stock product is in the cart. if yes - increase quantity, otherwise, add it as new.
+            } else if (this.cartitems.getValue().length !== 0 && p.remainingUnits > 0) {
+                let x = this.cartitems.getValue();
+                let dup = x.find(i => i.name === p.product?.name);
+                if (dup === undefined) {
+                    let cy: CartItem = { name: p.product?.name, count: 1, unitPrice: p.product?.price };
+                    let latestArray = [...x, cy];
+                    this.cartitems.next(latestArray);
+                    p.remainingUnits--;
+    
+                } else {
+                    let index = x.indexOf(dup);
+                    x[index].count++;
+                    p.remainingUnits--;
+    
+                }
+    
+    
+    
+            }
+            this.totalAmount.next(this.getSum(this.cartitems.getValue()));
         }
     
-    open(x:Order){
-        console.log(x);
-        this.order = x;
-        this.showDineInSessionForm = x.tableSession.name.includes('Takeaway')?false:true;
-        this.cartOrders.subscribe(c=>{c.forEach(y=>{this.cart.push({name: y.name, count :y.count, unitPrice:y.price,recordId:y.recordId})});  
-        this.totalAmount.next(this.getSum(this.cart));      
-        });
+    open(xi:Order){
+    
+        this.order = xi;
+        
+        this.showDineInSessionForm = xi.tableSession.name.includes('Takeaway')?false:true;
+        
+        
+                let x:CartItem[] = [];
+                xi.orderDetails.forEach(y=>
+            {
+                let cu:CartItem = {name: y.name, count :y.quantity, unitPrice:y.unitPrice,recordId:y.orderDetailId}
+                x.push(cu);
+            });
+            this.cartitems.next(x);  
+        this.totalAmount.next(this.getSum(this.cartitems.getValue()));      
+        
         
         this.tableSession = this.order.tableSession;
 
@@ -170,6 +216,7 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
         this.show = true;
 
     }
+
     close(){
         this.cart = [];
         this.selected = [];

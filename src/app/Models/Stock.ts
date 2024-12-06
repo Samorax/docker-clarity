@@ -12,5 +12,6 @@ export class Stock {
   hasWaste!:boolean
   isExpired!:boolean
   applicationUserID:any
-    isDeleted!: boolean
+  isDeleted!: boolean
+
 }

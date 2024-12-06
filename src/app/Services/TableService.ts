@@ -1,7 +1,7 @@
 import { HttpHeaders, HttpErrorResponse, HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
-import { catchError, throwError } from "rxjs";
+import { catchError, Observable, throwError } from "rxjs";
 import { Table } from "../Models/Table";
 import { AppComponent } from "../app.component";
 import { environment } from "../../environment/environment";
@@ -31,8 +31,8 @@ export class TableService{
         return throwError(() => new Error('Something bad happened; please try again later.'));
       }
 
-    addTable(table: Table){
-        return this._httpClient.post(this.baseUrl,table)
+    addTable(table: Table):Observable<Table>{
+        return this._httpClient.post<Table>(this.baseUrl,table)
         .pipe(catchError(this.handleError))
     }
 

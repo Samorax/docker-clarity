@@ -41,6 +41,7 @@ export class addStockDialog{
             hasWaste:false,
             isExpired:false,
             isDeleted:false,
+    
             applicationUserID:localStorage.getItem("user_id")
         }
          this.onOk.emit(stk);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit }
 import { Customer } from "../Models/Customer";
 import { Order } from "../Models/Order.model";
 import { BehaviorSubject } from "rxjs";
-import { EChartsOption } from "echarts";
+import { ECElementEvent, EChartsOption } from "echarts";
 import moment from "moment";
 import { ActivatedRoute } from "@angular/router";
 import { ageDemographicService } from "../Services/Customer/AgeDemographicService";
@@ -51,7 +51,7 @@ export class CustomerOverviewComponent implements OnInit{
         this.calHighSpenders();
 
         this.drawAverageSpendingsBarChart(11,"2024")
-        this.drawMRepeatChart(11,"2024");
+        this.drawMRepeatChart("2024");
 
         this.cd.detectChanges();
         
@@ -90,14 +90,16 @@ export class CustomerOverviewComponent implements OnInit{
     //argument: array of orders, array of customers
     //return object with properties: totalnumber and array of repeat customers
     calRepeatCusts(){
-        let rCustomers = []; 
+        let rCustomers:Customer[] = []; 
         this.orders.subscribe(o=>{
             this.customers.subscribe(y=>{
                 if(o.length > 1){
                     for (let c = 0; c < y.length; c++) {
-                        let r = o.filter(o=> o.customerID == y[c].id);
-                        if(r.length >= 2){
+                       
+                        let r = o.filter(o=> o.customerId === y[c].id);
+                        if(r.length > 1){
                             rCustomers.push(y[c]);
+                           
                         } 
                     }
                 }
@@ -137,18 +139,16 @@ export class CustomerOverviewComponent implements OnInit{
 
     drawAverageSpendingsBarChart(month:number, year:string)
     {  
-        let days:number[] = []
+        
         let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
 
-        this.customers.subscribe(c=>{
-            this.orders.subscribe(o=>{
-                let mdataSeries = this.averageSpendingsSvr.getMonthlyAverageSpendings(o,c,month,year);
+        let c = this.customers.getValue()
+         let o =   this.orders.getValue()
+                
                 let ydataSeries = this.averageSpendingsSvr.getYearlyAverageSpendings(o,c,month,year);
 
-                for (let i = 0; i < mdataSeries.length; i++) {
-                     days.push(i+1)
-                }
-                let init:EChartsOption;
+                
+                
                 let latter:EChartsOption;
 
                 latter = {
@@ -179,74 +179,140 @@ export class CustomerOverviewComponent implements OnInit{
                           type: 'bar',
                           showBackground: true
                         }
-                      ],
-                      graphic: [
-                        {
-                          type: 'text',
-                          left: 50,
-                          top: 20,
-                          style: {
-                            text: 'Back',
-                            fontSize: 18
-                          },
-                          onclick: ()=>{this.AverageSpendingsChart.next(init)}
-                        }
                       ]
                     };
-                init = {
-                    title:{
-                        text:'Average Spendings of Customers',
-                        top:'auto',
-                        left:'center',
-                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
-                    },
-                    tooltip:{
-                        trigger:'axis',
-                       
-                    },
-                    xAxis:{
-                        type:"category",
-                        axisTick:{ alignWithLabel:true},
-                        axisLabel:{rotate:30},
-                        data:days
-            
-                    },
-                    yAxis:{
-                        axisLabel:{ formatter: '{value}', align:'center'},
-                        type:"value",
-                    },
-                    series: [
-                        {
-                          data: mdataSeries,
-                          type: 'bar',
-                          showBackground: true,
-                          universalTransition:{
-                            enabled:true,
-                            divideShape:'clone'
-                          }
-                        }
-                      ],
-                }
-
-                this.AverageSpendingsChart.next(init)
-            })
-        })
+               
+                this.AverageSpendingsChart.next(latter)
+        
         
     }
 
-    
-
-    drawMRepeatChart(m:number,y:string){
-        let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
-        let weeks =  ['Week 1', 'Week 2','Week 3','Week 4','Week 5'];
+    onAverageDrill($event:ECElementEvent){
+        let days:number[] = []
+        let index = $event.dataIndex;
+        let init = this.AverageSpendingsChart.getValue()
         this.customers.subscribe(c=>{
             this.orders.subscribe(o=>{
-                let mDataSeries = this.customerRepeatRateSvr.getMontlyRepeatRate(c,o,y);
-                let wDataSeries = this.customerRepeatRateSvr.getWeeklyRepeatRate(c,o,m,y);
+                let mdataSeries = this.averageSpendingsSvr.getMonthlyAverageSpendings(o,c,index,'2024');
+                for (let i = 0; i < mdataSeries.length; i++) {
+                    days.push(i+1)
+               }
 
-                let init: EChartsOption;
+               this.AverageSpendingsChart.next({
+                title:{
+                    text:'Average Spendings of Customers',
+                    top:'auto',
+                    left:'center',
+                    textStyle:{ fontSize:'13px',fontWeight:'normal'}
+                },
+                tooltip:{
+                    trigger:'axis',
+                   
+                },
+                xAxis:{
+                    type:"category",
+                    axisTick:{ alignWithLabel:true},
+                    axisLabel:{rotate:30},
+                    data:days
+        
+                },
+                yAxis:{
+                    axisLabel:{ formatter: '{value}', align:'center'},
+                    type:"value",
+                },
+                series: [
+                    {
+                      data: mdataSeries,
+                      type: 'bar',
+                      showBackground: true
+                    }
+                  ],
+                  graphic: [
+                    {
+                      type: 'text',
+                      left: 50,
+                      top: 20,
+                      style: {
+                        text: 'Back',
+                        fontSize: 18
+                      },
+                      onclick: ()=>{this.AverageSpendingsChart.next(init)}
+                    }
+                  ]
+                });
+               })
+            })
+        }
+    
+
+    
+    onWRpeat($event:ECElementEvent)
+    {
+       let index =  $event.dataIndex;
+       let weeks =  ['Week 1', 'Week 2','Week 3','Week 4','Week 5'];
+       let init:EChartsOption = this.WRepeatChartOption.getValue()
+       
+       
+       let wDataSeries = this.customerRepeatRateSvr.getWeeklyRepeatRate(this.customers.getValue(),this.orders.getValue(),index,"2024");
+
+       let latter:EChartsOption = {
+        title:{
+            text:'Rate of Repeat Customers',
+            top:'auto',
+            left:'center',
+            textStyle:{ fontSize:'13px',fontWeight:'normal'}
+        },
+        tooltip:{
+            trigger:'axis'
+        },
+        xAxis:{
+            type:"category",
+            axisTick:{ alignWithLabel:true},
+            axisLabel:{rotate:30},
+            data:weeks
+
+        },
+        yAxis:{
+            type:"value",
+        },
+        series: [
+            {
+              data: wDataSeries,
+              type: 'bar',
+              showBackground: true,
+              universalTransition:{
+                enabled:true,
+                divideShape:'clone'
+              }
+            }
+            
+          ],
+          graphic: [
+            {
+              type: 'text',
+              left: 50,
+              top: 20,
+              style: {
+                text: 'Back',
+                fontSize: 18
+              },
+              onclick: ()=>{ this.WRepeatChartOption.next(init);}
+            }
+          ]
+    }
+    this.WRepeatChartOption.next(latter);
+             
+    }
+
+    drawMRepeatChart(y:string){
+        let months = ['jan','feb','mar','apr','may','jun','jul','aug','sept','oct','nov','dec']
+       
+        let c = this.customers.getValue()
+        let o = this.orders.getValue()
+                let mDataSeries = this.customerRepeatRateSvr.getMontlyRepeatRate(c,o,y);
+
                 let latter: EChartsOption;
-                init = {
+                latter = {
                     title:{
                         text:'Rate of Repeat Customers',
                         top:'auto',
@@ -278,50 +344,9 @@ export class CustomerOverviewComponent implements OnInit{
                         },
                       ]
                     };
-                latter = {
-                    title:{
-                        text:'Rate of Repeat Customers',
-                        top:'auto',
-                        left:'center',
-                        textStyle:{ fontSize:'13px',fontWeight:'normal'}
-                    },
-                    tooltip:{
-                        trigger:'axis'
-                    },
-                    xAxis:{
-                        type:"category",
-                        axisTick:{ alignWithLabel:true},
-                        axisLabel:{rotate:30},
-                        data:weeks
-            
-                    },
-                    yAxis:{
-                        type:"value",
-                    },
-                    series: [
-                        {
-                          data: wDataSeries,
-                          type: 'bar',
-                          showBackground: true
-                        },
-                        
-                      ],
-                      graphic: [
-                        {
-                          type: 'text',
-                          left: 50,
-                          top: 20,
-                          style: {
-                            text: 'Back',
-                            fontSize: 18
-                          },
-                          onclick: ()=>{this.WRepeatChartOption.next(init)}
-                        }
-                      ]
-                }
-                this.WRepeatChartOption.next(init)
-            })
-        })
+               
+                    this.WRepeatChartOption.next(latter)
+        
         
     }
     
@@ -339,7 +364,7 @@ export class CustomerOverviewComponent implements OnInit{
                 for (let c = 0; c < x.length; c++) {
                     const element = x[c];
                     orderOfMonth.forEach(o=>{
-                        if(o.customerID == element.id && o.totalAmount >= revenueAverage){
+                        if(o.customerId == element.id && o.totalAmount >= revenueAverage){
                             highSpenders.push(element);
                         }
                     });

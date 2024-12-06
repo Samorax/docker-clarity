@@ -4,6 +4,7 @@ import { Order } from "../../Models/Order.model";
 import { WeekDay } from "@angular/common";
 import { WeeklyRepeatCustomers } from "./WeeklyRepeatCustomers.Interface";
 import { MonthlyRepeatCustomers } from "./MonthlyRepeatCustomers.Interface";
+import { Console } from "console";
 
 @Injectable({
     providedIn:'root'
@@ -27,7 +28,9 @@ export class customerRepeatRateService
     getWeeklyRepeatRate(a:Customer[],o:Order[], month:number, year:string):number[]
     {
         let q = this.getQualifiedOrders(o);
+        
         let wReturnCustomers = this.getWeelyReturningCustomers(a,q,month,year);
+    
         let x = Object.values(wReturnCustomers);
         let t = x.splice(x.indexOf(x.length - 1),1);
         return x.map(i=> Math.round((i/t[0])*100))
@@ -39,10 +42,10 @@ export class customerRepeatRateService
         let qualifiedCustomers:Customer[] = allCustomers.filter(c=>new Date(c.registrationDate).getFullYear() <= Number(year));
         let yearOrder:Order[] = qualifiedOrders.filter(o=>new Date(o.orderDate).getFullYear() === Number(year));
         let yearData:MonthlyRepeatCustomers;
-        let yearDataYearCust:number[]=[yearLength].fill(0);
-        let yearDataReturningCust:number[]=[yearLength].fill(0)
+        let yearDataYearCust:number[]=Array<number>(yearLength).fill(0);
+        let yearDataReturningCust:number[]=Array<number>(yearLength).fill(0)
         let months:number[] = [];
-        let monthsArbitaryData:number[] = [12].fill(0);
+        let monthsArbitaryData:number[] = Array<number>(yearLength).fill(0);
 
         for (let i = 0; i < yearLength; i++) {
                   months.push(i)
@@ -50,12 +53,13 @@ export class customerRepeatRateService
 
         if(yearOrder.length !== 0){
             allCustomers.forEach(c=>{
-                let customerOrders = yearOrder.filter(o=>o.customerID === c.id);
+                let customerOrders = yearOrder.filter(o=>o.customerId === c.id);
+                
                 customerOrders.forEach(o=>{
                     let month = new Date(o.orderDate).getMonth();
-                    if(months.includes(month)){
-                        monthsArbitaryData[months.indexOf(month)]++;
-                    }
+                
+                    monthsArbitaryData[month] += 1;
+                    
                 });
                 for(let i = 0;i < monthsArbitaryData.length;i++){
                     if(monthsArbitaryData[i] > 1){
@@ -64,6 +68,7 @@ export class customerRepeatRateService
                     }
                 }
             });
+           
         }
 
         return yearData = {totalYearCustomers:yearDataYearCust,numberOfReturningCustomers:yearDataReturningCust};
@@ -80,7 +85,7 @@ export class customerRepeatRateService
         {
             qualifiedCustomer.forEach(c=>{
                 let w1:number=0,w2:number=0,w3:number =0,w4:number = 0,w5:number=0;
-                let customerOrders = monthOrders.filter(o=>o.customerID === c.id);
+                let customerOrders = monthOrders.filter(o=>o.customerId === c.id);
                 if(customerOrders.length > 1){
                     customerOrders.forEach(co=>{
                         let day = new Date(co.orderDate).getDate();
@@ -116,7 +121,7 @@ export class customerRepeatRateService
 
     private getQualifiedOrders(x:Order[])
     {
-        return x.filter(o=>o.isCompleted && o.customerID !== null);
+        return x.filter(o=>o.isCompleted && o.customerId !== null);
     }
 
     private calculateRepeatRate(totalNumberOfCustomers:number[], totalReturningCustomer:number[])

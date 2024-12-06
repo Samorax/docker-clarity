@@ -9,41 +9,67 @@ import { CartItem } from "../Models/CartItem";
 import { orderDetail } from "../Models/OrderDetails";
 import { TableSession } from "../Models/Session";
 import { TableSessionService } from "../Services/TableSessionsService";
-import { OrderDetailService } from "../Services/OrderDetailService";
-import { OrderService } from "../Services/OrderService";
+import { OrderDetailService } from "../Services/Order/OrderDetailService";
+import { OrderService } from "../Services/Order/OrderService";
 import { TableService } from "../Services/TableService";
 import { Table } from "../Models/Table";
 import { Waiter } from "../Models/Waiter";
-import { BehaviorSubject, Observable, map, of } from "rxjs";
-import { OrderCartService } from "../Services/OrderCartService";
+import { BehaviorSubject, Observable, first, map, of } from "rxjs";
+import { OrderCartService } from "../Services/Order/OrderCartService";
+import { CustomerService } from "../Services/Customer/CustomerService";
+import { ClrLoadingState } from "@clr/angular";
+import { Stock } from "../Models/Stock";
+import { appUserService } from "../Services/AppUserService";
+import { Customer } from "../Models/Customer";
 
 @Component({
     selector:'order-EditCart',
-    templateUrl:'./OrderInSessionEditCart.component.html'
+    templateUrl:'./OrderInSessionEditCart.component.html',
+    styleUrl:'./OrderCart.component.css'
 })
 
 export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
+customers: any;
+selectedCustomer: any;
+@Input()stocks!: BehaviorSubject<Stock[]>;
+    sCharge!: number;
+    vat!: number;
+    lastorderId: any;
+    rId: undefined;
+    custId: any;
+
+selectedOption: any;
+applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
+
+
     constructor(
-        private orderSvr:OrderService, private  oddSVr: OrderDetailService, private cartOrderSVR: OrderCartService,
-         private _voucherSvr:voucherService){}
+        private odSvr:OrderService, private  oddSVr: OrderDetailService, 
+        private cartOrderSVR: OrderCartService,private customerSvr:CustomerService,
+        private orderDetailSvr:OrderDetailService,
+        private _voucherSvr:voucherService, private appUserSvr:appUserService, 
+        private tableSvr:TableService,private tableSessionSvr:TableSessionService){}
 
     ngAfterViewInit(): void {
-        this.SubTotal.subscribe(s=>{
-            let vat:any = localStorage.getItem('vatCharge');
-            let sCharge:any = localStorage.getItem('serviceCharge');
-            this.VatCharge = (vat/100)*s;
-            this.ServiceCharge = (sCharge/100)*s;
-            this.TotalAmount = s+this.VatCharge+this.ServiceCharge;
-       });
+        this.appUserSvr.getAppUserInfo().subscribe(r=>
+            {
+                this.vat = r.vatCharge;
+                this.sCharge = r.serviceCharge;
+                this.SubTotal.subscribe(s=>{
+                    this.VatCharge.next((this.vat/100)*s);
+                    this.ServiceCharge.next((this.sCharge/100)*s);
+                    this.TotalAmount.next(s+this.VatCharge.getValue()+this.ServiceCharge.getValue());
+                });
+            })
+            
 
-        /* this.CartItems.subscribe(c=>{
-        this.orders.push(c);
-    });  */
+            
     }
 
     ngOnInit(): void {
         this.getVouchers();
+        this.getCustomers();
     }
+
 
 
     appId = localStorage.getItem("user_id");
@@ -53,7 +79,7 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
     @Input()order!:Order;
     @Input()Products!: Product[];
     @Input()SubTotal!:BehaviorSubject<number>;
-    @Input()CartItems!:Observable<CartItem>;
+    @Input()CartItems!:BehaviorSubject<CartItem[]>;
     @Input()sessionType:any;
     feedBack!:string;
     spinnerStatus:boolean = false;
@@ -63,9 +89,9 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
     payButtonStatus:boolean = false;
     paymentMethod!:string;
     @Input()tableSession!:TableSession;
-    VatCharge:any;
-    ServiceCharge:any;
-    TotalAmount:any
+    VatCharge:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    ServiceCharge:BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    TotalAmount:BehaviorSubject<number> = new BehaviorSubject<number>(0);
     @Input()orders!:CartItem[];
     prevCartOrder:CartItem[] = [];
 
@@ -84,25 +110,65 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
         }
     }
 
+    getCustomers(){
+        this.customerSvr.getCustomers().subscribe(c=>{
+            this.customers = c;
+        })
+    }
+
     onSelected(x:any){
         this.voucherToApply = this.vouchers.filter(v=>v.voucherNumber === x)[0];
     }
 
     onApply(){
-        this.SubTotal.pipe(map(s=>{
-            this.SubTotal.next(s - this.voucherToApply.voucherCreditAmount); 
-            if(s <= 0){
-            this.payButtonStatus = true;
-            this.spinnerStatus = true;
-            this.feedBack = 'Payment Succeeded!!'
+        let voucherCartItem:CartItem;
+        this.applyVouchBtn = ClrLoadingState.LOADING;
+        
+    
+        this.voucherToApply = <voucher>this.vouchers.find(v=>v.voucherNumber === this.selectedOption)
+
+        if(this.voucherToApply !== undefined)
+        {
+            let voucherAmount = this.voucherToApply.valueType === 1?this.voucherToApply.voucherCreditAmount:(this.voucherToApply.voucherCreditAmount/100)*this.SubTotal.getValue()
+            this.SubTotal.next(this.SubTotal.getValue() - voucherAmount);
+            this.VatCharge.next((this.vat/100)*this.SubTotal.getValue());
+            this.ServiceCharge.next((this.sCharge/100)*this.SubTotal.getValue());
+            this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
+
+            voucherCartItem = {name: this.voucherToApply.voucherNumber+'(Voucher)',unitPrice:-(voucherAmount),count:1 }
+            this.CartItems.next([...this.CartItems.getValue(),voucherCartItem]);
         }
-        }))
+        
+        this.applyVouchBtn = ClrLoadingState.DEFAULT;
     }
     
     onCancel(p:CartItem){
-        this.orders.splice(this.orders.indexOf(p),1);
-        this.cartOrderSVR.deleteCartOrder(p.recordId).subscribe();
-        this.SubTotal.next(this.getSum(this.orders));
+        let vat:any = localStorage.getItem('vatCharge');
+        let sCharge:any = localStorage.getItem('serviceCharge');
+
+        this.CartItems.pipe(first()).subscribe(c=>{
+            let updatedCart = c.filter(ci=>ci.name !== p.name);
+            this.CartItems.next(updatedCart);
+        });
+
+        this.stocks.pipe(first()).subscribe(stks=>{
+            let updatedStks = stks.map(s=>{
+                if(s.product?.name === p.name){
+                    return {...s, remainingUnits: +1}
+                }else{
+                    return s;
+                }
+            })
+            this.stocks.next(updatedStks);
+        })
+        
+  
+        let c = this.CartItems.getValue();
+        this.SubTotal.next(this.getSum(c));
+
+        this.VatCharge.next((vat/100)*this.SubTotal.getValue());
+        this.ServiceCharge.next((sCharge/100)*this.SubTotal.getValue());
+        this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
     }
 
     //update session isPayable to true, if items are in cart.
@@ -110,26 +176,97 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
     //update order.
     //table status to occupied.
     onLockSession(){
-      this.tableSession.isPayable = this.orders.length >=1;
-      this.order.tableSession = this.tableSession;
-      this.order.totalAmount = this.TotalAmount;
-    
-      //for the past session - remove all the details of the order
-      this.order.orderDetails.forEach(o=>{
-        this.oddSVr.removeOrderDetail(o.orderDetailId).subscribe();
-      });
-      
-
-      //for the current session - add the details of the order
-     this.createNewOrder(this.order,this.orders).subscribe(o=>{
-        o.serviceCharge = this.ServiceCharge; o.vatCharge = this.VatCharge;
-        this.orderSvr.updateOrder(o.orderID,o).subscribe((o:any)=>{
-            console.log(o);
-            this.cart.emit(o);
-        });
-     })
-    
+        this.applyVouchBtn = ClrLoadingState.LOADING
+        if(this.sessionType === "Takeaway")
+            {
+                console.log(this.lastorderId.getValue())
+                
+                //let cache = this.orderSvr.ordersCache; 
+                //let lastorderid = cache.length >= 1 ? cache[cache.length - 1].orderID: 1;
         
+                this.tableSession.name =  this.sessionType+" "+this.lastorderId;
+                let virtualTable :Table = {name: this.tableSession.name, maxCovers: 1, status:"Occupied", applicationUserID:this.appId, type:'virtual'};
+                let virtualWaiter:Waiter = {name: this.tableSession.name, applicationUserID:this.appId};
+                this.tableSession.waiter = virtualWaiter;
+                this.tableSession.table = virtualTable;
+                
+            }else{
+                this.table.status = 'Occupied';
+                this.tableSvr.updateTable(this.table,this.table.id).subscribe();
+            }
+                this.tableSession.applicationUserID = this.appId;
+                this.tableSession.createdAt = new Date();
+                this.tableSession.isPayable = this.CartItems.getValue().length >=1;
+                
+                    //add session to database
+                this.tableSessionSvr.updateSession(this.tableSession,this.tableSession.id).subscribe();
+                   //create new order
+                let od = this.order;
+                od.orderDate = this.tableSession.createdAt;od.totalAmount = this.TotalAmount.getValue(); od.vatCharge = this.VatCharge.getValue();od.serviceCharge = this.ServiceCharge.getValue();
+                if(this.rId !== undefined && this.custId !== undefined)
+                {
+                    od.customerRecordId = this.rId, od.customerId = this.custId;
+                }
+                
+                    //add order to database
+                this.odSvr.updateOrder(od.orderID,od).subscribe();
+                        //emit order to parent component
+                  //if there are items in cart, create order details and add to database.
+                if(this.CartItems.getValue().length >=1){
+                    let ct = this.CartItems.getValue();
+                    let newlyAddedCartItems:any[] = [];
+                    let updatedCartItems:any[] = []
+                    od.orderDetails.forEach(or=>{
+                        for (let i = 0; i< ct.length; i++) {
+                          const element = ct[i];
+                          if(or.name !== element.name && or.quantity !== element.count){
+                                newlyAddedCartItems.push(element);
+                          }else if(or.name === element.name && or.quantity !== element.count){
+                                updatedCartItems.push(element)
+                          }}
+                    })
+
+                    if(newlyAddedCartItems.length > 0)
+                        {
+                            newlyAddedCartItems.forEach(xi=>
+                                {
+                                    let cd:CartOrder = {name:xi.name,count:xi.count,price:xi.unitPrice,applicationUserID:this.appId,orderId:od.orderID,cartOrderId:this.appId,dateCreated:new Date()};
+                                    this.cartOrderSVR.addCartOrder(cd).subscribe();
+            
+                                    let odetail:orderDetail = {name:xi.name, quantity:xi.count,unitPrice:xi.unitPrice,applicationUserID:this.appId, orderId:od.orderID};  
+                                    this.orderDetailSvr.addOrderDetail(odetail).subscribe();
+                                    od.orderDetails.push(odetail);
+                                });
+                                
+                        }
+                        
+                    if(updatedCartItems.length > 0){
+                        updatedCartItems.forEach((xi:CartItem) => {
+                            let cd:CartOrder = {name:xi.name,count:xi.count,price:xi.unitPrice,applicationUserID:this.appId,orderId:od.orderID,cartOrderId:this.appId,dateCreated:new Date(),recordId:xi.recordId};
+                            this.cartOrderSVR.updateCartOrder(cd).subscribe();
+
+                            let odetail:orderDetail = {name:xi.name, quantity:xi.count,unitPrice:xi.unitPrice,applicationUserID:this.appId, orderId:od.orderID,orderDetailId:xi.recordId};  
+                            console.log(odetail,'orderDetails')
+                            this.orderDetailSvr.updateOrderDetail(odetail,odetail.orderDetailId).subscribe();
+                            let index = od.orderDetails.findIndex(od=>od.orderDetailId === odetail.orderDetailId)
+                            od.orderDetails[index]=odetail;
+
+                        });
+                    }
+                    this.CartItems.next([]);
+                   
+                   
+                }
+
+                
+            
+                this.cart.emit(od);
+        
+    }
+
+    getCustomerId(x:Event){
+        let customerId = <string>this.customers.find((c:Customer)=>c.recordId == this.selectedCustomer)?.id
+        this.rId = this.selectedCustomer; this.custId = customerId;
     }
 
     createNewOrder(x:Order,y:CartItem[])
@@ -152,35 +289,7 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
         });
       }
 
-    onCharge(){
-        //if(this.paymentMethod === 'Card'){
-        //    let ob: terminalPaymentObject = { amount: (this.TotalAmount*100).toString(), currency:this.PaymentSvr.currencySymbol}
-        //    this.PaymentSvr.discoverReader().then((result:Reader)=>{
-        //        this.spinnerStatus = true;
-        //        this.feedBack = "Reader discovered: "+result.label;
-        //        this.PaymentSvr.connectReader(result).then((status:string)=>{
-        //            this.feedBack = status;
-        //            this.PaymentSvr.processPayment(ob).then(g=>{
-        //                let p: PaymentIntentRequest = {PaymentIntentId : g};
-        //                this.PaymentSvr.capturePayment(p).subscribe((r:any)=> {
-        //                  this.feedBack = r.status;
-        //                  this.spinnerStatus = false;
-        //                  if(this.feedBack === 'succeeded'){
-        //                    this.createCartProducts(this.Products).then(p=>{
-        //                        this.newOder = {products : p,totalAmount:this.TotalAmount,opened:true, orderStatus:"Approved", 
-        //                        channel:'in-person', orderDate:Date.now(), orderID:0,customerID:0,payment:"succeeded", applicationUserID: this.appId }
-        //                        this.cart.emit(this.newOder);
-        //                    });
-        //                  }
-        //                });
-        //              },(err:any)=> {this.feedBack = err;  }); //if payment could not be processed.
-        //        })
-        //    },(er:any)=> {this.feedBack = er;}); //if reader is not discovered.
-        //}else if(this.paymentMethod === 'Cash'){
-            
-        //}
-           
-        }
+
         
     onPaymentSelection(x:any){
         this.paymentMethod = x;
@@ -197,19 +306,6 @@ export class OrderInSessionEditCartComponent implements OnInit, AfterViewInit {
         return sum;
     }
 
-    /* createCartProducts(y:Product[]):Promise<CartOrder[]>{
-        return new Promise((resolve)=>{
-            let cartProducts: CartOrder[] = [];
-            if(y.length !== 0){
-                y.forEach(p=>{
-                    let cart: CartOrder = {cartOrderId:0,orderId:0, name: p.name, category: p.category, price:p.price, description: p.description, code:p.code};
-                    cartProducts.push(cart);
-                })
-            }
-            resolve(cartProducts);
-        });
-        
-    } */
 
 
 

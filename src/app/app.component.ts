@@ -3,7 +3,7 @@ import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
 import { SignalrService } from './Services/Signalr.Service';
 import { BehaviorSubject, Observable, Subscription, fromEvent, map, merge, of } from 'rxjs';
-import { OrderService } from './Services/OrderService';
+import { OrderService } from './Services/Order/OrderService';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { appUserService } from './Services/AppUserService';
 import { Router } from '@angular/router';
@@ -69,15 +69,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   //add it to database, update cache and display notification status with sound.
   ngAfterViewInit(): void {
 
-    
     this.isAuthenticated = this._authSvr.isAuthenticated();
   
    this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();});
 
-   this.signalrService.AllStockUpdateFeedObservable.subscribe((s:Stock)=>{
-    console.log(s)
+   this.signalrService.AllStockUpdateFeedObservable.subscribe((s:any)=>{
     if(Object.keys(s).length !== 0){
-      this._toaster.info(`${s.product?.name} is out of Stock`,"Out-of-stock Notification",{
+      this._toaster.info(`${s.Product?.Name} is out of Stock`,"Out-of-stock Notification",{
         closeButton:true,
         tapToDismiss:true,
         disableTimeOut:true
@@ -88,14 +86,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if (Notification.permission === "granted") {
         // Check whether notification permissions have already been granted;
         // if so, create a notification
-        const notification = new Notification(`Out-of-Stock: ${s.product?.name} is out`);
+        const notification = new Notification(`Out-of-Stock: ${s.Product?.Name} is out`);
         // …
       } else if (Notification.permission !== "denied") {
         // We need to ask the user for permission
         Notification.requestPermission().then((permission) => {
           // If the user accepts, let's create a notification
           if (permission === "granted") {
-            const notification = new Notification(`Out-of-Stock: ${s.product?.name} is out`);
+            const notification = new Notification(`Out-of-Stock: ${s.Product?.Name} is out`);
             // …
           }
         });

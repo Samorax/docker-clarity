@@ -678,32 +678,31 @@ this.editODC.open(this.selected[0]);
     }
 
     onVoucherNotifications() {
-        this.appUser.subscribe(r=>{
-            let s = this.settingsForm.get('notifications.voucherNotifications')?.value;
-            r.voucherNotify = s;
-            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
-        })
+        let r = this.appUser.getValue();
+        let s = this.settingsForm.get('notifications.voucherNotifications')?.value;
+        r.voucherNotify = s;
+        this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
+    
     }
     
-            onSmsActivation() {
-                this.appUser.subscribe(r=>{
-                    let s = this.settingsForm.get('notifications.smsActivation')?.value;
-                    r.smsMode = s;
-                    this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(()=>{
-                       let d = s == true?false:true;
-                       this._smsActivator.activaionState.next(d);
-                    });
-                })
-
-            }
+    onSmsActivation() {
+        let r = this.appUser.getValue();
+        let s = this.settingsForm.get('notifications.smsActivation')?.value;
+        r.smsMode = s;
+        this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(()=>{
+           let d = s == true?false:true;
+           this._smsActivator.activaionState.next(d);
+        });
     
-            onBirthdayNotifications() {
-                this.appUser.subscribe(r=>{
-                    let s = this.settingsForm.get('notifications.birthdayNotifications')?.value;
-                    r.birthdayNotify = s;
-                    this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
-                })
+    }
+    
+    onBirthdayNotifications() {
+        let r = this.appUser.getValue();
+        let s = this.settingsForm.get('notifications.birthdayNotifications')?.value;
+        r.birthdayNotify = s;
+        this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
+    };
            
        
-        }
 }
+

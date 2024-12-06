@@ -41,7 +41,7 @@ export class averageHighSpendingService {
 
     getSpendingsByRegisteredCustomers(x:Order[]):Order[]
     {
-        return x.filter(o=>o.isCompleted && o.customerID !== null)
+        return x.filter(o=>o.isCompleted && o.customerId !== null)
     }
 
     //get the total amount of customers for each day of the month

@@ -1,18 +1,28 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output } from "@angular/core";
 import { Table } from "../Models/Table";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 
 @Component({
-    templateUrl:'./addTableDialog.component.html',
     selector:'app-addTable',
-    changeDetection:ChangeDetectionStrategy.OnPush
+    templateUrl:'./addTableDialog.component.html',
+
 })
 
 export class addTableDialogComponent{
     appId = localStorage.getItem("user_id");
+    formBuilder = inject(FormBuilder)
     table:Table = new Table();
     show:boolean = false 
     @Output()isOK:EventEmitter<any> = new EventEmitter<any>()
+
+    tableStatus:string[] = ['Available','Occupied','Pending']
+
+    tableForm = this.formBuilder.group({
+        name:['',Validators.required],
+        maxCovers:['',Validators.required],
+        status:['',Validators.required]
+    })
+
 
     open(){
         this.show = true;
@@ -24,11 +34,12 @@ export class addTableDialogComponent{
 
 
 
-    onSubmit(t:NgForm){
-       var x = <Table>t.value;
+    onSubmit(){
+       var x = <Table>this.tableForm.value;
         x.type = 'real';
         x.applicationUserID = this.appId;
         x.status.trim();
+        
         this.isOK.emit(x);
     }
 }

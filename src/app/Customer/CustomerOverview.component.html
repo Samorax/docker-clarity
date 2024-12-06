@@ -23,7 +23,7 @@
         <div class="clr-col-6">
             <div class="card">
                     <div class="card-block">
-                        <div  echarts [options]="WRepeatChartOption |async"></div>
+                        <div  echarts [options]="WRepeatChartOption |async" (chartClick)="onWRpeat($event)"></div>
                     </div>
                 </div>
             </div>
@@ -39,7 +39,7 @@
         <div class="clr-col">
             <div class="card">
                 <div class="card-block">
-                    <div  echarts [options]="AverageSpendingsChart | async"></div>
+                    <div  echarts [options]="AverageSpendingsChart | async" (chartClick)="onAverageDrill($event)"></div>
                 </div>
             </div>
            </div>

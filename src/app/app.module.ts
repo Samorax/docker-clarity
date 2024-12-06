@@ -21,8 +21,8 @@ import { ClarityModule, ClrButtonModule, ClrLoadingModule, ClrSpinnerModule, Clr
 import { HomeComponent } from './home/home.component';
 import { EditProductDialog } from './Inventory/EditProductDialog.component';
 import { DeleteProductDialog } from './Inventory/DeleteProductDialog.component';
-import { ProductService } from './Services/ProductService';
-import { OrderService } from './Services/OrderService';
+import { ProductService } from './Services/Product/ProductService';
+import { OrderService } from './Services/Order/OrderService';
 import { OrderEditComponent } from './Order/OrderEdit.component';
 import { OrderAddComponent } from './Order/OrderAdd.component';
 import { OrderCartComponent } from './Order/OrderCart.component';
@@ -63,7 +63,7 @@ import { delWaiterComponent } from './Waiter/delWaiterDialog.component';
 import { editWaiterComponent } from './Waiter/editWaiterDialog.component';
 import { SmsService } from './Services/SmsService';
 import { broadcastDialogComponent } from './Loyalty/broadcastDialog.component';
-import { OrderCartService } from './Services/OrderCartService';
+import { OrderCartService } from './Services/Order/OrderCartService';
 import { PageNotFoundComponent } from './Authentication/pagenotfound.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { BrowserModule } from '@angular/platform-browser';
@@ -87,14 +87,15 @@ import { deleteStockDialogComponent } from './Inventory/DeleteStockDialog.compon
 import { restockDialogComponent } from './Inventory/ReStockDialog.component';
 import { editStockDialogComponent } from './Inventory/EditStockDialog.component';
 import { stockResolver } from './Services/Stock/StockResolver';
-import { productResolver } from './Services/ProductResolver';
+import { productResolver } from './Services/Product/ProductResolver';
 import { ClarityIcons } from '@cds/core/icon';
-import { orderResolver } from './Services/OrderResolver';
+import { orderResolver } from './Services/Order/OrderResolver';
 import { customerResolver } from './Services/Customer/CustomerResolver';
 import { voucherResolver } from './Services/VoucherResolver';
 import { rewardResolver } from './Services/RewardResolver';
 import { appUserResolver } from './Services/AppUserResolver';
 import { LoyaltyOverviewComponent } from './Loyalty/overviewcomponent';
+import { CustomFormatPipe } from './Services/CustomFormatter.pipe';
 
 
 @NgModule({
@@ -158,7 +159,9 @@ import { LoyaltyOverviewComponent } from './Loyalty/overviewcomponent';
     becomeAPartnerComponent,
     partnersComponent,
     OrderAnnulComponent,
-    OrderReconcileComponent
+    OrderReconcileComponent,
+    CustomFormatPipe,
+    addTableDialogComponent
   ],
   imports: [
     HttpClientModule,

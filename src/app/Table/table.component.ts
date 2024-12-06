@@ -4,6 +4,8 @@ import { TableService } from "../Services/TableService";
 import { addTableDialogComponent } from "./addTableDialog.component";
 import { editTableDialogComponent } from "./editTableDialog.component";
 import { delTableDialogComponent } from "./delTableDialog.component";
+import { BehaviorSubject } from "rxjs";
+import { table } from "console";
 
 @Component({
     selector:"app-table",
@@ -12,13 +14,14 @@ import { delTableDialogComponent } from "./delTableDialog.component";
 })
 export class tableComponent implements OnInit, AfterViewInit{
     feedBackMessage!:string;
-    tables:Table[] = [];
+    tables:BehaviorSubject<any> = new BehaviorSubject<Table[]>([]);
     selected:Table[] = [];
     ifSuccess!: boolean;
     feedBackStatus!: string;
     ifError!: boolean;
 
     constructor(private _tableSvr:TableService, private cd:ChangeDetectorRef){}
+    
     ngOnInit(): void {
         this.getTables();
     }
@@ -26,24 +29,30 @@ export class tableComponent implements OnInit, AfterViewInit{
     ngAfterViewInit(): void {
         this.addTD.isOK.subscribe(t=>{
             
-            this._tableSvr.addTable(t).subscribe((t:any)=>{
-                this.tables.unshift(t);
+            this._tableSvr.addTable(t).subscribe((ta:any)=>{
+                let c = this.tables.getValue();
+                this.tables.next([...c,ta])
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully added to tables`;
                 this.cd.detectChanges()
-                
             },(er:Error)=>
             {
                 this.ifError = true;
                 this.feedBackStatus = 'warning';
                 this.feedBackMessage = `${t.name} cannot be added: ${er.message}`;
                 this.cd.detectChanges()
-            },()=>this.addTD.close());
+            });
+            this.addTD.close();
         });
 
         this.editTD.isOk.subscribe(t=>{
             this._tableSvr.updateTable(t,t.id).subscribe(r=>{
+                let currentTables = this.tables.getValue();
+                let indexUpdate =  currentTables.findIndex((ta:any)=>t.id === ta.id)
+                currentTables[indexUpdate] = t;
+                this.tables.next(currentTables);
+
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully updated`;
@@ -60,7 +69,9 @@ export class tableComponent implements OnInit, AfterViewInit{
 
         this.delTD.isOk.subscribe(t=>{
             this._tableSvr.deleteTable(t).subscribe(r=>{
-                this.tables.splice(this.tables.indexOf(t),1);
+                let currentTables = this.tables.getValue();
+                let undeletedTables = currentTables.filter((ta:Table)=>ta.id !== t.id);
+                this.tables.next(undeletedTables);
                 this.ifSuccess = true;
                 this.feedBackStatus = 'success';
                 this.feedBackMessage = `${t.name} successfully deleted`;
@@ -74,11 +85,12 @@ export class tableComponent implements OnInit, AfterViewInit{
         })
     }
 
-    @ViewChild(addTableDialogComponent) addTD = new addTableDialogComponent();
-    @ViewChild(editTableDialogComponent) editTD = new editTableDialogComponent();
-    @ViewChild(delTableDialogComponent) delTD = new delTableDialogComponent();
+    @ViewChild(addTableDialogComponent) addTD!:addTableDialogComponent;
+    @ViewChild(editTableDialogComponent) editTD!:editTableDialogComponent;
+    @ViewChild(delTableDialogComponent) delTD!:delTableDialogComponent;
 
     onAdd(){
+        
         this.addTD.open();
     }
 
@@ -92,6 +104,6 @@ export class tableComponent implements OnInit, AfterViewInit{
     }
 
     getTables(){
-        this._tableSvr.getTables().subscribe((t:any)=> {this.tables = t; this.cd.detectChanges()});
+        this._tableSvr.getTables().subscribe((t:any)=> {this.tables.next(t);});
     }
 }

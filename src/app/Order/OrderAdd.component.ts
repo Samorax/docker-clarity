@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, Sanitizer, ViewChild } from "@angular/core";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
-import { OrderService } from "../Services/OrderService";
-import { ProductService } from "../Services/ProductService";
+import { OrderService } from "../Services/Order/OrderService";
+import { ProductService } from "../Services/Product/ProductService";
 import { OrderCartComponent } from "./OrderCart.component";
 import { BehaviorSubject, map, Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -31,7 +31,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     waiter:Waiter = new Waiter();
     @Input()waiters!:Waiter[];
 
-    lastorderId:any
+    lastorderId:BehaviorSubject<any> = new BehaviorSubject<number>(1)
 
     table: Table = new Table();
     @Input()tables!:Table[];
@@ -50,6 +50,12 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     ngAfterViewInit(): void {
       this.OrderCartModal.cart.subscribe(o => {
             this.orda.emit(o);
+        })
+
+        this.orderSvr.getOrders().subscribe(or=>{
+            let ids = or.map(n=> n.orderID);
+            let biggerId = Math.max(...ids);
+            this.lastorderId.next(biggerId)
         })
 
     }
@@ -76,6 +82,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
                 })
             });
         });
+
+        
 
         
     }
@@ -164,38 +172,42 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     onSelect(p:Stock){
         //if the cart is empty and the seleted stock is still available.
         //add product of stock to cart.
-        if(this.cartitems.getValue().length === 0 && p.remainingUnits > 0){
+        this.configureCartItems(p);
+    }
     
-            let cy:CartItem= {name: p.product?.name, count : 1, unitPrice:p.product?.price};
-            let latestArray = [...this.cartitems.getValue(),cy]
+    private configureCartItems(p: Stock) {
+        if (this.cartitems.getValue().length === 0 && p.remainingUnits > 0) {
+
+            let cy: CartItem = { name: p.product?.name, count: 1, unitPrice: p.product?.price };
+            let latestArray = [...this.cartitems.getValue(), cy];
             this.cartitems.next(latestArray);
             p.remainingUnits--;
-            
-        
-        //if the cart is not empty and the selected stock is still available.
-        //check if the stock product is in the cart. if yes - increase quantity, otherwise, add it as new.
-        }else if(this.cartitems.getValue().length !== 0 && p.remainingUnits > 0){
+
+
+            //if the cart is not empty and the selected stock is still available.
+            //check if the stock product is in the cart. if yes - increase quantity, otherwise, add it as new.
+        } else if (this.cartitems.getValue().length !== 0 && p.remainingUnits > 0) {
             let x = this.cartitems.getValue();
-                    let dup = x.find(i=>i.name === p.product?.name);
-                    if(dup === undefined){
-                        let cy:CartItem= {name: p.product?.name, count : 1, unitPrice:p.product?.price};
-                        let latestArray = [...x,cy]
-                        this.cartitems.next(latestArray);
-                        p.remainingUnits--;
-                        
-                    }else{
-                        let index = x.indexOf(dup);
-                        x[index].count++;
-                        p.remainingUnits--;
-                        
+            let dup = x.find(i => i.name === p.product?.name);
+            if (dup === undefined) {
+                let cy: CartItem = { name: p.product?.name, count: 1, unitPrice: p.product?.price };
+                let latestArray = [...x, cy];
+                this.cartitems.next(latestArray);
+                p.remainingUnits--;
+
+            } else {
+                let index = x.indexOf(dup);
+                x[index].count++;
+                p.remainingUnits--;
+
+            }
+
+
+
+        }
+        this.totalAmount.next(this.getSum(this.cartitems.getValue()));
     }
-            
-    
-   
-}
-this.totalAmount.next(this.getSum(this.cartitems.getValue()));
-    }
-    
+
     open(){
         this.show = true;
     }

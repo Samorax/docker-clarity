@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@
 import { ECharts, EChartsOption} from "echarts";
 import { Order } from "../Models/Order.model";
 import { BehaviorSubject, Observable, Subscription, of, scheduled } from "rxjs";
-import { OrderService } from "../Services/OrderService";
+import { OrderService } from "../Services/Order/OrderService";
 import moment from "moment";
 import { paymentService } from "../Services/PaymentService";
 import { dayMonthlySale } from "../Models/dayMonthlySale";
