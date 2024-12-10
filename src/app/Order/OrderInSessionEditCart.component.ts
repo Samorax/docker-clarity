@@ -154,7 +154,7 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         this.stocks.pipe(first()).subscribe(stks=>{
             let updatedStks = stks.map(s=>{
                 if(s.product?.name === p.name){
-                    return {...s, remainingUnits: +1}
+                    return {...s, remainingUnits: s.remainingUnits+p.count}
                 }else{
                     return s;
                 }
@@ -179,7 +179,6 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         this.applyVouchBtn = ClrLoadingState.LOADING
         if(this.sessionType === "Takeaway")
             {
-                console.log(this.lastorderId.getValue())
                 
                 //let cache = this.orderSvr.ordersCache; 
                 //let lastorderid = cache.length >= 1 ? cache[cache.length - 1].orderID: 1;
@@ -202,7 +201,10 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
                 this.tableSessionSvr.updateSession(this.tableSession,this.tableSession.id).subscribe();
                    //create new order
                 let od = this.order;
-                od.orderDate = this.tableSession.createdAt;od.totalAmount = this.TotalAmount.getValue(); od.vatCharge = this.VatCharge.getValue();od.serviceCharge = this.ServiceCharge.getValue();
+                od.orderDate = this.tableSession.createdAt;od.totalAmount = this.TotalAmount.getValue(); 
+                od.vatCharge = this.VatCharge.getValue();
+                od.serviceCharge = this.ServiceCharge.getValue();
+
                 if(this.rId !== undefined && this.custId !== undefined)
                 {
                     od.customerRecordId = this.rId, od.customerId = this.custId;
@@ -214,45 +216,82 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
                   //if there are items in cart, create order details and add to database.
                 if(this.CartItems.getValue().length >=1){
                     let ct = this.CartItems.getValue();
-                    let newlyAddedCartItems:any[] = [];
-                    let updatedCartItems:any[] = []
-                    od.orderDetails.forEach(or=>{
-                        for (let i = 0; i< ct.length; i++) {
-                          const element = ct[i];
-                          if(or.name !== element.name && or.quantity !== element.count){
-                                newlyAddedCartItems.push(element);
-                          }else if(or.name === element.name && or.quantity !== element.count){
-                                updatedCartItems.push(element)
-                          }}
-                    })
+                    // items in cart remain the same but quantity may not
+                    if(ct.length === od.orderDetails.length){
+                        ct.forEach(c=>{
+                            let prevPresent = od.orderDetails.find(os=>os.name === c.name && os.quantity !== c.count);
+                            if(prevPresent !== undefined){
+                                let ch = {...prevPresent, quantity: c.count}
+                                let index = od.orderDetails.findIndex(o=>o.name === c.name);
+                                od.orderDetails[index] = ch;
+                                this.orderDetailSvr.updateOrderDetail(ch,ch.orderDetailId).subscribe();
+                            }
+                        })
+                        
+                    }
+                    // items have been removed from cart. quantity may also have changed
+                    if(ct.length < od.orderDetails.length){
+                        let deleted = od.orderDetails.filter(e=> !ct.includes(e.name))
+                        deleted.forEach(d=>{
+                            let update = od.orderDetails.filter(o=>o.name !== d?.name)
+                            let index = od.orderDetails.findIndex(os=>os.name === d?.name);
+                            od.orderDetails = update;
+                            this.orderDetailSvr.removeOrderDetail(d.orderDetailId).subscribe()
+                        });
+                        ct.forEach(c=>{
+                            let prevPresent = od.orderDetails.find(os=>os.name === c.name && os.quantity !== c.count);
+                            if(prevPresent !== undefined){
+                                let ch = {...prevPresent, quantity: c.count}
+                                let index = od.orderDetails.findIndex(o=>o.name === c.name);
+                                od.orderDetails[index] = ch;
+                                this.orderDetailSvr.updateOrderDetail(ch,ch.orderDetailId).subscribe();
+                            }
+                        })  
+                    }
+                    // new items have been added to cart. quantity of previous items may also have changed.
+                    if(ct.length > od.orderDetails.length){
+                        ct.forEach(c=>{
+                            let present = od.orderDetails.find(os=>os.name === c.name && os.quantity === c.count);
+                            if(present === undefined){
+                                let odetail:orderDetail = {name:c.name, quantity:c.count,unitPrice:c.unitPrice,applicationUserID:this.appId, orderId:od.orderID};  
+                                od.orderDetails.push(odetail);
+                                this.orderDetailSvr.addOrderDetail(odetail).subscribe();
+                            };
+                            let prevPresent = od.orderDetails.find(os=>os.name === c.name && os.quantity !== c.count);
+                            if(prevPresent !== undefined){
+                                let ch = {...prevPresent, quantity: c.count}
+                                let index = od.orderDetails.findIndex(o=>o.name === c.name);
+                                od.orderDetails[index] = ch;
+                                this.orderDetailSvr.updateOrderDetail(ch,ch.orderDetailId).subscribe();
+                            }
+                        });
+                    }
 
-                    if(newlyAddedCartItems.length > 0)
-                        {
+
+                  /*   if(newlyAddedCartItems.length > 0)
+                    {
                             newlyAddedCartItems.forEach(xi=>
                                 {
                                     let cd:CartOrder = {name:xi.name,count:xi.count,price:xi.unitPrice,applicationUserID:this.appId,orderId:od.orderID,cartOrderId:this.appId,dateCreated:new Date()};
                                     this.cartOrderSVR.addCartOrder(cd).subscribe();
             
-                                    let odetail:orderDetail = {name:xi.name, quantity:xi.count,unitPrice:xi.unitPrice,applicationUserID:this.appId, orderId:od.orderID};  
-                                    this.orderDetailSvr.addOrderDetail(odetail).subscribe();
+                                    
                                     od.orderDetails.push(odetail);
                                 });
                                 
-                        }
+                    }
                         
-                    if(updatedCartItems.length > 0){
+                    if(updatedCartItems.length > 0)
+                    {
                         updatedCartItems.forEach((xi:CartItem) => {
                             let cd:CartOrder = {name:xi.name,count:xi.count,price:xi.unitPrice,applicationUserID:this.appId,orderId:od.orderID,cartOrderId:this.appId,dateCreated:new Date(),recordId:xi.recordId};
                             this.cartOrderSVR.updateCartOrder(cd).subscribe();
 
-                            let odetail:orderDetail = {name:xi.name, quantity:xi.count,unitPrice:xi.unitPrice,applicationUserID:this.appId, orderId:od.orderID,orderDetailId:xi.recordId};  
-                            console.log(odetail,'orderDetails')
-                            this.orderDetailSvr.updateOrderDetail(odetail,odetail.orderDetailId).subscribe();
-                            let index = od.orderDetails.findIndex(od=>od.orderDetailId === odetail.orderDetailId)
-                            od.orderDetails[index]=odetail;
+                            
 
                         });
-                    }
+                    } */
+
                     this.CartItems.next([]);
                    
                    

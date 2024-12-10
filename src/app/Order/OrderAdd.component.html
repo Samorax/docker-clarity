@@ -31,8 +31,8 @@
             <div class="clr-row">
                 <div class="clr-col-8">
                     <h3>Select Product(s)</h3>
-                    <div style="padding: 5px; height: 450px;">
-                      <div class="card clickable" *ngFor='let stock of stocks$ | async'  (click)="onSelect(stock)" class="clr-col-lg-3" style="display: inline; float: left;"> 
+                    <div class="cart-container">
+                      <div class="card clickable" *ngFor='let stock of stocks$ | async'  (click)="onSelect(stock)" class="clr-col-lg-3 cart-item-container" > 
                         <div class="card-media-block wrap">
                           <div class="card-media-image">
                             <img [src]="stock.product?.photosUrl" alt="..."  class="card-img" style="height: 100%;width: 100%;"/>
@@ -59,7 +59,7 @@
            
         </div>
         <div class="modal-footer" clrModalActions>
-          <button class="btn btn-outline" (click)="show=false">Close</button>
+          <button class="btn btn-outline" (click)="onCloseCart()">Close</button>
         </div>
       </clr-modal>
 </div>

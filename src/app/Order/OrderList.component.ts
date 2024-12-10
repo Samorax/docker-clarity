@@ -149,10 +149,12 @@ this.reconcileOrderModal.open();
 
 
       this.signalrSVR.AllOrderFeedObservable.subscribe((o:any)=>{
+        console.log(o);
         let ord = JSON.parse(o);
-        this.orders.subscribe(o=>
+        console.log(ord);
+        this.orders.subscribe(or=>
           {
-            o.unshift(ord);
+            or.unshift(ord);
             
           });
       })

@@ -21,7 +21,8 @@ import { stockService } from "../Services/Stock/StockService";
 
 @Component({
     selector:'app-orderInSession',
-    templateUrl:'./OrderInSessionEdit.component.html'
+    templateUrl:'./OrderInSessionEdit.component.html',
+    styleUrl:'./OrderAdd.component.css'
 
 })
 
@@ -197,15 +198,26 @@ export class OrderInSessionEditComponent implements OnInit, AfterViewInit{
         this.order = xi;
         
         this.showDineInSessionForm = xi.tableSession.name.includes('Takeaway')?false:true;
+        let regularStks = this.stocks.getValue();
         
-        
-                let x:CartItem[] = [];
-                xi.orderDetails.forEach(y=>
-            {
-                let cu:CartItem = {name: y.name, count :y.quantity, unitPrice:y.unitPrice,recordId:y.orderDetailId}
-                x.push(cu);
-            });
-            this.cartitems.next(x);  
+        let x:CartItem[] = [];
+        xi.orderDetails.forEach(y=>
+        {
+            let cu:CartItem = {name: y.name, count :y.quantity, unitPrice:y.unitPrice,recordId:y.orderDetailId};
+            x.push(cu);
+
+            
+            regularStks.forEach(rstk=>{
+                if(rstk.product?.name === y.name && !rstk.hasWaste && !rstk.isExpired){
+                    let ch = {...rstk,remainingUnits:rstk.remainingUnits - y.quantity}
+                    regularStks[regularStks.indexOf(rstk)] = ch;
+                }
+            })
+
+
+        });
+        this.stocks.next(regularStks)
+        this.cartitems.next(x);  
         this.totalAmount.next(this.getSum(this.cartitems.getValue()));      
         
         

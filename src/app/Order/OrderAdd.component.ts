@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, Sanitizer, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, Sanitizer, SimpleChanges, ViewChild } from "@angular/core";
 import { Order } from "../Models/Order.model";
 import { Product } from "../Models/Product";
 import { OrderService } from "../Services/Order/OrderService";
@@ -22,7 +22,8 @@ import { forEach, initial } from "lodash";
 
 @Component({
     selector:'add-order',
-    templateUrl:'./OrderAdd.component.html'
+    templateUrl:'./OrderAdd.component.html',
+    styleUrl:'./OrderAdd.component.css'
 })
 
 export class OrderAddComponent implements OnInit, AfterViewInit{
@@ -46,6 +47,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     currencySymbol:any = this.paymentSvr.currencySymbol;
     constructor(private paymentSvr: paymentService, private tableSessionSvr: TableSessionService, private orderSvr:OrderService,private tableSvr:TableService, 
         private stktService: stockService, private sanitizer: DomSanitizer){}
+    
+      
 
     ngAfterViewInit(): void {
       this.OrderCartModal.cart.subscribe(o => {
@@ -173,6 +176,28 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
         //if the cart is empty and the seleted stock is still available.
         //add product of stock to cart.
         this.configureCartItems(p);
+    }
+
+    onCloseCart(){
+        let currentCartItems = this.cartitems.getValue();
+        if(currentCartItems.length > 0)
+        {
+               let changeStk!:Stock
+               let updatedStk!:Stock[];
+               let stk = this.stocks.getValue();
+               stk.forEach(s=>{
+                for (let i = 0; i < currentCartItems.length; i++) {
+                    const element = currentCartItems[i];
+                    if(s.product?.name === element.name && !s.hasWaste && !s.isExpired){
+                        changeStk = {...s, remainingUnits: s.remainingUnits+element.count}
+                        stk[stk.indexOf(s)] = changeStk;
+                    }   
+                }
+               })
+               this.stocks.next(stk);
+        };
+        this.cartitems.next([]);
+        this.show = false;
     }
     
     private configureCartItems(p: Stock) {

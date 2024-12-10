@@ -156,7 +156,7 @@ selectedCustomer:any
         this.stocks.pipe(first()).subscribe(stks=>{
             let updatedStks = stks.map(s=>{
                 if(s.product?.name === p.name){
-                    return {...s, remainingUnits: +1}
+                    return {...s, remainingUnits:s.remainingUnits+p.count}
                 }else{
                     return s;
                 }
