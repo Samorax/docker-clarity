@@ -74,7 +74,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
     ngOnInit(): void {
         
         this.stktService.getStocks().subscribe(s=>{
-            let realStocks = s.filter(i=>i.isExpired !== true)
+            let realStocks = s.filter(i=>i.isExpired !== true && !i.isDeleted)
             let excludeSameNameStocks = this.filterItems(realStocks);
             
             excludeSameNameStocks.forEach(stk=> {
