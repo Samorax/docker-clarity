@@ -79,11 +79,10 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
             
             excludeSameNameStocks.forEach(stk=> {
                 this.convertImgByte(<Product>stk.product).subscribe(p=>{
-                    excludeSameNameStocks[excludeSameNameStocks.indexOf(stk)].product =p;
-                    let latestArray = [...excludeSameNameStocks];
-                    this.stocks.next(latestArray);
+                    excludeSameNameStocks[excludeSameNameStocks.indexOf(stk)].product =p; 
                 })
             });
+            this.stocks.next(excludeSameNameStocks);
         });
 
         
