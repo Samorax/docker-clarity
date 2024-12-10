@@ -193,7 +193,7 @@
         </div>
         <div class="clr-row">
           <div class="clr-col-3">
-            <button class="btn btn-primary" (click)="onChangePaymentProcessor($event)" [disabled]="!settingsForm.get('integrationSettings')?.valid">Save</button>
+            <button class="btn btn-primary" (click)="onChangePaymentProcessor($event)" [disabled]="!settingsForm.get('integrationSettings')?.valid" [clrLoading]="PaymentBtnState">Save</button>
           </div>
           <div class="clr-col">
             <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showPaymentProcessorUpdateFeedback">
@@ -359,7 +359,7 @@
           </clr-input-container>
           <div class="clr-row">
             <div class="clr-col-3">
-              <button class="btn btn-primary" (click)="onChangeReceiptDetails()" [disabled]="!settingsForm.get('shopSettings')?.valid">Save</button>
+              <button class="btn btn-primary" (click)="onChangeReceiptDetails()" [disabled]="!settingsForm.get('shopSettings')?.valid"  [clrLoading]="ReceiptBtnState">Save</button>
             </div>
             <div class="clr-col">
               <clr-alert [clrAlertLightweight]="true" [clrAlertType]="'success'" class="clr-col" *ngIf="showReceiptUpdateFeedback">

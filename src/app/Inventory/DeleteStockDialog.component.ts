@@ -34,10 +34,11 @@ export class deleteStockDialogComponent
     onConfirmWaste(){
         this.stk.hasWaste = true;
         this.showDeleteDialog = true;
+        this.showConfirmWasteDialog = false;
     }
 
     close(){
-        this.show = false;
+        this.showDeleteDialog = false;
     }
 
     onConfirm(){

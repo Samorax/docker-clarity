@@ -29,9 +29,14 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
     elements:BehaviorSubject<any> =new BehaviorSubject<Stock[]>([])
     products:Product[] = [];
 
+    ifError!: boolean;
+    feedBackStatus!: string;
+    feedBackMessage!: string;
+    ifSuccess!: boolean;
+
     ngOnInit(): void {
         this.activatedroute.data.subscribe((s:any)=> {
-            let currentStocks =s.stocks.filter((d:any)=>d.isExpired !== true); 
+            let currentStocks =s.stocks.filter((d:any)=>d.isExpired !== true && d.isDeleted !== true); 
             this.elements.next(currentStocks)
             this.productsService.getProducts().subscribe(p=>{
                 this.products = p;
@@ -44,9 +49,15 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
 
         this.addStkDialog.onOk.subscribe(r=>{
-            this.stkService.addStock(r).subscribe(r=>{
-                this.elements.next([...this.elements.getValue(),r])
+            this.stkService.addStock(r).subscribe((rr:Stock)=>{
+                console.log(rr);
+                this.elements.next([...this.elements.getValue(),rr])
+                this.ifSuccess = true;
+                this.feedBackStatus = 'success';
+                this.feedBackMessage = 'You have successfully addedd '+rr.product?.name+' to the collection';
+
             })
+            this.addStkDialog.StockAddBtnState = ClrLoadingState.SUCCESS;
             this.addStkDialog.close();
         });
 
@@ -56,6 +67,7 @@ export class InventoryStockComponent implements OnInit, AfterViewInit {
             let undeletedStocks = this.elements.getValue().filter((s:Stock)=>s.id !== r.id);
             this.elements.next(undeletedStocks);
             this.delStkDialog.close();
+            this.cd.detectChanges();
         })
 
         this.reStkDialog.onOk.subscribe(r=>{

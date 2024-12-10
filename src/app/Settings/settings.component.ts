@@ -22,6 +22,7 @@ import { ChangeDetectionStrategy } from "@angular/core";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { ActivatedRoute } from "@angular/router";
 import { environment } from "../../environment/environment";
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     templateUrl:'./settings.component.html',
@@ -89,6 +90,8 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     showReceiptUpdateFeedback: boolean = false;
     showPaymentProcessorUpdateFeedback: boolean = false;
     SwitchMode: boolean = false;
+ReceiptBtnState: ClrLoadingState = ClrLoadingState.DEFAULT
+PaymentBtnState: ClrLoadingState = ClrLoadingState.DEFAULT
     
     
 
@@ -488,17 +491,20 @@ this.editODC.open(this.selected[0]);
 
     //update the vat charge fee and the service charge. 
     onChangeReceiptDetails(){
-        this.appUser.subscribe(r=>{
+        this.ReceiptBtnState = ClrLoadingState.LOADING;
+            let r = this.appUser.getValue();
             let x = this.settingsForm.get('shopSettings.vatCharge')?.value;
             let y = this.settingsForm.get('shopSettings.serviceCharge')?.value;
     
             r.vatCharge = x;
             r.serviceCharge = y;
     
-            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(r=>{
-                this.showReceiptUpdateFeedback = true;
-            },(er:Error)=>console.log(er.message));
-        })
+            this._appUserSrv.updateAppUserInfo(r.id,r).subscribe();
+            this.showReceiptUpdateFeedback = true;
+            
+            this.ReceiptBtnState = ClrLoadingState.DEFAULT
+            this.cd.detectChanges()
+        
        
     }
     
@@ -515,7 +521,8 @@ this.editODC.open(this.selected[0]);
     }
     
     onChangePaymentProcessor(x:any){
-        this.appUser.subscribe(r=>{
+        this.PaymentBtnState = ClrLoadingState.LOADING;
+        let r = this.appUser.getValue();
             x.preventDefault();
             let pp:paymentProcessor = this.settingsForm.get('integrationSettings')?.value;
             if(r.paymentProcessor == null)
@@ -532,9 +539,10 @@ this.editODC.open(this.selected[0]);
         
             this._appUserSrv.updateAppUserInfo(r.id,r).subscribe(r=>{
                 this.showPaymentProcessorUpdateFeedback = true;
+                this.PaymentBtnState = ClrLoadingState.DEFAULT;
                 this.cd.detectChanges()
             },(er:Error)=>console.log(er.message)); 
-        })
+        
         
     }
 

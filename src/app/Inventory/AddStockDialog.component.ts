@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
 import { Product } from "../Models/Product";
 import { Stock } from "../Models/Stock";
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     selector:'addStock-dialog',
@@ -21,6 +22,7 @@ export class addStockDialog{
         initialUnits:[0,Validators.required],
         prepDate:[this.date,Validators.required],
       })
+StockAddBtnState:ClrLoadingState = ClrLoadingState.DEFAULT
 
     open(){
         this.show = true;
@@ -31,6 +33,7 @@ export class addStockDialog{
     }
 
     onSubmit(){
+        this.StockAddBtnState = ClrLoadingState.LOADING
         let result = this.addStockForm.value;
         let stk:Stock = {
             prepDate:result.prepDate,
