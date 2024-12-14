@@ -149,6 +149,11 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         this.CartItems.pipe(first()).subscribe(c=>{
             let updatedCart = c.filter(ci=>ci.name !== p.name);
             this.CartItems.next(updatedCart);
+
+            this.SubTotal.next(this.getSum(updatedCart));
+            this.VatCharge.next((vat/100)*this.SubTotal.getValue());
+            this.ServiceCharge.next((sCharge/100)*this.SubTotal.getValue());
+            this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
         });
 
         this.stocks.pipe(first()).subscribe(stks=>{
@@ -163,12 +168,8 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         })
         
   
-        let c = this.CartItems.getValue();
-        this.SubTotal.next(this.getSum(c));
-
-        this.VatCharge.next((vat/100)*this.SubTotal.getValue());
-        this.ServiceCharge.next((sCharge/100)*this.SubTotal.getValue());
-        this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
+  
+       
     }
 
     //update session isPayable to true, if items are in cart.
@@ -339,7 +340,7 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         let sum = 0;
         if(p.length >=1){
             p.forEach(pr=>{
-                sum += pr.unitPrice
+                sum += pr.unitPrice*pr.count
             })
         }
         return sum;

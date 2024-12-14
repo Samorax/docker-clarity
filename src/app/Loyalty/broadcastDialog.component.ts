@@ -22,10 +22,8 @@ export class broadcastDialogComponent implements OnInit{
     phoneNumers : string[] = [];
 
     ngOnInit(): void {
-        this.custSVR.getCustomers().subscribe(c=> {
-            this.recepients = c;
-            console.log(this.recepients);
-        });
+        
+       
     }
 
     
@@ -35,6 +33,11 @@ export class broadcastDialogComponent implements OnInit{
 
         this.message.Message = s, this.message.MessageSID = this.mSID;
         this.show = true;
+        console.log('hey');
+        this.custSVR.getCustomers().subscribe(c=> {
+            this.recepients = c;
+           
+        });
     }
 
     close(){

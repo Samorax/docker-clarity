@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, inject, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { Rewards } from "../Models/Rewards";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, NgForm, Validators } from "@angular/forms";
 import { voucher } from "../Models/Voucher";
 import { paymentService } from "../Services/PaymentService";
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     selector:'edit-loyalty',
@@ -11,12 +12,24 @@ import { paymentService } from "../Services/PaymentService";
 
 export class editLoyaltyDialogComponent implements OnInit {
     @Input() vouchers!: voucher[]
-    @Input() reward!:Rewards
+    reward!:Rewards
     @Output() isOk: EventEmitter<FormData> = new EventEmitter<FormData>();
     show:boolean = false;
     currencySymbol: any;
     @ViewChild('file')fileInput: any;
     appUserId = localStorage.getItem('user_id');
+    addButtonActivity:ClrLoadingState = ClrLoadingState.DEFAULT
+    _formBuilder = inject(FormBuilder)
+
+    loyaltyForm = this._formBuilder.group({
+        title:['',Validators.required],
+        description:['',Validators.required],
+        rewardImage:[File,Validators.required],
+        units:['',Validators.required],
+        expiryDate:['',Validators.required],
+        redeemPoint:['',Validators.required]
+    })
+
 
     constructor(private _paySvr:paymentService){}
 
@@ -24,7 +37,19 @@ export class editLoyaltyDialogComponent implements OnInit {
         this.currencySymbol = this._paySvr.currencySymbol;
     }
 
-    open(){
+    open(x:Rewards){
+        this.reward = x;
+        this.loyaltyForm.setValue(
+            {
+                title:x.title,
+                description:x.description,
+                units:x.units.toString(),
+                expiryDate: x.expiryDate,
+                redeemPoint:x.redeemPoint.toString(),
+                rewardImage:x.rewardImage
+
+            }
+        )
         this.show = true;
     }
 
@@ -59,23 +84,22 @@ export class editLoyaltyDialogComponent implements OnInit {
         }
     }
 
-    onSubmit(x:NgForm)
+    onSubmit()
     {
-        let r = <Rewards>x.value;
-        r.rewardsId = this.reward.rewardsId;
-        r.createdDate = new Date().toUTCString();
-        r.expiryDate = new Date(r.expiryDate).toUTCString();
-        r.applicationUserID = this.appUserId;
+        this.addButtonActivity = ClrLoadingState.LOADING
+        let y:any = this.loyaltyForm.value;
+        let expiryDate = new Date(y.expiryDate).toUTCString();
+
         let form = new FormData();
-        form.append('rewardsId',r.rewardsId.toString());
-        form.append('title',r.title);
-        form.append('description',r.description);
-        form.append('units',r.units.toString());
+        form.append('rewardsId',this.reward.rewardsId.toString());
+        form.append('title',y.title);
+        form.append('description',y.description);
+        form.append('units',y.units.toString());
         form.append('rewardImage', this.checkIfPhotoFilePresent(this.fileInput[0]));
-        form.append('redeemPoint',r.redeemPoint.toString());
-        form.append('createdDate',r.createdDate);
-        form.append('expiryDate',r.expiryDate);
-        form.append('applicationUserID',r.applicationUserID);
+        form.append('redeemPoint',y.redeemPoint.toString());
+        form.append('createdDate',this.reward.createdDate);
+        form.append('expiryDate',expiryDate);
+        form.append('applicationUserID',this.reward.applicationUserID);
 
         this.isOk.emit(form);
     }

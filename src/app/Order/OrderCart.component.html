@@ -44,7 +44,7 @@
             <div class="clr-col-4" style="font-size: large; font-weight: 300;">Total:</div>
             <div class="clr-col-8" style="font-size: large; font-weight: 300;">{{TotalAmount |async | currency:currencySymbol}} </div>
         </div>
-        <button style="width:100%;margin-top: 0;margin-bottom: 0; text-align: center;"   class="btn btn-primary" (click)="onLockSession()">Lock Session</button>
+        <button style="width:100%;margin-top: 0;margin-bottom: 0; text-align: center;"   class="btn btn-primary" (click)="onLockSession()" [disabled]="CartItems.getValue().length === 0">Lock Session</button>
         <!-- <button style="width:483px;margin-top: 0;margin-bottom: 0;" [disabled]=" TotalAmount <= 0 ? true:false "  class="btn btn-primary" (click)="onLockSession()">Lock Session</button> -->
     </div>
     

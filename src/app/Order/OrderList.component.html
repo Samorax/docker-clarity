@@ -8,7 +8,7 @@
             <cds-icon shape="plus"></cds-icon>
             Add 
           </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1 && selected[0].orderStatus !== 'Completed'">
+          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1 && selected[0].orderStatus !== 'Completed'" [disabled]="selected.length !== 1">
             <cds-icon shape="pencil"></cds-icon>
             Edit
           </button>

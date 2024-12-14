@@ -8,32 +8,32 @@ import { BehaviorSubject } from "rxjs";
 import { Rewards } from "../Models/Rewards";
 
 @Component({
-    templateUrl:'./voucherSms.component.html',
-    selector:'voucher-sms'
+    templateUrl:'./rewardSms.component.html',
+    selector:'reward-sms'
 })
 
-export class VoucherSmsComponent{
+export class RewardSmsComponent{
 AllSelection: string = 'All';
     constructor(private _formBuilder:FormBuilder){
         this.msId = localStorage.getItem('mSID')
     }
     msId:any
-    @Output()voucherSms:EventEmitter<smsModel> = new EventEmitter<smsModel>()
+    @Output()rewardSms:EventEmitter<smsModel> = new EventEmitter<smsModel>()
     show = false
     customers!:BehaviorSubject<any>;
     selection:string[] = [];
     phoneCode:string = '+44'
-    voucher!:any
+    reward!:any
     sendButtonActivity:ClrLoadingState = ClrLoadingState.DEFAULT
 
-    voucherForm= this._formBuilder.group({
+    rewardForm= this._formBuilder.group({
         recepients:[[],Validators.required],
         message:['',Validators.required]
     })
 
-    open(x:BehaviorSubject<Customer[]>,y?:voucher){
+    open(x:BehaviorSubject<Customer[]>,y?:Rewards){
         this.customers =  x;
-        this.voucher = y;
+        this.reward = y;
         this.show = true
     }
 
@@ -46,27 +46,27 @@ AllSelection: string = 'All';
     send(){
         this.sendButtonActivity = ClrLoadingState.LOADING
 
-        let m:any = this.voucherForm.value;
+        let m:any = this.rewardForm.value;
         let sms:smsModel;
-        let selection:any = this.voucherForm.value.recepients
+        let selection:any = this.rewardForm.value.recepients
         if(selection[0] == 'All'){
             let pn:string[] = []
             this.customers.getValue().forEach((c:Customer) => pn.push(this.phoneCode+c.phoneNumber.substring(1)))
             sms = {Message:m.message, MessageSID:this.msId, PhoneNumbers:pn}
-            console.log(sms)
+        
         }else{
             let custs:string[] = []
             selection.forEach((c:any)=> {
                 let s = c.split(" ");
                 let customer:any = this.customers.getValue().find((u:Customer)=> u.firstName === s[0] && u.lastName ===s[1])
                 custs.push(this.phoneCode+customer?.phoneNumber.substring(1));
-                console.log(custs)
+                
             })
             sms = {Message:m.message, MessageSID:this.msId, PhoneNumbers:custs}
             
         }
         
-        this.voucherSms.emit(sms)
+        this.rewardSms.emit(sms)
 
     }
 }

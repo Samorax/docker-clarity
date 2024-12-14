@@ -96,6 +96,7 @@ import { rewardResolver } from './Services/RewardResolver';
 import { appUserResolver } from './Services/AppUserResolver';
 import { LoyaltyOverviewComponent } from './Loyalty/overviewcomponent';
 import { CustomFormatPipe } from './Services/CustomFormatter.pipe';
+import { RewardSmsComponent } from './Loyalty/rewardSms.component';
 
 
 @NgModule({
@@ -161,7 +162,8 @@ import { CustomFormatPipe } from './Services/CustomFormatter.pipe';
     OrderAnnulComponent,
     OrderReconcileComponent,
     CustomFormatPipe,
-    addTableDialogComponent
+    addTableDialogComponent,
+    RewardSmsComponent
   ],
   imports: [
     HttpClientModule,
@@ -197,8 +199,8 @@ import { CustomFormatPipe } from './Services/CustomFormatter.pipe';
       {path:'tables/list', component:tableComponent},
       {path:'waiters/list',component:waiterComponent},
       {path:'loyalty/overview',component:LoyaltyOverviewComponent,resolve:{}},
-      {path:'loyalty/vouchers',component: voucherComponent,resolve:{vouchers:voucherResolver}},
-      {path:'loyalty/rewards',component:rewardComponent,resolve:{rewards:rewardResolver}},
+      {path:'loyalty/vouchers',component: voucherComponent,resolve:{vouchers:voucherResolver,customers:customerResolver}},
+      {path:'loyalty/rewards',component:rewardComponent,resolve:{rewards:rewardResolver,customers:customerResolver}},
       {path:'settings', component:SettingsComponent,resolve:{appUser:appUserResolver}}] },
       {path: '**', component:PageNotFoundComponent, pathMatch:'full'}
     ],{enableViewTransitions:true}),

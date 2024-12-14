@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from "@angular/core";
 import { addLoyaltyDialogComponent } from "./addRewardDialog.component";
 import { Product } from "../Models/Product";
 import { Rewards } from "../Models/Rewards";
@@ -10,6 +10,10 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
 import { announcementIcon, ClarityIcons, pencilIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
 import { ActivatedRoute } from "@angular/router";
+import { VoucherSmsComponent } from "./voucherSms.component";
+import { Customer } from "../Models/Customer";
+import { RewardSmsComponent } from "./rewardSms.component";
+import { SmsService } from "../Services/SmsService";
 ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon,pencilIcon)
 
 @Component({
@@ -25,17 +29,21 @@ export class rewardComponent implements OnInit, AfterViewInit
     redeemPts!:number
     vouchers!:voucher[];
     products!: Product[]
+    customers: BehaviorSubject<any> = new BehaviorSubject<Customer[]>([])
     rewards:BehaviorSubject<any> = new BehaviorSubject<Rewards[]>([])
     reward:Rewards = new Rewards();
     @ViewChild(editLoyaltyDialogComponent) editLoyalty!: editLoyaltyDialogComponent;
     @ViewChild(addLoyaltyDialogComponent) addLoyalty!: addLoyaltyDialogComponent;
     @ViewChild(deleteLoyaltyDialogComponent) delLoyalty!:deleteLoyaltyDialogComponent;
+    @ViewChild(RewardSmsComponent)bDC!:RewardSmsComponent;
+    
+    
     currencySymbol: any;
 
     
     
 
-    constructor(private activatedRoute:ActivatedRoute,private sanitizer: DomSanitizer,private cd:ChangeDetectorRef,
+    constructor(private activatedRoute:ActivatedRoute,private sanitizer: DomSanitizer,private cd:ChangeDetectorRef,private smsSVR:SmsService,
          private _rewardsSvr:RewardService){}
 
     ngAfterViewInit(): void {
@@ -46,7 +54,7 @@ export class rewardComponent implements OnInit, AfterViewInit
                 })
                 this.addLoyalty.close()
             },(err)=>{});
-            this.cd.detectChanges()
+            
         });
 
         this.editLoyalty.isOk.subscribe((r:FormData)=>{
@@ -66,24 +74,30 @@ export class rewardComponent implements OnInit, AfterViewInit
                 },(er)=> console.log(er))
             })
             this.delLoyalty.close()
-            this.cd.detectChanges()
+            
         });
+
+        this.bDC.rewardSms.subscribe(s=>{
+            this.smsSVR.sendMessage(s).subscribe(r=>{
+  
+            })
+            this.bDC.close();
+        })
     }
 
     ngOnInit(): void {
-    
-        this.getProductswithLoyaltyPoints();
         this.getRewards();
+        this.getCustomers()
 
     }
 
-    getProductswithLoyaltyPoints(){
-
-            this.activatedRoute.data.subscribe((p:any)=>{
-                this.products = p.products.filter((pr:Product)=>pr.loyaltyPoints != 0)
-            })
-        }
     
+    getCustomers(){
+        this.activatedRoute.data.subscribe((cs:any)=>{
+            this.customers.next(cs.customers)
+            console.log(this,this.customers.getValue())
+        })
+    }
 
     getRewards(){
         let n:Rewards[] = [];
@@ -95,7 +109,6 @@ export class rewardComponent implements OnInit, AfterViewInit
                     })
                 })
                 this.rewards.next(n);
-                this.cd.detectChanges();
             })
         
     }
@@ -103,7 +116,7 @@ export class rewardComponent implements OnInit, AfterViewInit
     
 
     onBroadcast(){
-        
+        this.bDC.open(this.customers,this.selected[0])
     }
 
     onAdd(){
@@ -116,8 +129,7 @@ export class rewardComponent implements OnInit, AfterViewInit
     }
 
     onEdit(){
-        this.reward = this.selected[0];
-        this.editLoyalty.open();
+        this.editLoyalty.open(this.selected[0]);
     }
 
     

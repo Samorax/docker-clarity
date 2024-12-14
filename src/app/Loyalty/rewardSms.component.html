@@ -1,7 +1,7 @@
 <clr-modal [(clrModalOpen)]="show" clrModalSize="md" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
-    <h3 class="modal-title" clrModalTitle>Broadcast Voucher</h3>
+    <h3 class="modal-title" clrModalTitle>Broadcast Reward</h3>
     <div class="modal-body" clrModalContent>
-        <form (ngSubmit)="send()" [formGroup]="voucherForm">
+        <form (ngSubmit)="send()" [formGroup]="rewardForm">
             <clr-combobox-container>
                 <label class="clr-required-mark">Select Recepients</label>
                 <clr-combobox formControlName="recepients" clrMulti="true">
@@ -23,7 +23,7 @@
             </clr-textarea-container>
             <div class="modal-footer" clrModalActions>
                 <button class="btn btn-outline" (click)="show=false">Close</button>
-                <button class="btn btn-primary" type="submit" [disabled]="!voucherForm.valid" [clrLoading]="sendButtonActivity">Send</button>
+                <button class="btn btn-primary" type="submit" [disabled]="!rewardForm.valid" [clrLoading]="sendButtonActivity">Send</button>
                 
               </div>
         </form>

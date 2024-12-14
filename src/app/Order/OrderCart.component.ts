@@ -75,7 +75,7 @@ selectedCustomer:any
 
     appId = localStorage.getItem("user_id");
     @Output()cart: EventEmitter<Order> = new EventEmitter<Order>();
-    @Input()lastorderId!:BehaviorSubject<number>
+    lastorderId:BehaviorSubject<number> = new BehaviorSubject<number>(0)
     @Input()table!:Table;
     newOder!:Order;
     @Input()Products!: Product[];
@@ -179,17 +179,23 @@ selectedCustomer:any
     //update order.
     //table status to occupied.
     onLockSession(){
+        
     if(this.sessionType === "Takeaway")
     {
-        
-        //let cache = this.orderSvr.ordersCache; 
-        //let lastorderid = cache.length >= 1 ? cache[cache.length - 1].orderID: 1;
-
-        this.tableSession.name =  this.sessionType+" "+this.lastorderId;
-        let virtualTable :Table = {name: this.tableSession.name, maxCovers: 1, status:"Occupied", applicationUserID:this.appId, type:'virtual'};
+        this.odSvr.getOrders().subscribe(or=>{
+            let ids = or.map(n=> n.orderID);
+            let biggerId = Math.max(...ids);
+            this.tableSession.name =  this.sessionType+" "+(biggerId + Number(1));
+            let virtualTable :Table = {name: this.tableSession.name, maxCovers: 1, status:"Occupied", applicationUserID:this.appId, type:'virtual'};
         let virtualWaiter:Waiter = {name: this.tableSession.name, applicationUserID:this.appId};
         this.tableSession.waiter = virtualWaiter;
         this.tableSession.table = virtualTable;
+        })   
+        //let cache = this.orderSvr.ordersCache; 
+        //let lastorderid = cache.length >= 1 ? cache[cache.length - 1].orderID: 1;
+        
+       
+        
         
     }else{
         this.table.status = 'Occupied';

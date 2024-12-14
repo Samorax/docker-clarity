@@ -2,19 +2,14 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from "
 import { voucher } from "../Models/Voucher";
 import { voucherService } from "../Services/VoucherService";
 import { addVoucherDialogComponent } from "./addVoucherDialog.component";
-import { editLoyaltyDialogComponent } from "./editRewardDialog.component";
 import { deleteVoucherDialogComponent } from "./deleteVoucherDialog.component";
 import { editVoucherDialogComponent } from "./editVoucherDialog.component";
-import { broadcastDialogComponent } from "./broadcastDialog.component";
 import { SmsService } from "../Services/SmsService";
 import { VoucherSmsComponent } from "./voucherSms.component";
-import { CustomerService } from "../Services/Customer/CustomerService";
 import { Customer } from "../Models/Customer";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
-import { log } from "console";
 import { ChangeDetectionStrategy } from "@angular/core";
-import { announcementIcon, ClarityIcons, plusCircleIcon, plusIcon, timesCircleIcon } from "@cds/core/icon";
-import { ClrLoadingState } from "@clr/angular";
+import { announcementIcon, ClarityIcons, plusIcon, timesCircleIcon } from "@cds/core/icon";
 import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
 ClarityIcons.addIcons(timesCircleIcon,announcementIcon,plusIcon)
@@ -37,7 +32,7 @@ export class voucherComponent implements OnInit, AfterViewInit{
     @ViewChild(editVoucherDialogComponent)editVDC!: editVoucherDialogComponent;
     @ViewChild(deleteVoucherDialogComponent)delVDC!: deleteVoucherDialogComponent;
     @ViewChild(VoucherSmsComponent)bDC!:VoucherSmsComponent;
-    customers!: Customer[];
+    customers: BehaviorSubject<Customer[]> = new BehaviorSubject<Customer[]>([]);
 
     constructor(private  activatedRoute:ActivatedRoute, private _voucherSvr:voucherService, private smsSVR: SmsService,private _smsActivator:SmSActivatorService,private cd:ChangeDetectorRef){}
 
@@ -99,7 +94,10 @@ export class voucherComponent implements OnInit, AfterViewInit{
     }
 
     getCustomers(){
-        this.activatedRoute.data.subscribe((cs:any)=> this.customers = cs.customers)
+        this.activatedRoute.data.subscribe((cs:any)=> 
+            {
+                this.customers.next(cs.customers);
+            })
     }
 
     onAdd(){
@@ -116,7 +114,10 @@ export class voucherComponent implements OnInit, AfterViewInit{
     }
 
     onBroadcast(){
-        this.bDC.open(this.selected[0], this.customers);
+        
+            this.bDC.open(this.customers,this.selected[0]);
+        
+       
     }
 
 }

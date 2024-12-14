@@ -55,11 +55,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit{
             this.orda.emit(o);
         })
 
-        this.orderSvr.getOrders().subscribe(or=>{
-            let ids = or.map(n=> n.orderID);
-            let biggerId = Math.max(...ids);
-            this.lastorderId.next(biggerId)
-        })
+        
 
     }
 
