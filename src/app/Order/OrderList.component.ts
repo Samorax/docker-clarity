@@ -181,6 +181,7 @@ this.reconcileOrderModal.open();
       
       this.activatedRoute.data.subscribe((o:any)=>{
           let latestOrders= o.orders.filter((o:any)=>o.isDeleted === false);
+          console.log(latestOrders)
             //index is 0 because the list is in ascending order.
             //return the last order id and pass it to the child component (Cart) to reference a Takeaway order.
             this.orders.next(latestOrders);

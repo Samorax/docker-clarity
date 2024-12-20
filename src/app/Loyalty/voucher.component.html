@@ -25,8 +25,7 @@
         <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
      </clr-dg-column>
     <clr-dg-column>Credit Amount</clr-dg-column>
-    <clr-dg-column>Created date</clr-dg-column>
-    <clr-dg-column>Expiry date</clr-dg-column>
+   
     <clr-dg-column>Status</clr-dg-column>
     <clr-dg-column>Activation</clr-dg-column>
 
@@ -36,8 +35,6 @@
       <clr-dg-cell>{{element.voucherNumber}}</clr-dg-cell>
       <clr-dg-cell *ngIf="element.valueType === 1">{{element.voucherCreditAmount| currency:currencySymbol}}</clr-dg-cell>
       <clr-dg-cell *ngIf="element.valueType === 0">{{element.voucherCreditAmount/100| percent}}</clr-dg-cell>
-      <clr-dg-cell>{{element.voucherCreationDate | date: 'medium'}}</clr-dg-cell>
-      <clr-dg-cell>{{element.voucherExpirationDate | date: 'medium'}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherStatus? 'Expired':'Active'}}</clr-dg-cell>
       <clr-dg-cell>{{element.voucherActivation? 'Enabled':'Disabled'}}</clr-dg-cell>
     </clr-dg-row>
@@ -45,8 +42,32 @@
    <clr-dg-detail *clrIfDetail="let element">
       <clr-dg-detail-header>{{element.voucherName}}</clr-dg-detail-header>
       <clr-dg-detail-body>
-        <p>Type: {{element.valueType}}</p>
-        <p>Remaining Units: {{element.units}}</p>
+        <div class="clr-row">
+          <table class="table table-vertical table-noborder table-compact">
+            <tbody>
+              <tr>
+                <th>Created on</th>
+                <td>{{element.voucherCreationDate | date: 'medium'}}</td>
+              </tr>
+              <tr>
+                <th>Expires on</th>
+                <td>{{element.voucherExpirationDate | date: 'medium'}}</td>
+              </tr>
+              <tr *ngIf="element.valueType === 1">
+                <th>Type</th>
+                <td>Actual Value</td>
+              </tr>
+              <tr *ngIf="element.valueType === 0">
+                <th>Type</th>
+                <td>Percentage Value</td>
+              </tr>
+              <tr>
+                <th>Remaining Units</th>
+                <td>{{element.units}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </clr-dg-detail-body>
     </clr-dg-detail> 
   
@@ -56,7 +77,7 @@
           Vouchers per page
         </clr-dg-page-size>
         {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
-        {{pagination.totalItems}} elements
+        {{pagination.totalItems}} Vouchers
       </clr-dg-pagination>
     </clr-dg-footer>
   </clr-datagrid>

@@ -44,16 +44,47 @@
       <clr-dg-detail-header>Order No:{{element.orderID}}</clr-dg-detail-header>
       <clr-dg-detail-body>
        <div class="clr-row">
-        <div class="clr-col-6">
-          <div>Date: {{element.orderDate | date:'medium'}}</div>
-          <div>Payment Type:{{element.payment}}</div>
-          <div>Channel:{{element.channel}}</div>
-          <div>Status:{{element.orderStatus}}</div>
-          <div>Notes:{{element.notes}}</div>
-          <div *ngIf="element.type === 'Dine-In'">
-            <div>Waiter:{{element.tableSession.waiter.name}}</div>
-            <div>Table:{{element.tableSession.table.name}}</div>
-          </div>
+        <div class="clr-col-8">
+          <table class="table table-vertical table-noborder table-compact">
+            <tbody>
+              <tr>
+                <th>Date</th>
+                <td> {{element.orderDate | date:'medium'}}</td>
+              </tr>
+              <tr>
+                <th>Payment Type</th>
+                <td>{{element.payment}}</td>
+              </tr>
+              <tr>
+                <th>Channel</th>
+                <td>{{element.channel}}</td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td>{{element.orderStatus}}</td>
+              </tr>
+              <tr>
+                <th>Notes</th>
+                <td>{{element.notes}}</td>
+              </tr>
+              <tr *ngIf="element.tableSession.name.includes('Takeaway') === false">
+                <th>Order Type</th>
+                <td>Dine-in</td>
+              </tr>
+              <tr *ngIf="element.tableSession.name.includes('Takeaway') === false" >
+                <th>Waiter</th>
+                <td>{{element.tableSession.waiter.name}}</td>
+              </tr>
+              <tr *ngIf="element.tableSession.name.includes('Takeaway') === false">
+                <th>Table</th>
+                <td>{{element.tableSession.table.name}}</td>
+              </tr>
+              <tr *ngIf="element.tableSession.name.includes('Takeaway')">
+                <th>Order Type</th>
+                <td>Takeaway</td>
+              </tr>
+            </tbody>
+          </table>
           <button class="btn btn-secondary" (click)="sendMessage(element.customer)" [disabled]="enableSms" *ngIf="element.channel !== 'In-Person'">Send Message</button>
         </div>
         <div class="clr-col" *ngIf="element.channel !== 'In-Person'">

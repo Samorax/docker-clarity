@@ -131,8 +131,10 @@ applyVouchBtn: ClrLoadingState = ClrLoadingState.DEFAULT;
         {
             let voucherAmount = this.voucherToApply.valueType === 1?this.voucherToApply.voucherCreditAmount:(this.voucherToApply.voucherCreditAmount/100)*this.SubTotal.getValue()
             this.SubTotal.next(this.SubTotal.getValue() - voucherAmount);
-            this.VatCharge.next((this.vat/100)*this.SubTotal.getValue());
+
             this.ServiceCharge.next((this.sCharge/100)*this.SubTotal.getValue());
+            this.VatCharge.next((this.vat/100)*(this.SubTotal.getValue() + this.ServiceCharge.getValue()));
+            
             this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
 
             voucherCartItem = {name: this.voucherToApply.voucherNumber+'(Voucher)',unitPrice:-(voucherAmount),count:1 }

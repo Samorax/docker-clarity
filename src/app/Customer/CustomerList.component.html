@@ -31,61 +31,67 @@
       <clr-dg-detail-header>{{element.firstName + ' '+ ' '+element.lastName}}</clr-dg-detail-header>
       <clr-dg-detail-body>
         <div class="clr-row">
-          <div class="clr-col-6">
-            <table>
-              <tr>
-                <td>CustomerNo: </td>
-                <td>{{element.recordId}}</td>
-              </tr>
+          <div class="clr-col-7">
+            <table class="table table-vertical table-noborder table-compact">
+              <tbody>
                 <tr>
-                  <td>Birthday: </td>
+                  <th>CustomerNo: </th>
+                  <td>{{element.recordId}}</td>
+                </tr>
+                <tr>
+                  <th>Birthday: </th>
                   <td>{{element.birthday | date}}</td>
                 </tr>
                 <tr>
-                  <td>Last Order Date: </td>
+                  <th>Last Order Date: </th>
                   <td>{{element.lastOrderDate | date}}</td>
                 </tr>
                 <tr>
-                  <td>Total Amount Spent: </td>
+                  <th>Total Amount Spent: </th>
                   <td>{{element.totalAmountSpent | currency: currency}}</td>
                 </tr>
                 <tr>
-                  <td>High Spender: </td>
+                  <th>House Address:</th>
+              <td>{{element.houseAddress}}</td>
+                </tr>
+                <tr>
+                  <th>Email: </th>
+                  <td>{{element.email}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="clr-col-5">
+            <table class="table table-vertical table-noborder table-compact">
+              <tbody>
+                <tr>
+                  <th>High Spender: </th>
                   <td>{{element.highSpender}}</td>
                 </tr>
                 <tr>
-                  <td>Favourite: </td>
+                  <th>Favourite: </th>
                   <td>{{element.favourite}}</td>
                 </tr>
                 <tr>
-                  <td>Loyalty Points: </td>
+                  <th>Loyalty Points: </th>
                   <td>{{element.loyaltyPoints}}pts</td>
                 </tr>
                 <tr>
-                  <td>Membership: </td>
+                  <th>Membership: </th>
                   <td>{{element.membership}}</td>
                 </tr>
+                <tr>
+                  <th>Mobile Number: </th>
+                  <td>{{element.mobileNumber}}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
             </table>
-            
           </div>
-          <div class="clr-col-6">
-            <table>
-            <tr>
-              <td>House Address:</td>
-              <td>{{element.houseAddress}}</td>
-            </tr>
-            <tr>
-              <td>Email: </td>
-              <td>{{element.email}}</td>
-            </tr>
-            <tr>
-              <td>Mobile Number: </td>
-              <td>{{element.mobileNumber}}</td>
-            </tr>
-          </table>
           </div>
-        </div>
-       
     </clr-dg-detail-body>
     </clr-dg-detail> 
   

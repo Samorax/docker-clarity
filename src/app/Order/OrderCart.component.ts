@@ -168,8 +168,9 @@ selectedCustomer:any
         let c = this.CartItems.getValue();
         this.SubTotal.next(this.getSum(c));
 
-        this.VatCharge.next((vat/100)*this.SubTotal.getValue());
+       
         this.ServiceCharge.next((sCharge/100)*this.SubTotal.getValue());
+        this.VatCharge.next((vat/100)*(this.SubTotal.getValue() + this.ServiceCharge.getValue()));
         this.TotalAmount.next(this.SubTotal.getValue()+this.VatCharge.getValue()+this.ServiceCharge.getValue());
 
     }

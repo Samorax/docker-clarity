@@ -64,7 +64,7 @@
               "RelativeDocumentMoniker": "ngsw-config.json",
               "ToolTip": "C:\\Users\\SamuelAzeez\\source\\repos\\Foodloyale\\Foodloyalefrontend\\ngsw-config.json",
               "RelativeToolTip": "ngsw-config.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2024-05-20T13:52:14.947Z",
               "EditorCaption": ""
@@ -79,8 +79,7 @@
               "RelativeToolTip": "package.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-05-20T13:52:09.615Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-20T13:52:09.615Z"
             },
             {
               "$type": "Document",
@@ -92,8 +91,7 @@
               "RelativeToolTip": "src\\app\\Authentication\\register.component.ts",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAA0AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2024-05-08T20:53:41.566Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-08T20:53:41.566Z"
             },
             {
               "$type": "Document",

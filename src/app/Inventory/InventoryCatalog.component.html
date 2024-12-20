@@ -45,29 +45,29 @@
       <clr-dg-detail-body>
         <div class="clr-row">
           <div class="clr-col-6">
-            <table>
+            <table class="table table-vertical table-noborder table-compact">
               <tr>
-                <td>Category:</td>
+                <th>Category</th>
                 <td>{{element.category}}</td>
               </tr>
               <tr>
-                <td>Price:</td>
+                <th>Price</th>
                 <td>{{element.price | currency:currencySymbol}}</td>
               </tr>
               <tr>
-                <td>Description:</td>
+                <th>Description</th>
                 <td>{{element.description}}</td>
               </tr>
               <tr>
-                <td>Code:</td>
+                <th>Code</th>
                 <td>{{element.code}}</td>
               </tr>
               <tr>
-                <td>Loyalty Points:</td>
+                <th>Loyalty Points</th>
                 <td>{{element.loyaltyPoints}}</td>
               </tr>
               <tr *ngIf="element.allergens">
-                <td>Allergens:</td>
+                <th>Allergens</th>
                 <td *ngFor="let allergen of element.allergens.split(',')">
                   <span class="label">{{allergen}}</span>
                 </td>
@@ -87,7 +87,7 @@
           Products per page
         </clr-dg-page-size>
         {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
-        {{pagination.totalItems}} elements
+        {{pagination.totalItems}} products
       </clr-dg-pagination>
     </clr-dg-footer>
   </clr-datagrid>
