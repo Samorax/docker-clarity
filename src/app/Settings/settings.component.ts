@@ -22,11 +22,8 @@ import { ChangeDetectionStrategy } from "@angular/core";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { ActivatedRoute } from "@angular/router";
 import { environment } from "../../environment/environment";
-<<<<<<< HEAD
-import { ClrLoadingState } from "@clr/angular";
-=======
 import { AccountingService } from "../Services/AccountingService";
->>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
+import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     templateUrl:'./settings.component.html',
@@ -114,8 +111,9 @@ PaymentBtnState: ClrLoadingState = ClrLoadingState.DEFAULT
     
 
 constructor(private _appUserSrv: appUserService,private activatedRoute: ActivatedRoute,private cd:ChangeDetectorRef,private _testModeSVR:testModeService,
-    private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,
-    private _smsActivator:SmSActivatorService, private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService, private formBUilder:FormBuilder ){}
+    private _openTimeSVR:openTimesService, private _authSVR:AuthenticationService,private _smsActivator:SmSActivatorService, 
+    private _apiKeySvr: apiKeyRequestService, private stripeIntentService: paymentService ){}
+    formBUilder:FormBuilder = inject(FormBuilder);
 
     ngAfterViewInit(): void {
         this.delAcc.isOk.subscribe(o=>{

@@ -1,7 +1,7 @@
-import { NgModule, inject, isDevMode } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { provideRouter, RouterModule, withViewTransitions } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 
@@ -21,8 +21,6 @@ import { ClarityModule, ClrButtonModule, ClrLoadingModule, ClrSpinnerModule, Clr
 import { HomeComponent } from './home/home.component';
 import { EditProductDialog } from './Inventory/Products/EditProductDialog.component';
 import { DeleteProductDialog } from './Inventory/Products/DeleteProductDialog.component';
-import { ProductService } from './Services/Product/ProductService';
-import { OrderService } from './Services/Order/OrderService';
 import { OrderEditComponent } from './Order/OrderEdit.component';
 import { OrderAddComponent } from './Order/OrderAdd.component';
 import { OrderCartComponent } from './Order/OrderCart.component';
@@ -88,7 +86,6 @@ import { restockDialogComponent } from './Inventory/Stocks/ReStockDialog.compone
 import { editStockDialogComponent } from './Inventory/Stocks/EditStockDialog.component';
 import { stockResolver } from './Services/Stock/StockResolver';
 import { productResolver } from './Services/Product/ProductResolver';
-import { ClarityIcons } from '@cds/core/icon';
 import { orderResolver } from './Services/Order/OrderResolver';
 import { customerResolver } from './Services/Customer/CustomerResolver';
 import { voucherResolver } from './Services/VoucherResolver';
