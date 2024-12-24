@@ -22,6 +22,7 @@ import { ChangeDetectionStrategy } from "@angular/core";
 import { SmSActivatorService } from "../Services/SmsActivatorService";
 import { ActivatedRoute } from "@angular/router";
 import { environment } from "../../environment/environment";
+import { AccountingService } from "../Services/AccountingService";
 
 @Component({
     templateUrl:'./settings.component.html',
@@ -46,6 +47,19 @@ import { environment } from "../../environment/environment";
     ]
 })
 export class SettingsComponent implements OnInit, AfterViewInit{
+
+accSystemSVR = inject(AccountingService);
+onSaveAccountingSystem($event: Event) {
+    $event.preventDefault();
+    let v = this.settingsForm.get('accountingSettings.clientId')?.value;
+    this.accSystemSVR.addAccountingSystem(v).subscribe((r:any)=>console.log(r));
+}
+
+showXeroForms: any;
+onChangeAccountingSystem(x:string) {
+    this.showXeroForms = x === 'Xero'?true:false;
+}
+
 
     accountActive = true;
     paymentProvider:paymentProcessor = new paymentProcessor();
@@ -77,6 +91,7 @@ export class SettingsComponent implements OnInit, AfterViewInit{
     isOpen6: boolean = true;
     isOpen5: boolean = true;
     isOpen8 = true;
+    isOpen9 = true;
     isOpen4 = true;
     Mode = inject(disseminateModeService)
     @ViewChild(operatingDaysComponent)oDC!:operatingDaysComponent
@@ -174,6 +189,12 @@ constructor(private _appUserSrv: appUserService,private activatedRoute: Activate
                 SoftwareHouseId:['', Validators.required]
             
         }),
+
+        accountingSettings:this.formBUilder.group({
+            clientSecret:['',Validators.required],
+            clientId:['',Validators.required]
+        }),
+
         logistics:this.formBUilder.group({
             deliveryDistance:['',Validators.required],
             deliveryFee:['',Validators.required]
@@ -295,6 +316,10 @@ this.editODC.open(this.selected[0]);
     showAddressSettings(){
         this.showBusinessDetailsUpdateFeedback =false;
         this.isOpen8 = !this.isOpen8;
+    }
+
+    showAccountSystemSettings(){
+        this.isOpen9 = !this.isOpen9;
     }
 
     fillAccountSettings(){

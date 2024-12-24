@@ -1,98 +1,269 @@
-<clr-alert *ngIf="ifError" [clrAlertType]="feedBackStatus">
-  <clr-alert-item>
-<span class="alert-text">{{feedBackMessage}}</span>
-  </clr-alert-item>
-</clr-alert>
-<clr-alert *ngIf="ifSuccess" [clrAlertType]="feedBackStatus">
-  <clr-alert-item>
-    <span class="alert-text">{{feedBackMessage}}</span>
-  </clr-alert-item>
-</clr-alert>
-<clr-datagrid [(clrDgSelected)]="selected">
-    <clr-dg-action-bar>
-        <div class="btn-group">
-          <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
-            <cds-icon shape="plus"></cds-icon> 
-            Add 
-          </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
-            <cds-icon shape="times-circle"></cds-icon>
-            Delete
-          </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
-            <cds-icon shape="pencil"></cds-icon>
-            Edit
-     </button>
-        </div>
-    </clr-dg-action-bar>
-    <clr-dg-column >Name</clr-dg-column>
-    <clr-dg-column >Price 
-        <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
-     </clr-dg-column>
-    <clr-dg-column >Category</clr-dg-column>
-    <clr-dg-column >Product Code</clr-dg-column>
+<clr-tabs>
+  <clr-tab>
+    <button clrTabLink>Products</button>
+    <clr-tab-content>
+      <clr-alert *ngIf="ifError" [clrAlertType]="feedBackStatus">
+        <clr-alert-item>
+      <span class="alert-text">{{feedBackMessage}}</span>
+        </clr-alert-item>
+      </clr-alert>
+      <clr-alert *ngIf="ifSuccess" [clrAlertType]="feedBackStatus">
+        <clr-alert-item>
+          <span class="alert-text">{{feedBackMessage}}</span>
+        </clr-alert-item>
+      </clr-alert>
+      <clr-datagrid [(clrDgSelected)]="selected">
+          <clr-dg-action-bar>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-secondary" (click)="onAdd()">
+                  <cds-icon shape="plus"></cds-icon> 
+                  Add 
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" (click)="onDelete()">
+                  <cds-icon shape="times-circle"></cds-icon>
+                  Delete
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" (click)="onEdit()" *ngIf="selected.length == 1">
+                  <cds-icon shape="pencil"></cds-icon>
+                  Edit
+           </button>
+              </div>
+          </clr-dg-action-bar>
+          <clr-dg-column >Name</clr-dg-column>
+          <clr-dg-column >Price 
+              <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+           </clr-dg-column>
+          <clr-dg-column >Category</clr-dg-column>
+          <clr-dg-column >Product Code</clr-dg-column>
+      
+          <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
+          <clr-dg-row *clrDgItems="let element of elements |async" [clrDgItem]="element">
+            <clr-dg-cell>{{element.name}}</clr-dg-cell>
+            <clr-dg-cell>{{element.price | currency:currencySymbol}}</clr-dg-cell>
+            <clr-dg-cell>{{element.category}}</clr-dg-cell>
+            <clr-dg-cell>{{element.code}}</clr-dg-cell>
+          </clr-dg-row>
+        
+         <clr-dg-detail *clrIfDetail="let element">
+            <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
+            <clr-dg-detail-body>
+              <div class="clr-row">
+                <div class="clr-col-6">
+                  <table>
+                    <tr>
+                      <td>Category:</td>
+                      <td>{{element.category}}</td>
+                    </tr>
+                    <tr>
+                      <td>Price:</td>
+                      <td>{{element.price | currency:currencySymbol}}</td>
+                    </tr>
+                    <tr>
+                      <td>Description:</td>
+                      <td>{{element.description}}</td>
+                    </tr>
+                    <tr>
+                      <td>Code:</td>
+                      <td>{{element.code}}</td>
+                    </tr>
+                    <tr>
+                      <td>Loyalty Points:</td>
+                      <td>{{element.loyaltyPoints}}</td>
+                    </tr>
+                    <tr *ngIf="element.allergens">
+                      <td>Allergens:</td>
+                      <td *ngFor="let allergen of element.allergens.split(',')">
+                        <span class="label">{{allergen}}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="clr-col-6">
+                  <img [src]="element.photosUrl" style="height: 200px;width: auto;"/>
+                </div>
+              </div>
+          </clr-dg-detail-body>
+          </clr-dg-detail> 
+        
+          <clr-dg-footer>
+            <clr-dg-pagination #pagination>
+              <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+                Products per page
+              </clr-dg-page-size>
+              {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+              {{pagination.totalItems}} elements
+            </clr-dg-pagination>
+          </clr-dg-footer>
+        </clr-datagrid>
+      
+       <add-product [products]="elements|async"></add-product>
+      <edit-product [products]="elements|async"></edit-product>
+      <del-product></del-product>
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink>Food Ingredients</button>
+    <clr-tab-content>
+      <clr-datagrid [(clrDgSelected)]="selectedFI">
+        <clr-dg-action-bar>
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onAddFI()">
+                <cds-icon shape="plus"></cds-icon> 
+                Add 
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onDeleteFI()" *ngIf="selected.length == 1">
+                <cds-icon shape="times-circle"></cds-icon>
+                Delete
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onEditFI()" *ngIf="selected.length == 1">
+                <cds-icon shape="pencil"></cds-icon>
+                Edit
+         </button>
+         <button type="button" class="btn btn-sm btn-secondary" (click)="onPO()" *ngIf="selected.length == 1">
+          <cds-icon shape="pencil"></cds-icon>
+          Buy
+        </button>
+            </div>
+        </clr-dg-action-bar>
+        <clr-dg-column >Name</clr-dg-column>
+        <clr-dg-column >Price 
+            <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+         </clr-dg-column>
+        <clr-dg-column >Category</clr-dg-column>
+        <clr-dg-column >Product Code</clr-dg-column>
+    
+        <clr-dg-placeholder>We couldn't find any Food Ingredients. Add new Food Ingredients</clr-dg-placeholder>
+        <clr-dg-row *clrDgItems="let element of FIs |async" [clrDgItem]="element">
+          <clr-dg-cell>{{element.name}}</clr-dg-cell>
+          <clr-dg-cell>{{element.unitPrice | currency:currencySymbol}}</clr-dg-cell>
+          <clr-dg-cell>{{element.description}}</clr-dg-cell>
+          <clr-dg-cell>{{element.quantity}}</clr-dg-cell>
+        </clr-dg-row>
+      
+       <clr-dg-detail *clrIfDetail="let element">
+          <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
+          <clr-dg-detail-body>
+            <div class="clr-row">
+              <div class="clr-col-6">
+                <table>
+                  <tr>
+                    <td>Category:</td>
+                    <td>{{element.quantity}}</td>
+                  </tr>
+                  <tr>
+                    <td>Price:</td>
+                    <td>{{element.unitPrice | currency:currencySymbol}}</td>
+                  </tr>
+                  <tr>
+                    <td>Description:</td>
+                    <td>{{element.description}}</td>
+                  </tr>
+                 
+                  <tr>
+                    <td>LastOrderDate:</td>
+                    <td>{{element.lastOrderDate}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+        </clr-dg-detail-body>
+        </clr-dg-detail> 
+      
+        <clr-dg-footer>
+          <clr-dg-pagination #pagination>
+            <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+              Food Ingredients per page
+            </clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+            {{pagination.totalItems}} Food Ingredients
+          </clr-dg-pagination>
+        </clr-dg-footer>
+      </clr-datagrid>
+      <editFI-dialog></editFI-dialog>
+      <addFI-dialog></addFI-dialog>
+      <deleteFI-dialog></deleteFI-dialog>
+      <PO-dialog></PO-dialog>
+    </clr-tab-content>  
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink>Suppliers</button>
+    <clr-tab-content>
+      <clr-datagrid [(clrDgSelected)]="selectedFI">
+        <clr-dg-action-bar>
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onAddSup()">
+                <cds-icon shape="plus"></cds-icon> 
+                Add 
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onDeleteSup()" *ngIf="selected.length == 1">
+                <cds-icon shape="times-circle"></cds-icon>
+                Delete
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="onEditSup()" *ngIf="selected.length == 1">
+                <cds-icon shape="pencil"></cds-icon>
+                Edit
+         </button>
+            </div>
+        </clr-dg-action-bar>
+        <clr-dg-column >Name</clr-dg-column>
+        <clr-dg-column >Price 
+            <!-- <clr-dg-string-filter [clrDgStringFilter]="myFilter"></clr-dg-string-filter> -->
+         </clr-dg-column>
+        <clr-dg-column >Category</clr-dg-column>
+        <clr-dg-column >Product Code</clr-dg-column>
+    
+        <clr-dg-placeholder>We couldn't find any Suppliers. Add new Suppliers</clr-dg-placeholder>
+        <clr-dg-row *clrDgItems="let element of Sup |async" [clrDgItem]="element">
+          <clr-dg-cell>{{element.name}}</clr-dg-cell>
+          <clr-dg-cell>{{element.phone}}</clr-dg-cell>
+          <clr-dg-cell>{{element.website}}</clr-dg-cell>
+          <clr-dg-cell>{{element.status}}</clr-dg-cell>
+        </clr-dg-row>
+      
+       <clr-dg-detail *clrIfDetail="let element">
+          <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
+          <clr-dg-detail-body>
+            <div class="clr-row">
+              <div class="clr-col-6">
+                <table>
+                  <tr>
+                    <td>Address:</td>
+                    <td>{{element.address}}</td>
+                  </tr>
+                  <tr>
+                    <td>Email:</td>
+                    <td>{{element.email}}</td>
+                  </tr>
+                  <tr>
+                    <td>Description:</td>
+                    <td>{{element.description}}</td>
+                  </tr>
+                 
+                  <tr>
+                    <td>PhoneNumber:</td>
+                    <td>{{element.PhoneNumber}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+        </clr-dg-detail-body>
+        </clr-dg-detail> 
+      
+        <clr-dg-footer>
+          <clr-dg-pagination #pagination>
+            <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
+              Suppliers per page
+            </clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
+            {{pagination.totalItems}} Suppliers
+          </clr-dg-pagination>
+        </clr-dg-footer>
+      </clr-datagrid>
+      <editSupplier-dialog></editSupplier-dialog>
+      <addSupplier-dialog></addSupplier-dialog>
+      <deleteSupplier-dialog></deleteSupplier-dialog>
+    </clr-tab-content>
+  </clr-tab>
+</clr-tabs>
 
-    <clr-dg-placeholder>We couldn't find any Products. Add new Products</clr-dg-placeholder>
-    <clr-dg-row *clrDgItems="let element of elements |async" [clrDgItem]="element">
-      <clr-dg-cell>{{element.name}}</clr-dg-cell>
-      <clr-dg-cell>{{element.price | currency:currencySymbol}}</clr-dg-cell>
-      <clr-dg-cell>{{element.category}}</clr-dg-cell>
-      <clr-dg-cell>{{element.code}}</clr-dg-cell>
-    </clr-dg-row>
-  
-   <clr-dg-detail *clrIfDetail="let element">
-      <clr-dg-detail-header>{{element.name}}</clr-dg-detail-header>
-      <clr-dg-detail-body>
-        <div class="clr-row">
-          <div class="clr-col-6">
-            <table>
-              <tr>
-                <td>Category:</td>
-                <td>{{element.category}}</td>
-              </tr>
-              <tr>
-                <td>Price:</td>
-                <td>{{element.price | currency:currencySymbol}}</td>
-              </tr>
-              <tr>
-                <td>Description:</td>
-                <td>{{element.description}}</td>
-              </tr>
-              <tr>
-                <td>Code:</td>
-                <td>{{element.code}}</td>
-              </tr>
-              <tr>
-                <td>Loyalty Points:</td>
-                <td>{{element.loyaltyPoints}}</td>
-              </tr>
-              <tr *ngIf="element.allergens">
-                <td>Allergens:</td>
-                <td *ngFor="let allergen of element.allergens.split(',')">
-                  <span class="label">{{allergen}}</span>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="clr-col-6">
-            <img [src]="element.photosUrl" style="height: 200px;width: auto;"/>
-          </div>
-        </div>
-    </clr-dg-detail-body>
-    </clr-dg-detail> 
-  
-    <clr-dg-footer>
-      <clr-dg-pagination #pagination>
-        <clr-dg-page-size [clrPageSizeOptions]="[10,20,50,100]">
-          Products per page
-        </clr-dg-page-size>
-        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of
-        {{pagination.totalItems}} elements
-      </clr-dg-pagination>
-    </clr-dg-footer>
-  </clr-datagrid>
-
- <add-product [products]="elements|async"></add-product>
-<edit-product [products]="elements|async"></edit-product>
-<del-product></del-product>
   

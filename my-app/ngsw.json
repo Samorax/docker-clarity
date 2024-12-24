@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1733316076299,
+  "timestamp": 1734886354945,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -11,14 +11,14 @@
         "ignoreVary": true
       },
       "urls": [
-        "/806.js",
+        "/697.82826e3075f6bdc8.js",
         "/favicon.ico",
         "/index.html",
-        "/main.js",
+        "/main.fc8dcb7c82de6f59.js",
         "/manifest.webmanifest",
-        "/polyfills.js",
-        "/runtime.js",
-        "/styles.css"
+        "/polyfills.61e373193d29277e.js",
+        "/runtime.9637233cdcc33a91.js",
+        "/styles.f11b50e064ee18e0.css"
       ],
       "patterns": []
     },
@@ -89,7 +89,7 @@
   ],
   "dataGroups": [],
   "hashTable": {
-    "/806.js": "448892d47063099dc50530ef3458e4a51614b564",
+    "/697.82826e3075f6bdc8.js": "1ec4d28d4228cf4e525fec2f5d31cd87a50163e7",
     "/assets/foodloyale_logo.png": "0d8e54d896b1bc994173c2ffc92973784524311a",
     "/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
     "/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
@@ -144,12 +144,12 @@
     "/assets/order-notify.mp3": "aadbba81c167018b8e834faf243998a9ae9a73a9",
     "/assets/videos/demo_product.mp4": "5225f3a3a3a19240caf5908421d209c7652d4105",
     "/favicon.ico": "9bfb4825e48303651493f34f22897135a182d04d",
-    "/index.html": "b89a2697994be47e107ef8def5bc2e00a1c01d5d",
-    "/main.js": "169415c4938dcdc84dd2faea76297b41b201c979",
+    "/index.html": "bdddae1d1212b7a85959d97efeca69f5d4cf628e",
+    "/main.fc8dcb7c82de6f59.js": "8c608ca980f7c690b740fb8c17d600df45473fac",
     "/manifest.webmanifest": "e2e28a7463b72639606547fd41e7a1d48fd87208",
-    "/polyfills.js": "d6d10232795136addf3256dbaf645d1426a805d2",
-    "/runtime.js": "b6c0f3ce0906cb0dbb4822f851c070cda0065fcc",
-    "/styles.css": "037bee30dfde3fc44b9521edb23473ee911f9ca6"
+    "/polyfills.61e373193d29277e.js": "d5e1cd2fdd3f41481986bbe29d97553155c3da2e",
+    "/runtime.9637233cdcc33a91.js": "72ab383f7f1a34c2d39a5e73a112ec8d2344c656",
+    "/styles.f11b50e064ee18e0.css": "5c339be961760c88bcfd7164b84e86e5e7e0e41e"
   },
   "navigationUrls": [
     {

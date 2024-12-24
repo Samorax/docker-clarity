@@ -13,7 +13,8 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^17.0.0",
-    "@angular/common": "^17.0.0",
+    "@angular/cdk": "^17.0.0",
+    "@angular/common": "^18.0.0",
     "@angular/compiler": "^17.0.0",
     "@angular/core": "^17.0.0",
     "@angular/forms": "^17.0.0",
@@ -38,7 +39,6 @@
     "ngx-echarts": "^17.1.0",
     "ngx-toastr": "^18.0.0",
     "run-script-os": "*",
-    "rxdb": "^15.36.1",
     "rxjs": "~7.8.0",
     "stripe.js": "",
     "tslib": "^2.3.0",
