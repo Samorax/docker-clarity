@@ -16,8 +16,7 @@ import { testModeService } from './Services/TestModeService';
 import { SettingsComponent } from './Settings/settings.component';
 import { disseminateModeService } from './Services/DisseminateMode';
 import 'zone.js/plugins/zone-patch-rxjs';
-import { RxDbReplService } from './Services/RxDbReplService';
-import { rxDbService } from './Services/RxDbService';
+
 import { environment } from '../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Stock } from './Models/Stock';
@@ -54,7 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private signalrService: SignalrService,private _testModeSVR:testModeService,private _getNetStatus:GetNetworkStatus,
     private ordersrv: OrderService,private _appUserSvr:appUserService, private _toaster:ToastrService,
-    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef, private _rxdbReplSvr:RxDbReplService, private rxDbSvr:rxDbService,
+    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef,
      private _route: Router) {
     
      }

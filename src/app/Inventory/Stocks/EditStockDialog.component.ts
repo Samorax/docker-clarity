@@ -1,11 +1,11 @@
 import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
-import { Stock } from "../Models/Stock";
+import { Stock } from "../../Models/Stock";
 import { FormBuilder, Validators } from "@angular/forms";
-import { Product } from "../Models/Product";
+import { Product } from "../../Models/Product";
 
 @Component({
     selector:'editStk-dialog',
-    templateUrl:'../Inventory/EditStockDialog.component.html'
+    templateUrl:'../Stocks/EditStockDialog.component.html'
 })
 
 export class editStockDialogComponent

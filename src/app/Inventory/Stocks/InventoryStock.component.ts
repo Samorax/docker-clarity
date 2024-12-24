@@ -1,9 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, OnInit, ViewChild } from "@angular/core";
-import { Stock } from "../Models/Stock";
-import { stockService } from "../Services/Stock/StockService";
+import { Stock } from "../../Models/Stock";
+import { stockService } from "../../Services/Stock/StockService";
 import { addStockDialog } from "./AddStockDialog.component";
-import { Product } from "../Models/Product";
-import { ProductService } from "../Services/Product/ProductService";
+import { Product } from "../../Models/Product";
+import { ProductService } from "../../Services/Product/ProductService";
 import { deleteStockDialogComponent } from "./DeleteStockDialog.component";
 import { restockDialogComponent } from "./ReStockDialog.component";
 import { editStockDialogComponent } from "./EditStockDialog.component";

@@ -1,12 +1,17 @@
 import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
+<<<<<<< HEAD:src/app/Inventory/AddStockDialog.component.ts
 import { Product } from "../Models/Product";
 import { Stock } from "../Models/Stock";
 import { ClrLoadingState } from "@clr/angular";
+=======
+import { Product } from "../../Models/Product";
+import { Stock } from "../../Models/Stock";
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a:src/app/Inventory/Stocks/AddStockDialog.component.ts
 
 @Component({
     selector:'addStock-dialog',
-    templateUrl:'../Inventory/AddStockDialog.component.html'
+    templateUrl:'../Stocks/AddStockDialog.component.html'
 })
 
 export class addStockDialog{

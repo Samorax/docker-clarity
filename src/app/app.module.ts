@@ -16,11 +16,11 @@ import { OrderListComponent } from './Order/OrderList.component';
 import { OrderOverviewComponent } from './Order/OrderOverview.component';
 import { CustomerListComponent } from './Customer/CustomerList.component';
 import { CustomerOverviewComponent } from './Customer/CustomerOverview.component';
-import { AddProductDialog } from './Inventory/AddProductDialog.component';
+import { AddProductDialog } from './Inventory/Products/AddProductDialog.component';
 import { ClarityModule, ClrButtonModule, ClrLoadingModule, ClrSpinnerModule, ClrTooltipModule } from '@clr/angular';
 import { HomeComponent } from './home/home.component';
-import { EditProductDialog } from './Inventory/EditProductDialog.component';
-import { DeleteProductDialog } from './Inventory/DeleteProductDialog.component';
+import { EditProductDialog } from './Inventory/Products/EditProductDialog.component';
+import { DeleteProductDialog } from './Inventory/Products/DeleteProductDialog.component';
 import { ProductService } from './Services/Product/ProductService';
 import { OrderService } from './Services/Order/OrderService';
 import { OrderEditComponent } from './Order/OrderEdit.component';
@@ -80,12 +80,12 @@ import { becomeAPartnerComponent } from './index/becomeAPartnerComponent';
 import { partnersComponent } from './index/partnersComponent';
 import { OrderAnnulComponent } from './Order/OrderAnnul.component';
 import { OrderReconcileComponent } from './Order/OrderReconcile.component';
-import { InventoryStockComponent } from './Inventory/InventoryStock.component';
-import { addStockDialog } from './Inventory/AddStockDialog.component';
+import { InventoryStockComponent } from './Inventory/Stocks/InventoryStock.component';
+import { addStockDialog } from './Inventory/Stocks/AddStockDialog.component';
 
-import { deleteStockDialogComponent } from './Inventory/DeleteStockDialog.component';
-import { restockDialogComponent } from './Inventory/ReStockDialog.component';
-import { editStockDialogComponent } from './Inventory/EditStockDialog.component';
+import { deleteStockDialogComponent } from './Inventory/Stocks/DeleteStockDialog.component';
+import { restockDialogComponent } from './Inventory/Stocks/ReStockDialog.component';
+import { editStockDialogComponent } from './Inventory/Stocks/EditStockDialog.component';
 import { stockResolver } from './Services/Stock/StockResolver';
 import { productResolver } from './Services/Product/ProductResolver';
 import { ClarityIcons } from '@cds/core/icon';
@@ -97,6 +97,13 @@ import { appUserResolver } from './Services/AppUserResolver';
 import { LoyaltyOverviewComponent } from './Loyalty/overviewcomponent';
 import { CustomFormatPipe } from './Services/CustomFormatter.pipe';
 import { RewardSmsComponent } from './Loyalty/rewardSms.component';
+import { AddFIDialogComponent } from './Inventory/Food Ingredients/AddFI.component';
+import { DeleteFIDialogComponent } from './Inventory/Food Ingredients/DeleteFI.component';
+import { EditFIDialogComponent } from './Inventory/Food Ingredients/EditFI.component';
+import { PODialogComponent } from './Inventory/Food Ingredients/PO.component';
+import { AddSupplierDialogComponent } from './Inventory/Supplier/AddSupplierDialog.component';
+import { DeleteSupplierDialogComponent } from './Inventory/Supplier/DeleteSupplierDialog.component';
+import { EditSupplierDialogComponent } from './Inventory/Supplier/EditSupplierDialog.component';
 
 
 @NgModule({
@@ -114,6 +121,13 @@ import { RewardSmsComponent } from './Loyalty/rewardSms.component';
     InventoryOverviewComponent,
     InventoryCatalogComponent,
     InventoryStockComponent,
+    AddSupplierDialogComponent,
+    DeleteSupplierDialogComponent,
+    EditSupplierDialogComponent,
+    DeleteFIDialogComponent,
+    AddFIDialogComponent,
+    EditFIDialogComponent,
+    PODialogComponent,
     addStockDialog,
     deleteStockDialogComponent,
     restockDialogComponent,

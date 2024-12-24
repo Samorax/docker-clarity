@@ -1,13 +1,13 @@
 import { Component, EventEmitter, inject, Output } from "@angular/core";
-import { Stock } from "../Models/Stock";
+import { Stock } from "../../Models/Stock";
 import { FormBuilder, Validators } from "@angular/forms";
-import { stockService } from "../Services/Stock/StockService";
-import { Restock } from "../Models/Restock.model";
+import { stockService } from "../../Services/Stock/StockService";
+import { Restock } from "../../Models/Restock.model";
 import { ClrLoadingState } from "@clr/angular";
 
 @Component({
     selector:'restock-dialog',
-    templateUrl:'../Inventory/RestockDialog.component.html'
+    templateUrl:'../Stocks/RestockDialog.component.html'
 })
 
 export class restockDialogComponent

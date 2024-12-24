@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from "@angular/core";
-import { Product } from "../Models/Product";
+import { Product } from "../../Models/Product";
 
 @Component({
   selector: 'del-product',

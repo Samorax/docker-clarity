@@ -137,6 +137,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+<<<<<<< HEAD
 array-push-at-sort-position
 Apache-2.0
 Apache License
@@ -982,6 +983,8 @@ Apache License
 
 
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 echarts
 Apache-2.0
 
@@ -1208,9 +1211,12 @@ The following files embed [d3.js](https://github.com/d3/d3) BSD 3-Clause:
 See `/licenses/LICENSE-d3` for details of the license.
 
 
+<<<<<<< HEAD
 event-reduce-js
 MIT
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 file-saver
 MIT
 The MIT License
@@ -1320,6 +1326,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+<<<<<<< HEAD
 mingo
 MIT
 The MIT License (MIT)
@@ -1344,6 +1351,8 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 moment
 MIT
 Copyright (c) JS Foundation and other contributors
@@ -1420,6 +1429,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+<<<<<<< HEAD
 oblivious-set
 MIT
 MIT License
@@ -1470,6 +1480,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 ramda
 MIT
 The MIT License (MIT)
@@ -1495,6 +1507,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+<<<<<<< HEAD
 rxdb
 Apache-2.0
                                Apache License
@@ -1700,6 +1713,8 @@ Apache-2.0
  limitations under the License.
 
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 rxjs
 Apache-2.0
                                Apache License
@@ -1921,6 +1936,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 
+<<<<<<< HEAD
 unload
 Apache-2.0
 Apache License
@@ -2126,11 +2142,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
+=======
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 zone.js
 MIT
 The MIT License
 
+<<<<<<< HEAD
 Copyright (c) 2010-2023 Google LLC. https://angular.io/license
+=======
+Copyright (c) 2010-2024 Google LLC. https://angular.io/license
+>>>>>>> fbffca7dd94f221062d383b7345b79d0b920637a
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

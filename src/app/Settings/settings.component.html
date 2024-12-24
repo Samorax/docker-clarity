@@ -13,13 +13,10 @@
       <clr-tab-content *clrIfActive>
         <section>
           <div>
-            <h4>Account Details</h4>
-          </div>
-          <div>
-            <section formGroupName = 'accountDetails'  >
-              <div (click)="showAccountSettings()" class="section-header">
-                <h6>Change Contact Details</h6>
-              </div>
+            <section formGroupName = 'accountDetails'>
+              <button (click)="showAccountSettings()" class="btn btn-outline">
+                Change Contact Details
+              </button>
              
               <div [@openClose]="isOpen ? 'close':'open'">
                 <div class="clr-row">
@@ -120,10 +117,7 @@
         </section>
         <section>
           <div>
-            <h4>Account Payment</h4>
-          </div>
-          <div>
-            <h6 (click)="showPaymentDetailsSettings()" class="section-header">Change Payment Details</h6>
+            <button (click)="showPaymentDetailsSettings()" class="btn btn-outline">Change Payment Details</button>
             <div class="formbody" id="payment-form" [@openClose]="isOpen3 ? 'close':'open'">
               <div class="group" id="payment-element">
                 <!--Stripe.js injects the Payment Element-->
@@ -157,11 +151,7 @@
     <button clrTabLink (click)="fillIntegrationSettings()">Integrations</button>
     <clr-tab-content *clrIfActive>
       <section formGroupName="integrationSettings">
-        
-          <h4>Payment Processor</h4>
-        <div (click)="showPaymentProcessorSettings()" class="section-header">
-          <h6>Change Payment Processor</h6>
-        </div>
+        <button (click)="showPaymentProcessorSettings()" class="btn btn-outline">Change Payment Processor</button>
         <div [@openClose]="isOpen4 ?'close':'open'">
           <clr-select-container>
             <label class="clr-required-mark clr-control-label">Select Payment Provider</label>
@@ -204,9 +194,40 @@
           </div>
         </div>
         </div>
+      </section>
+      <section formGroupName="accountingSettings">
+        <div>
+          <button class="btn btn-outline" (click)="showAccountSystemSettings()">Change Accounting System</button>
+          <div [@openClose]="isOpen9?'close':'open'">
+            <clr-select-container>
+              <label class="clr-required-mark clr-control-label">Select Accounting System</label>
+              <select clrSelect formControlName="accountingSystem" #selectedSystem (change)="onChangeAccountingSystem(selectedSystem.value)">
+                  <option value="Xero">Xero</option>
+              </select>
+            </clr-select-container>
+              <div *ngIf="showXeroForms">
+                <div class="clr-row">
+                  <div class="clr-col">
+                    <clr-password-container>
+                      <label class="clr-required-mark">Client ID</label>
+                      <input clrPassword autocomplete="current-password" placeholder="insert client id" formControlName="clientId"/>
+                      <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-password-container>
+                  </div>
+                  <div class="clr-col">
+                    <clr-password-container>
+                      <label class="clr-required-mark">Client Secret</label>
+                      <input clrPassword autocomplete="current-password" placeholder="Insert client secret" formControlName="clientSecret" />
+                      <clr-control-error *clrIfError="'required'">This field is required</clr-control-error>
+                    </clr-password-container>
+                  </div>
+                </div>
+                <button class="btn btn-primary" (click)="onSaveAccountingSystem($event)" [disabled]="!settingsForm.get('accountingSettings')?.valid">Save</button>
+              </div>
+          </div>
+        </div>
           
       </section>
-
     </clr-tab-content>
   </clr-tab>
 
@@ -255,9 +276,9 @@
       <section formGroupName="operatingHours">
         
           <h4>Operating Hours Settings</h4>
-         <div (click)="toggle5()" class="section-header">
-          <h6>Change Operating Hours</h6> 
-         </div>
+         <button (click)="toggle5()" class="btn btn-outline">
+          Change Operating Hours
+         </button>
             <div class="clr-row" [@openClose]="isOpen5 ?'close':'open'">
               <div class="clr-col">
 
@@ -305,11 +326,9 @@
       </section>
 
       <section formGroupName="logistics">
-        
-          <h4>Logistics Settings</h4>
-        <div (click)="showLogisticsSettings()" class="section-header">
-          <h6>Change logistics</h6>
-        </div>
+        <button (click)="showLogisticsSettings()" class="btn btn-outline">
+          Change logistics
+        </button>
        
         <div class="clr-row" [@openClose]="isOpen6 ?'close':'open'">
           <clr-input-container class="clr-col">
@@ -340,11 +359,9 @@
       </section>
      
       <section formGroupName="shopSettings">
-    
-          <h4>Receipt Settings</h4>
-        <div (click)="showReceiptSettings()" class="section-header">
-          <h6>Change receipts</h6>
-        </div>
+        <button (click)="showReceiptSettings()" class="btn btn-outline">
+          Change receipts
+        </button>
         
         <div class="clr-row" [@openClose]="isOpen7 ?'close':'open'">
           <clr-input-container class="clr-col">
@@ -374,11 +391,9 @@
       </section>
       
       <section formGroupName="businessDetails">
-        
-          <h4>Address Settings</h4>
-        <div (click)="showAddressSettings()" class="section-header">
-          <h6>Change Address</h6>
-        </div>
+        <button (click)="showAddressSettings()" class="btn btn-outline">
+          Change Address
+        </button>
         <div [@openClose]="isOpen8 ? 'close':'open'">
           <div class="clr-row" >
             <clr-input-container class="clr-col">

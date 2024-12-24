@@ -1,0 +1,9 @@
+<clr-modal [(clrModalOpen)]="show" clrModalSize="md" [clrModalStaticBackdrop]="true" [clrModalClosable]="false">
+    <h3 class="modal-title" clrModalTitle>Add New Product</h3>
+    <div class="modal-body" clrModalContent>
+        <div class="modal-footer" clrModalActions>
+            <button class="btn btn-outline" (click)="show=false" >Cancel</button>
+            <button class="btn btn-primary">OK</button>
+          </div>
+    </div>
+</clr-modal>

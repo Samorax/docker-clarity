@@ -4,8 +4,7 @@ services:
   myapp:
     image: myapp
     depends_on:
-      foodloyaleapi:
-        condition:  service_health 
+      - backend
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -13,3 +12,10 @@ services:
       NODE_ENV: production
     ports:
       - 4200:4200
+  backend:
+    image: webapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 5241:5241

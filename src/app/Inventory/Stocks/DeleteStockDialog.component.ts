@@ -1,10 +1,10 @@
 import { Component,EventEmitter, Output } from "@angular/core";
-import { Stock } from "../Models/Stock";
+import { Stock } from "../../Models/Stock";
 
 
 @Component({
     selector:'deleteStk-dialog',
-    templateUrl:'../Inventory/DeleteStockDialog.component.html'
+    templateUrl:'../Stocks/DeleteStockDialog.component.html'
 })
 
 export class deleteStockDialogComponent

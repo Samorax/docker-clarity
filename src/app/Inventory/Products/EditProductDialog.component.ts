@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
-import { Product } from "../Models/Product";
-import { FormBuilder, NgForm, Validators } from "@angular/forms";
+import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { Product } from "../../Models/Product";
+import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
   selector: 'edit-product',
