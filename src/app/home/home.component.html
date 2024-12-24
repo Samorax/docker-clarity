@@ -18,12 +18,12 @@
       </div>
     </div>
       
-    <app-nav-menu ></app-nav-menu> 
+    <!-- <app-nav-menu ></app-nav-menu>  -->
   <div class="content-container">
     
-    <app-sidebar></app-sidebar>
+    <!-- <app-sidebar></app-sidebar> -->
     <div class="content-area">
-      <button (click)="openChatBox()" class="btn btn-secondary assistantButton">
+     <!--  <button (click)="openChatBox()" class="btn btn-secondary assistantButton">
         <cds-icon shape="chat-bubble"></cds-icon>
       </button>
       <div class="chatBox" [style.display]="showDialogBox?'block':'none'">
@@ -35,9 +35,9 @@
                 {{chat.message}}</p>
             </li>
           </ul>
-        </div>
+        </div> -->
         
-        <form (ngSubmit)="onSubmit()" [formGroup]="chatForm" clrForm clrLayout="vertical" class="dialogForm" >
+      <!--   <form (ngSubmit)="onSubmit()" [formGroup]="chatForm" clrForm clrLayout="vertical" class="dialogForm" >
             <clr-textarea-container>
               <textarea clrTextarea formControlName="message" cols="43" rows="3" required></textarea>
               <clr-control-helper>Insert your message</clr-control-helper>
@@ -46,7 +46,7 @@
         <div class="side-panel-footer">
           <button type="submit" class="btn btn-primary" [disabled]="!chatForm.valid">Send</button>
         </div>
-      </form>
+      </form> -->
       </div>
     
   <!-- <clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="false">
@@ -61,7 +61,7 @@
     </div>
    
   </div>
-</div>
+
 
 
   

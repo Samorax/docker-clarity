@@ -1,26 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import '@cds/core/icon/register.js';
 import { ClarityIcons, usersIcon, bundleIcon, shoppingCartIcon,plusIcon, bellIcon,cogIcon } from '@cds/core/icon';
-import { SignalrService } from './Services/Signalr.Service';
-import { BehaviorSubject, Observable, Subscription, fromEvent, map, merge, of } from 'rxjs';
-import { OrderService } from './Services/Order/OrderService';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { appUserService } from './Services/AppUserService';
-import { Router } from '@angular/router';
-import { Notifications, notificationType } from './Models/Notification';
-import { Customer } from './Models/Customer';
-import { AuthenticationService } from './Services/AuthenticationService';
-import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+
 import * as _ from 'lodash';
-import { testModeService } from './Services/TestModeService';
-import { SettingsComponent } from './Settings/settings.component';
-import { disseminateModeService } from './Services/DisseminateMode';
+
 import 'zone.js/plugins/zone-patch-rxjs';
 
 import { environment } from '../environment/environment';
 import { HttpClient } from '@angular/common/http';
-import { Stock } from './Models/Stock';
-import { GetNetworkStatus } from './Services/GetNetworkService';
 
 
 
@@ -32,15 +20,15 @@ ClarityIcons.addIcons(usersIcon, bundleIcon, shoppingCartIcon, plusIcon,bellIcon
   styleUrl:'./app.component.css',
   changeDetection:ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(NavMenuComponent)navcomponent!: NavMenuComponent;
-  @ViewChild(SettingsComponent)settingscomponent!:SettingsComponent;
+export class AppComponent implements OnInit, OnDestroy {
+ // @ViewChild(NavMenuComponent)navcomponent!: NavMenuComponent;
+  //@ViewChild(SettingsComponent)settingscomponent!:SettingsComponent;
 
   networkStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   networkStatus$: Subscription = Subscription.EMPTY;
 
   loginStatus!:string;
-  notifications:Notifications[] = [];
+  //notifications:Notifications[] = [];
   isAuthenticated?: Observable<boolean>
   allFeedSubscription: any;
   order!: any;
@@ -48,13 +36,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   Orderstatus:string = '';
   paymentProvider: any;
   testMode!:boolean
-  mode = inject(disseminateModeService)
+  //mode = inject(disseminateModeService)
   baseUrl =  environment.apiBaseUrl+'api/sync/';
 
-  constructor(private signalrService: SignalrService,private _testModeSVR:testModeService,private _getNetStatus:GetNetworkStatus,
-    private ordersrv: OrderService,private _appUserSvr:appUserService, private _toaster:ToastrService,
-    private _authSvr:AuthenticationService,private cd:ChangeDetectorRef,
-     private _route: Router) {
+  constructor(
+    
+     ) {
     
      }
      
@@ -66,7 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //after view initialises, when order is received from outside channel
   //add it to database, update cache and display notification status with sound.
-  ngAfterViewInit(): void {
+ /*  ngAfterViewInit(): void {
 
     this.isAuthenticated = this._authSvr.isAuthenticated();
   
@@ -208,16 +195,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.navcomponent.loginStatus.subscribe(s=> this.loginStatus = s);
 
-  }
+  } */
  _httpClient= inject(HttpClient)
   //on page reload or when app initialises - initialise all services and cache data required.
   ngOnInit() {
 
-    this.checkPaymentTerminalStatus();
+   /*  this.checkPaymentTerminalStatus();
     
     this.checkNetworkStatus();
 
-    this.signalrService.init();
+    this.signalrService.init(); */
 
     /* this.rxDbSvr.createDb().then(s=>{ 
       let r = this.rxDbSvr.getProducts().asRxCollection;
@@ -229,13 +216,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     
 
     // 2 - register for ALL relay
-    this.signalrService.listenToOrderFeeds();
+/*     this.signalrService.listenToOrderFeeds();
     this.signalrService.listenToBirthdayFeeds();
     this.signalrService.listenToOrderUpdateFeeds();
 
     let x:any = localStorage.getItem('appMode');
 
-    this.testMode = x;
+    this.testMode = x; */
 
     // 3 - subscribe to messages received
    /* this.signalrService.AllFeedObservable
@@ -244,7 +231,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       });*/
   } 
 
-   playSoundNotification(){
+ /*   playSoundNotification(){
       let au = new Audio();
         au.src = '../assets/order-notify.mp3';
         au.load();
@@ -272,7 +259,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
 onFixPaymentProcessor(){
 this._route.parseUrl('/home/settings');
-}
+} */
 
 
   title = 'Foodloyale';

@@ -1,14 +1,10 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
-import { SettingsComponent } from '../Settings/settings.component';
-import { chatService } from '../Services/ChatService';
+
 import { FormBuilder, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { chatQuery } from '../Models/ChatQuery';
-import { IChatMessage } from '../Services/IChatMessage';
+
 import { ClarityIcons, timesIcon } from '@cds/core/icon';
-import { AuthenticationService } from '../Services/AuthenticationService';
-import { disseminateModeService } from '../Services/DisseminateMode';
-import { GetNetworkStatus } from '../Services/GetNetworkService';
+
 ClarityIcons.addIcons(timesIcon)
 
 @Component({
@@ -20,15 +16,15 @@ ClarityIcons.addIcons(timesIcon)
 })
 export class HomeComponent implements AfterViewInit {
 
-  _authSvr = inject(AuthenticationService);
+/*   _authSvr = inject(AuthenticationService);
   mode = inject(disseminateModeService)
   cd = inject(ChangeDetectorRef)
-  netStatus = inject(GetNetworkStatus)
+  netStatus = inject(GetNetworkStatus) */
 
   ngAfterViewInit(): void {
-    this.isAuthenticated = this._authSvr.isAuthenticated();
-    this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();});
-    this.netStatus.getStatus$.subscribe(n=> {this.networkStatus = n;this.cd.detectChanges()})
+    //this.isAuthenticated = this._authSvr.isAuthenticated();
+   // this.mode.getMode.subscribe(m=> {this.testMode = m;this.cd.detectChanges();});
+    //this.netStatus.getStatus$.subscribe(n=> {this.networkStatus = n;this.cd.detectChanges()})
   }
  
   show:any;
@@ -37,9 +33,9 @@ export class HomeComponent implements AfterViewInit {
   appMode!:boolean
 
   formBuilder = inject(FormBuilder)
-  chatSVR = inject(chatService)
+  //chatSVR = inject(chatService)
   
-  chatHistory:BehaviorSubject<IChatMessage[]> = new BehaviorSubject<IChatMessage[]>([{author:'',message:''}])
+  //chatHistory:BehaviorSubject<IChatMessage[]> = new BehaviorSubject<IChatMessage[]>([{author:'',message:''}])
 
 
   chatForm = this.formBuilder.group({
@@ -51,18 +47,18 @@ isAuthenticated!: Observable<boolean>;
 testMode: any;
   
   
-  onSubmit() {
+  /* onSubmit() {
     let currentArray = this.chatHistory.getValue();
     let updatedArray = [...currentArray,{author:'You',message:<string>this.chatForm.value.message}]
     this.chatHistory.next(updatedArray) ;
   
-    let x: chatQuery = {message: this.chatForm.value.message};
-    this.chatSVR.sendMessage(x).subscribe(r=>{
+    let x: chatQuery = {message: this.chatForm.value.message}; */
+   /*  this.chatSVR.sendMessage(x).subscribe(r=>{
       let currentArray = this.chatHistory.getValue();
       let updatedArray = [...currentArray,{author:'Ai Asistant',message:<string>r.content}]
     this.chatHistory.next(updatedArray);
-    }) 
-  }
+    })  
+  }*/
   chatResponse: BehaviorSubject<string> = new BehaviorSubject<string>('');
   userPrompt: string = ''
   
