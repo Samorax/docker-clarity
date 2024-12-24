@@ -3,6 +3,9 @@ version: '3.4'
 services:
   myapp:
     image: myapp
+    depends_on:
+      foodloyaleapi:
+        condition:  service_health 
     build:
       context: .
       dockerfile: ./Dockerfile
